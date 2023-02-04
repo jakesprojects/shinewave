@@ -1,0 +1,1 @@
+Hi {first_name}, don't forget about your healthcare appointment today at {key_time}. Please arrive 10 minutes early and bring along your ID and insurance card. If you need to reschedule, please call {response_phone_number}. We look forward to seeing you soon!

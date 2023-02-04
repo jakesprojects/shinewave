@@ -1,0 +1,1 @@
+It's time to renew the {prescription_1} prescription for {first_name} {last_name}. Respond with 1 by {today + 7} to renew. Respond with 2 to cancel.
