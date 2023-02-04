@@ -3,3 +3,5 @@
 **/*.egg-info/*
 **/jakenode/build
 **/jakenode/build/*
+**/*.trashinfo
+file_mount/node_app/.ipynb_checkpoints
