@@ -1,3 +1,5 @@
 **/*Zone.Identifier
 **/*.egg-info
 **/*.egg-info/*
+**/jakenode/build
+**/jakenode/build/*
