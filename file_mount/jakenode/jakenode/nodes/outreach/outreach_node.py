@@ -11,5 +11,5 @@ class OutreachNode(WorkflowNode):
     # initial default node name.
     NODE_NAME = 'Outreach'
 
-    def __init__(self):
-        super(TriggerNode, self).__init__(has_output=True, has_input=True)
+    def __init__(self, has_output):
+        super(OutreachNode, self).__init__(has_output=has_output, has_input=True)

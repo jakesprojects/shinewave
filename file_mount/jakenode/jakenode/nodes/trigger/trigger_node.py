@@ -14,3 +14,4 @@ class TriggerNode(WorkflowNode):
 
     def __init__(self, has_input):
         super(TriggerNode, self).__init__(has_output=True, has_input=has_input)
+        self.set_property('color', (151, 219, 215, 200))

@@ -2,27 +2,28 @@ import random
 
 from jakenode.nodes.outreach.outreach_node import OutreachNode
 
-class SMSOutreach(WorkflowNode):
+class SMSOutreach(OutreachNode):
     """
     """
 
     # unique node identifier.
-    __identifier__ = 'nodes.event'
+    __identifier__ = 'nodes.outreach'
 
     # initial default node name.
     NODE_NAME = 'SMS Outreach'
 
     def __init__(self):
-        super(TriggerNode, self).__init__(has_output=True, has_input=True)
+        super(SMSOutreach, self).__init__(has_output=True)
 
-        self.generate_api_presets()
+        self.generate_sms_templates()
 
         sms_templates = self.sms_templates
         template_names = [''] + [i.name for i in sms_templates]
         self.add_combo_menu('sms_templates', 'SMS Templates', items=template_names)
+        self.set_property('color', (151, 219, 179))
 
     def generate_sms_templates(self):
-        self.sms_templates = [APIPreset(), APIPreset()]
+        self.sms_templates = [SMSTemplate(), SMSTemplate()]
 
 class SMSTemplate():
     def __init__(self, location=''):
