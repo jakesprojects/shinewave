@@ -1,2 +1,2 @@
-id,workflow_id,member_id,previous_state_id,previous_state_time,pending_triggers
-INTEGER,INTEGER,INTEGER,ID,TEXT,TEXT
+id,account_id,workflow_id,source_event_id,member_id,previous_state_id,previous_state_time,pending_triggers,active
+INTEGER,INTEGER,INTEGER,INTEGER,INTEGER,INTEGER,TEXT,TEXT,TEXT

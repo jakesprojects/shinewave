@@ -1,2 +1,2 @@
-id,provider_id,first_name,last_name,phone_number,email,key_date,key_time,custom_data
-INTEGER,TEXT,TEXT,TEXT,INTEGER,TEXT,TEXT,TEXT,TEXT
+id,account_id,provider_id,first_name,last_name,phone_number,email,key_date,key_time,custom_data,active
+INTEGER,INTEGER,TEXT,TEXT,TEXT,INTEGER,TEXT,TEXT,TEXT,TEXT,TEXT

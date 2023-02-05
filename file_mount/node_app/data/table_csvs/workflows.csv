@@ -1,2 +1,2 @@
-id,definition_file
-INTEGER,TEXT
+id,account_id,definition_file,active
+INTEGER,INTEGER,TEXT,TEXT

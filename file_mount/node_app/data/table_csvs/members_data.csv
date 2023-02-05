@@ -1,5 +1,5 @@
-id,provider_id,first_name,last_name,phone_number,email,key_date,key_time,custom_data
-1,m394y78sdh7,Joe,Johnson,1234567890,Joe.Johnson@gmail.com,2/17/2023,12:21:22:00,"{""prescription_1"": ""Testagra"", ""prescription_2"": ""Molisia""}"
-2,rns9frh9747,Pam,Morrison,2561321325,Pam.Morrison@gmail.com,4/23/2023,02:38:27:00,"{""prescription_1"": ""Molisia""}"
-3,dsf9r8hjf98we4utgyh,Mike,Brown,8456917435,Mike.Brown@gmail.com,3/1/2023,03:46:08:00,"{""prescription_1"": ""Testagra"", ""prescription_2"": ""Molisia""}"
-4,msg9wj8rfw98fhj,Rico,Gonzales,1658453652,Rico.Gonzales@gmail.com,4/7/2023,23:17:17:00,"{""prescription_1"": ""Molisia"", ""prescription_2"": ""Testagra""}"
+id,account_id,provider_id,first_name,last_name,phone_number,email,key_date,key_time,custom_data
+1,1,m394y78sdh7,Joe,Johnson,1234567890,Joe.Johnson@gmail.com,2/17/2023,12:21:22:00,"{""prescription_1"": ""Testagra"", ""prescription_2"": ""Molisia""}",TRUE
+2,1,rns9frh9747,Pam,Morrison,2561321325,Pam.Morrison@gmail.com,4/23/2023,02:38:27:00,"{""prescription_1"": ""Molisia""}",TRUE
+3,2,dsf9r8hjf98we4utgyh,Mike,Brown,8456917435,Mike.Brown@gmail.com,3/1/2023,03:46:08:00,"{""prescription_1"": ""Testagra"", ""prescription_2"": ""Molisia""}",TRUE
+4,2,msg9wj8rfw98fhj,Rico,Gonzales,1658453652,Rico.Gonzales@gmail.com,4/7/2023,23:17:17:00,"{""prescription_1"": ""Molisia"", ""prescription_2"": ""Testagra""}",TRUE
