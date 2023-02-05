@@ -1,1 +1,1 @@
-docker run -e DISPLAY=:0 -v /tmp/.X11-unix:/tmp/.X11-unix --user="$(id --user):$(id --group)" --net=host -v $(pwd)/file_mount:/srv jupyter
+docker run --privileged -e DISPLAY=:0 -v /tmp/.X11-unix:/tmp/.X11-unix --user="$(id --user):$(id --group)" --net=host -v $(pwd)/file_mount:/srv jupyter
