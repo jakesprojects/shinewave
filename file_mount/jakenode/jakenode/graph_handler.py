@@ -1,12 +1,14 @@
 from datetime import datetime
 
+from jakenode import node_handler
 from NodeGraphQt import NodeGraph
 
 class GraphHandler(NodeGraph):
 
-    def __init__(self, parent=None):
+    def __init__(self, queue=None, parent=None):
+        self.queue = queue
         self.init_time = datetime.now()
-        self.display_delay_seconds = 5
+        self.display_delay_seconds = 2
         super(GraphHandler, self).__init__(parent)
 
         # properties bin widget.
@@ -31,11 +33,8 @@ class GraphHandler(NodeGraph):
                 self.display_node_info(node)
 
     def display_node_info(self, node):
-        node_types_dict = {
-            'nodes.trigger.APITrigger': {'lookup_key': 'api_presets'}
-        }
-        node_type = node.get_property('type_')
-        fetch_data_dict = node_types_dict.get(node_type)
-        if fetch_data_dict:
-            lookup_key = fetch_data_dict.get('lookup_key')
-            print(node.get_property(lookup_key))
+        title, description = node_handler.fetch_node_display_info(node)
+        if self.queue is None:
+        	print(title, description)
+        else:
+        	self.queue.put((title, description))

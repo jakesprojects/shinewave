@@ -19,7 +19,9 @@ class SMSOutreach(OutreachNode):
 
         sms_templates = self.sms_templates
         template_names = [''] + [i.name for i in sms_templates]
-        self.add_combo_menu('sms_templates', 'SMS Templates', items=template_names)
+        self.add_combo_menu(
+            'sms_templates', 'SMS Templates', items=['', 'Same Day Appt Reminder', 'Prescription Reminder']
+        )
         self.set_property('color', (151, 219, 179))
 
     def generate_sms_templates(self):
