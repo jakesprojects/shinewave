@@ -1,0 +1,5 @@
+id,account_id,name,template_type,definition_file,active
+1,1,Same Day Appt Reminder,nodes.outreach.SMSOutreach,1.txt,TRUE
+2,1,Prescription Reminder,nodes.outreach.SMSOutreach,2.txt,TRUE
+3,2,Same Day Appt Reminder,nodes.outreach.SMSOutreach,1.txt,TRUE
+4,2,Prescription Reminder,nodes.outreach.SMSOutreach,2.txt,TRUE
