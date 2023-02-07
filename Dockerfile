@@ -13,11 +13,6 @@ RUN apt-get -y install libpulse-dev
 COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
 
-COPY NodeGraphQt-master /srv/NodeGraphQt
-COPY jakenode-master /srv/jakenode
-RUN pip3 install /srv/NodeGraphQt
-RUN pip3 install /srv/jakenode
-
 RUN apt-get -y install x11-apps
 ENV DISPLAY :80
 # ENV DISPLAY localhost:0
@@ -29,6 +24,11 @@ RUN apt -y install xpra
 RUN git clone https://github.com/Xpra-org/xpra-html5
 RUN xpra-html5/setup.py install
 RUN apt-get install --reinstall -y xdg-utils
+
+COPY NodeGraphQt-master /srv/NodeGraphQt
+COPY jakenode-master /srv/jakenode
+RUN pip3 install /srv/NodeGraphQt
+RUN pip3 install /srv/jakenode
 
 WORKDIR "/srv"
 RUN adduser --disabled-password --gecos "" myuser
