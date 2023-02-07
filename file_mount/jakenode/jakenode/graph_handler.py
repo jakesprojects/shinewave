@@ -5,8 +5,9 @@ from NodeGraphQt import NodeGraph
 
 class GraphHandler(NodeGraph):
 
-    def __init__(self, queue=None, parent=None):
+    def __init__(self, queue=None, socketio=None, parent=None):
         self.queue = queue
+        self.socketio = socketio
         self.init_time = datetime.now()
         self.display_delay_seconds = 2
         super(GraphHandler, self).__init__(parent)
@@ -34,7 +35,12 @@ class GraphHandler(NodeGraph):
 
     def display_node_info(self, node):
         title, description = node_handler.fetch_node_display_info(node)
-        if self.queue is None:
-        	print(title, description)
-        else:
+        if self.socketio is not None:
+            self.socketio.emit(
+                'info_update',
+                {'title': title, 'description': description}
+            )
+        if self.queue is not None:
         	self.queue.put((title, description))
+        else:
+        	print(title, description)
