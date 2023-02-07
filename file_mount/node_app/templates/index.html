@@ -22,7 +22,7 @@
             // The callback function is invoked whenever the server emits data
             // to the client. The data is then displayed in the "Received"
             // section of the page.
-            socket.on('my_response', function(msg, cb) {
+            socket.on('info_update', function(msg, cb) {
                 $('#log').empty().append('<br>' + $('<div/>').text('Received #' + msg.title + ': ' + msg.description).html());
                 if (cb)
                     cb();
