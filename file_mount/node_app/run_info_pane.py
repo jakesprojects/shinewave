@@ -20,10 +20,10 @@ def run_info_pane(queue, socketio=socketio, thread_lock=thread_lock):
         """Example of how to send server generated events to clients."""
         count = 0
         while True:
-            if not queue.empty():
+            if queue is not None and not queue.empty():
                 title, description = queue.get()
                 socketio.emit(
-                    'my_response',
+                    'info_update',
                     {'title': title, 'description': description}
                 )
                 socketio.sleep(.1)
@@ -59,4 +59,4 @@ def run_info_pane(queue, socketio=socketio, thread_lock=thread_lock):
                 thread = socketio.start_background_task(background_thread)
         emit('my_response', {'data': 'Connected', 'count': 0})
 
-    socketio.run(app)
+    socketio.run(app, allow_unsafe_werkzeug=True)
