@@ -15,20 +15,20 @@ from jakenode.nodes.trigger.api_trigger import APITrigger
 from jakenode.nodes.trigger.time_elapsed_trigger import TimeElapsedTrigger
 from jakenode.nodes.outreach.sms_outreach import SMSOutreach
 
-def run_node_app(queue):
+def run_node_app(queue=None, socketio=None):
     init_time = datetime.now()
     print(init_time)
     print(datetime.now() - init_time)
 
     # handle SIGINT to make the app terminate on CTRL+C
-    signal.signal(signal.SIGINT, signal.SIG_DFL)
+#     signal.signal(signal.SIGINT, signal.SIG_DFL)
 
     QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
 
     app = QtWidgets.QApplication([])
 
     # create graph controller.
-    graph = GraphHandler(queue)
+    graph = GraphHandler(queue=queue, socketio=socketio)
 
     # set up context menu for the node graph.
     graph.set_context_menu_from_file('./config/master_config.json')
@@ -111,4 +111,4 @@ def run_node_app(queue):
     app.exec_()
     
 if __name__ == '__main__':
-    run_node_app(None)
+    run_node_app()
