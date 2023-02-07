@@ -4,5 +4,6 @@
 **/jakenode/build
 **/jakenode/build/*
 **/*.trashinfo
+**//.Trash-0
 **/.ipynb_checkpoints
 **/__pycache__
