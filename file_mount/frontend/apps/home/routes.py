@@ -22,7 +22,10 @@ def route_template(template):
 
     try:
 
-        if not template.endswith('.html'):
+        if template.endswith('.html'):
+            template_name = template.rsplit('.html', 1)[0]
+        else:
+            template_name = template
             template += '.html'
 
         # Detect the current page
@@ -52,3 +55,6 @@ def get_segment(request):
 
     except:
         return None
+
+def handle_special_template(template_name):
+    pass
