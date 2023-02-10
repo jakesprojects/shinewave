@@ -1,0 +1,231 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Panels {% endblock %} 
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{{url_for('static', filename='/jstree/dist/themes/default/style.min.css')}}" />
+{% endblock stylesheets %}
+
+{% block content %}
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="{{url_for('static', filename='/jstree/dist/jstree.min.js')}}"></script>
+</head>
+	<div class="content">
+		<div class="page-inner">
+			<div class="page-header">
+				<h4 class="page-title">Panels</h4>
+				<ul class="breadcrumbs">
+					<li class="nav-home">
+						<a href="#">
+							<i class="flaticon-home"></i>
+						</a>
+					</li>
+					<li class="separator">
+						<i class="flaticon-right-arrow"></i>
+					</li>
+					<li class="nav-item">
+						<a href="#">Base</a>
+					</li>
+					<li class="separator">
+						<i class="flaticon-right-arrow"></i>
+					</li>
+					<li class="nav-item">
+						<a href="#">Panels</a>
+					</li>
+				</ul>
+			</div>
+			<div class="row">
+				<div class="col">
+					<div class="card">
+						<div class="card-header">
+							<h4 class="card-title">Nav Pills (Vertical Tabs)</h4>
+						</div>
+						<div class="card-body">
+							<div class="row">
+								<div class="col-5 col-md-4">
+									<div class="nav flex-column nav-pills nav-secondary" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+										<a class="nav-link active" id="v-pills-home-tab" data-toggle="pill" href="#v-pills-home" role="tab" aria-controls="v-pills-home" aria-selected="true">Edit Workflow</a>
+										<a class="nav-link" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="false">Create Workflow</a>
+										<a class="nav-link" id="v-pills-messages-tab" data-toggle="pill" href="#v-pills-messages" role="tab" aria-controls="v-pills-messages" aria-selected="false">Delete Workflow</a>
+									</div>
+								</div>
+								<div class="col-7 col-md-8">
+									<div class="tab-content" id="v-pills-tabContent">
+										<div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
+											<h1>HTML demo</h1>
+											<div id="html" class="demo">
+												<ul>
+													<li data-jstree='{ "opened" : true }'>Root node
+														<ul>
+															<li data-jstree='{ "selected" : true }'>Child node 1</li>
+															<li>Child node 2</li>
+														</ul>
+													</li>
+												</ul>
+											</div>
+
+											<h1>Inline data demo</h1>
+											<div id="data" class="demo"></div>
+
+											<h1>Data format demo</h1>
+											<div id="frmt" class="demo"></div>
+
+											<h1>AJAX demo</h1>
+											<div id="ajax" class="demo"></div>
+
+											<h1>Lazy loading demo</h1>
+											<div id="lazy" class="demo"></div>
+
+											<h1>Callback function data demo</h1>
+											<div id="clbk" class="demo"></div>
+
+											<h1>Interaction and events demo</h1>
+											<button id="evts_button">select node with id 1</button> <em>either click the button or a node in the tree</em>
+											<div id="evts" class="demo"></div>
+
+											<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+											<script src="{{url_for('static', filename='/jstree/dist/jstree.min.js')}}"></script>
+											
+											<script>
+											// html demo
+											$('#html').jstree();
+
+											// inline data demo
+											$('#data').jstree({
+												'core' : {
+													'data' : [
+														{ "text" : "Root node", "children" : [
+																{ "text" : "Child node 1" },
+																{ "text" : "Child node 2" }
+														]}
+													]
+												}
+											});
+
+											// data format demo
+											$('#frmt').jstree({
+												'core' : {
+													'data' : [
+														{
+															"text" : "Root node",
+															"state" : { "opened" : true },
+															"children" : [
+																{
+																	"text" : "Child node 1",
+																	"state" : { "selected" : true },
+																	"icon" : "jstree-file"
+																},
+																{ "text" : "Child node 2", "state" : { "disabled" : true } }
+															]
+														}
+													]
+												}
+											});
+
+											// ajax demo
+											$('#ajax').jstree({
+												'core' : {
+													'data' : {
+														"url" : "./root.json",
+														"dataType" : "json" // needed only if you do not supply JSON headers
+													}
+												}
+											});
+
+											// lazy demo
+											$('#lazy').jstree({
+												'core' : {
+													'data' : {
+														"url" : "//www.jstree.com/fiddle/?lazy",
+														"data" : function (node) {
+															return { "id" : node.id };
+														}
+													}
+												}
+											});
+
+											// data from callback
+											$('#clbk').jstree({
+												'core' : {
+													'data' : function (node, cb) {
+														if(node.id === "#") {
+															cb([{"text" : "Root", "id" : "1", "children" : true}]);
+														}
+														else {
+															cb(["Child"]);
+														}
+													}
+												}
+											});
+
+											// interaction and events
+											$('#evts_button').on("click", function () {
+												var instance = $('#evts').jstree(true);
+												instance.deselect_all();
+												instance.select_node('1');
+											});
+											$('#evts')
+												.on("changed.jstree", function (e, data) {
+													if(data.selected.length) {
+														alert('The selected node is: ' + data.instance.get_node(data.selected[0]).text);
+													}
+												})
+												.jstree({
+													'core' : {
+														'multiple' : false,
+														'data' : [
+															{ "text" : "Root node", "children" : [
+																	{ "text" : "Child node 1", "id" : 1 },
+																	{ "text" : "Child node 2" }
+															]}
+														]
+													}
+												});
+											</script>
+										</div>
+										<div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
+											<p>Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic life One day however a small line of blind text by the name of Lorem Ipsum decided to leave for the far World of Grammar.</p>
+											<p>The Big Oxmox advised her not to do so, because there were thousands of bad Commas, wild Question Marks and devious Semikoli, but the Little Blind Text didn’t listen. She packed her seven versalia, put her initial into the belt and made herself on the way.
+											</p>
+										</div>
+										<div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">
+											<p>Pityful a rethoric question ran over her cheek, then she continued her way. On her way she met a copy. The copy warned the Little Blind Text, that where it came from it would have been rewritten a thousand times and everything that was left from its origin would be the word "and" and the Little Blind Text should turn around and return to its own, safe country.</p>
+
+											<p> But nothing the copy said could convince her and so it didn’t take long until a few insidious Copy Writers ambushed her, made her drunk with Longe and Parole and dragged her into their agency, where they abused her for their</p>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+	<!-- Atlantis DEMO methods, don't include it in your project! -->
+	<script src="/static/assets/js/setting-demo2.js"></script>
+
+{% endblock javascripts %}
+
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>jstree basic demos</title>
+	<style>
+	html { margin:0; padding:0; font-size:62.5%; }
+	body { max-width:800px; min-width:300px; margin:0 auto; padding:20px 10px; font-size:14px; font-size:1.4em; }
+	h1 { font-size:1.8em; }
+	.demo { overflow:auto; border:1px solid silver; min-height:100px; }
+	</style>
+	<link rel="stylesheet" href="./../../dist/themes/default/style.min.css" />
+</head>
+<body>
+	
