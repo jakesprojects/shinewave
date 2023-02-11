@@ -63,14 +63,31 @@ def get_segment(request):
 
 def handle_special_template(template_name):
     def _workflow_tree_dict_to_json(workflow_tree_dict):
-        json_list = []
+        json_list = [
+            {'text': 'New Folder', 'icon': 'jstree-ok'}
+        ]
 
         for parent_node in workflow_tree_dict:
 
-            children_list = []
+            children_list = [
+                {'text': 'New Workflow', 'icon': 'jstree-ok'},
+                {'text': f'Rename Folder "{parent_node}"', 'icon': 'jstree-ok'},
+                {'text': f'Delete Folder "{parent_node}"', 'icon': 'jstree-ok'}
+            ]
 
             for child_node_name, child_node_id in workflow_tree_dict[parent_node]:
-                children_list.append({'text': child_node_name, 'id': child_node_id})
+                children_list.append(
+                    {
+                        'text': child_node_name,
+                        'id': child_node_id,
+                        'icon': 'jstree-file',
+                        'children': [
+                            {'text': f'Edit Workflow "{child_node_name}"', 'icon': 'jstree-ok'},
+                            {'text': f'Rename Workflow "{child_node_name}"', 'icon': 'jstree-ok'},
+                            {'text': f'Delete Workflow "{child_node_name}"', 'icon': 'jstree-ok'}
+                        ]
+                    }
+                )
 
             json_list.append({'text': parent_node, 'children': children_list})
 
