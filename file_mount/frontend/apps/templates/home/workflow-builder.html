@@ -54,15 +54,12 @@
 									<div class="tab-content" id="v-pills-tabContent">
 										<div class="tab-pane fade show active" id="v-pills-workflow" role="tabpanel" aria-labelledby="v-pills-workflow-tab">
 											<h1>Workflows</h1>
-											<!-- <button id="evts_button">select node with id 1</button> <em>either click the button or a node in the tree</em> -->
+
 											<div id="evts" class="demo">
 												<ul>
 													{{tree_format_text | safe}}
 												</ul>
 											</div>
-
-											<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> -->
-											<script src="{{url_for('static', filename='/jstree/dist/jstree.min.js')}}"></script>
 
 											<script>
 												// interaction and events
@@ -126,6 +123,7 @@
 
 	<!-- Atlantis DEMO methods, don't include it in your project! -->
 	<script src="/static/assets/js/setting-demo2.js"></script>
+	<script src="{{url_for('static', filename='/jstree/dist/jstree.min.js')}}"></script>
 
 {% endblock javascripts %}
 
