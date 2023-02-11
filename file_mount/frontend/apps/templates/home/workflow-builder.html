@@ -65,26 +65,26 @@
 											<script src="{{url_for('static', filename='/jstree/dist/jstree.min.js')}}"></script>
 
 											<script>
-											// interaction and events
-											$('#evts_button').on("click", function () {
-												var instance = $('#evts').jstree(true);
-												instance.deselect_all();
-												instance.select_node('1');
-											});
-											$('#evts')
-												.on("changed.jstree", function (e, data) {
-													if(data.selected.length) {
-														alert('The selected node is: ' + data.instance.get_node(data.selected[0]).text);
-													}
-												})
-												.jstree({
-													'core' : {
-														'multiple' : false,
-														'data' : {{tree_format_code | safe}}
-													}
+												// interaction and events
+												$('#evts_button').on("click", function () {
+													var instance = $('#evts').jstree(true);
+													instance.deselect_all();
+													instance.select_node('1');
 												});
+												$('#evts')
+													.on("changed.jstree", function (e, data) {
+														if(data.selected.length) {
+															alert('The selected node is: ' + data.instance.get_node(data.selected[0]).text);
+														}
+													})
+													.jstree({
+														'core' : {
+															'multiple' : false,
+															'data' : {{tree_format_code | safe}}
+														}
+													});
 											</script>
-											
+
 										</div>
 										<div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
 											<p>Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic life One day however a small line of blind text by the name of Lorem Ipsum decided to leave for the far World of Grammar.</p>
