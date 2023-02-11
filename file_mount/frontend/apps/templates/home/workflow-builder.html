@@ -39,20 +39,20 @@
 				<div class="col">
 					<div class="card">
 						<div class="card-header">
-							<h4 class="card-title">Nav Pills (Vertical Tabs)</h4>
+							<h4 class="card-title">Workflow Builder</h4>
 						</div>
 						<div class="card-body">
 							<div class="row">
 								<div class="col-5 col-md-4">
 									<div class="nav flex-column nav-pills nav-secondary" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-										<a class="nav-link active" id="v-pills-home-tab" data-toggle="pill" href="#v-pills-home" role="tab" aria-controls="v-pills-home" aria-selected="true">Edit Workflow</a>
-										<a class="nav-link" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="false">Create Workflow</a>
-										<a class="nav-link" id="v-pills-messages-tab" data-toggle="pill" href="#v-pills-messages" role="tab" aria-controls="v-pills-messages" aria-selected="false">Delete Workflow</a>
+										<a class="nav-link active" id="v-pills-workflow-tab" data-toggle="pill" href="#v-pills-workflow" role="tab" aria-controls="v-pills-workflow" aria-selected="true">Edit Workflows</a>
+										<a class="nav-link" id="v-pills-template-tab" data-toggle="pill" href="#v-pills-template" role="tab" aria-controls="v-pills-template" aria-selected="false">Edit Templates</a>
+										<!-- <a class="nav-link" id="v-pills-messages-tab" data-toggle="pill" href="#v-pills-messages" role="tab" aria-controls="v-pills-messages" aria-selected="false">Delete Workflow</a> -->
 									</div>
 								</div>
 								<div class="col-7 col-md-8">
 									<div class="tab-content" id="v-pills-tabContent">
-										<div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
+										<div class="tab-pane fade show active" id="v-pills-workflow" role="tabpanel" aria-labelledby="v-pills-workflow-tab">
 											<h1>Workflows</h1>
 											<!-- <button id="evts_button">select node with id 1</button> <em>either click the button or a node in the tree</em> -->
 											<div id="evts" class="demo">
@@ -61,7 +61,7 @@
 												</ul>
 											</div>
 
-											<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+											<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> -->
 											<script src="{{url_for('static', filename='/jstree/dist/jstree.min.js')}}"></script>
 
 											<script>
@@ -86,10 +86,23 @@
 											</script>
 
 										</div>
-										<div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
-											<p>Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic life One day however a small line of blind text by the name of Lorem Ipsum decided to leave for the far World of Grammar.</p>
-											<p>The Big Oxmox advised her not to do so, because there were thousands of bad Commas, wild Question Marks and devious Semikoli, but the Little Blind Text didn’t listen. She packed her seven versalia, put her initial into the belt and made herself on the way.
-											</p>
+										<div class="tab-pane fade" id="v-pills-template" role="tabpanel" aria-labelledby="v-pills-template-tab">
+											<ul class="nav nav-pills nav-secondary" id="pills-tab" role="tablist">
+													<li class="nav-item">
+														<a class="nav-link active" id="pills-sms-tab" data-toggle="pill" href="#pills-sms" role="tab" aria-controls="pills-sms" aria-selected="true">SMS</a>
+													</li>
+													<li class="nav-item">
+														<a class="nav-link" id="pills-email-tab" data-toggle="pill" href="#pills-email" role="tab" aria-controls="pills-email" aria-selected="false">Email</a>
+													</li>
+											</ul>
+											<div class="tab-content mt-2 mb-3" id="pills-tabContent">
+												<div class="tab-pane fade show active" id="pills-sms" role="tabpanel" aria-labelledby="pills-sms-tab">
+													<p>SMS BRO!</p>
+												</div>
+												<div class="tab-pane fade" id="pills-email" role="tabpanel" aria-labelledby="pills-email-tab">
+													<p>Email Dude!</p>
+												</div>
+											</div>
 										</div>
 										<div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">
 											<p>Pityful a rethoric question ran over her cheek, then she continued her way. On her way she met a copy. The copy warned the Little Blind Text, that where it came from it would have been rewritten a thousand times and everything that was left from its origin would be the word "and" and the Little Blind Text should turn around and return to its own, safe country.</p>
