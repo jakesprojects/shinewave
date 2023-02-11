@@ -60,15 +60,7 @@ def get_segment(request):
 
 def handle_special_template(template_name):
     if template_name == 'workflow-builder':
-        tree_format_text = """<!-- 
-            <li data-jstree='{ "opened" : true }'>Root node
-                <ul>
-                    <li data-jstree='{ "selected" : true }'>Child node 1</li>
-                    <li>Child node 2</li>
-                </ul>
-            </li>
-        -->
-        """
+        tree_format_text = ''
         tree_format_code = """
             [
                 { "text" : "Root node", "children" : [
