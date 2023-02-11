@@ -3,6 +3,8 @@
 Copyright (c) 2019 - present AppSeed.us
 """
 
+import json
+
 from apps.home import blueprint
 from flask import render_template, request
 from flask_login import login_required
@@ -58,8 +60,30 @@ def get_segment(request):
     except:
         return None
 
+
 def handle_special_template(template_name):
+    def _workflow_tree_dict_to_json(workflow_tree_dict):
+        json_list = []
+
+        for parent_node in workflow_tree_dict:
+
+            children_list = []
+
+            for child_node_name, child_node_id in workflow_tree_dict[parent_node]:
+                children_list.append({'text': child_node_name, 'id': child_node_id})
+
+            json_list.append({'text': parent_node, 'children': children_list})
+
+        return json.dumps(json_list)
+
     if template_name == 'workflow-builder':
+
+        tree_format = {
+            'Parent Node Test 1': [('child node 1', 1), ('child node 2', 2)],
+            'Parent Node Test 2': [('child node 3', 3), ('child node 4', 4)]
+        }
+
+        tree_format_code = _workflow_tree_dict_to_json(tree_format)
 
         # Not sure how this is used
         tree_format_text = """<!-- 
@@ -72,15 +96,6 @@ def handle_special_template(template_name):
         -->
         """
 
-        tree_format_code = """
-            [
-                { "text" : "Root node", "children" : [
-                        { "text" : "Child node 1", "id" : 1 },
-                        { "text" : "Child node 2" },
-                        { "text" : "Child node 3" }
-                ]}
-            ]
-        """
         return {'tree_format_text': tree_format_text, 'tree_format_code': tree_format_code}
     else:
         return {}
