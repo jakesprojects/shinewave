@@ -28,11 +28,13 @@ def route_template(template):
             template_name = template
             template += '.html'
 
+        special_formatting = handle_special_template(template_name)
+
         # Detect the current page
         segment = get_segment(request)
 
         # Serve the file (if exists) from app/templates/home/FILE.html
-        return render_template("home/" + template, segment=segment)
+        return render_template("home/" + template, segment=segment, **special_formatting)
 
     except TemplateNotFound:
         return render_template('home/page-404.html'), 404
@@ -57,4 +59,25 @@ def get_segment(request):
         return None
 
 def handle_special_template(template_name):
-    pass
+    if template_name == 'workflow-builder':
+        tree_format_text = """<!-- 
+            <li data-jstree='{ "opened" : true }'>Root node
+                <ul>
+                    <li data-jstree='{ "selected" : true }'>Child node 1</li>
+                    <li>Child node 2</li>
+                </ul>
+            </li>
+        -->
+        """
+        tree_format_code = """
+            [
+                { "text" : "Root node", "children" : [
+                        { "text" : "Child node 1", "id" : 1 },
+                        { "text" : "Child node 2" },
+                        { "text" : "Child node 3" }
+                ]}
+            ]
+        """
+        return {'tree_format_text': tree_format_text, 'tree_format_code': tree_format_code}
+    else:
+        return {}

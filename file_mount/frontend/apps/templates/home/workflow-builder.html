@@ -53,16 +53,11 @@
 								<div class="col-7 col-md-8">
 									<div class="tab-content" id="v-pills-tabContent">
 										<div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
-											<h1>Interaction and events demo</h1>
+											<h1>Workflows</h1>
 											<!-- <button id="evts_button">select node with id 1</button> <em>either click the button or a node in the tree</em> -->
 											<div id="evts" class="demo">
 												<ul>
-													<li data-jstree='{ "opened" : true }'>Root node
-														<ul>
-															<li data-jstree='{ "selected" : true }'>Child node 1</li>
-															<li>Child node 2</li>
-														</ul>
-													</li>
+													{{tree_format_text | safe}}
 												</ul>
 											</div>
 <!-- 											<h1>HTML demo</h1>
@@ -100,76 +95,7 @@
 											<script src="{{url_for('static', filename='/jstree/dist/jstree.min.js')}}"></script>
 											
 											<script>
-											// html demo
-											$('#html').jstree();
-
-											// inline data demo
-											$('#data').jstree({
-												'core' : {
-													'data' : [
-														{ "text" : "Root node", "children" : [
-																{ "text" : "Child node 1" },
-																{ "text" : "Child node 2" }
-														]}
-													]
-												}
-											});
-
-											// data format demo
-											$('#frmt').jstree({
-												'core' : {
-													'data' : [
-														{
-															"text" : "Root node",
-															"state" : { "opened" : true },
-															"children" : [
-																{
-																	"text" : "Child node 1",
-																	"state" : { "selected" : true },
-																	"icon" : "jstree-file"
-																},
-																{ "text" : "Child node 2", "state" : { "disabled" : true } }
-															]
-														}
-													]
-												}
-											});
-
-											// ajax demo
-											$('#ajax').jstree({
-												'core' : {
-													'data' : {
-														"url" : "./root.json",
-														"dataType" : "json" // needed only if you do not supply JSON headers
-													}
-												}
-											});
-
-											// lazy demo
-											$('#lazy').jstree({
-												'core' : {
-													'data' : {
-														"url" : "//www.jstree.com/fiddle/?lazy",
-														"data" : function (node) {
-															return { "id" : node.id };
-														}
-													}
-												}
-											});
-
-											// data from callback
-											$('#clbk').jstree({
-												'core' : {
-													'data' : function (node, cb) {
-														if(node.id === "#") {
-															cb([{"text" : "Root", "id" : "1", "children" : true}]);
-														}
-														else {
-															cb(["Child"]);
-														}
-													}
-												}
-											});
+											
 
 											// interaction and events
 											$('#evts_button').on("click", function () {
@@ -186,12 +112,7 @@
 												.jstree({
 													'core' : {
 														'multiple' : false,
-														'data' : [
-															{ "text" : "Root node", "children" : [
-																	{ "text" : "Child node 1", "id" : 1 },
-																	{ "text" : "Child node 2" }
-															]}
-														]
+														'data' : {{tree_format_code | safe}}
 													}
 												});
 											</script>
