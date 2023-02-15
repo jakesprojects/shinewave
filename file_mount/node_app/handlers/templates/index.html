@@ -307,7 +307,7 @@
                 $('#log').empty().append(
                     '<h2>' + $('<div/>').text(msg.title).html() + '</h2>'
                 );
-                $('#log').append('<br><h2>' + msg.description + '</h2>');
+                $('#log').append(msg.description);
                 if (cb)
                     cb();
             });
