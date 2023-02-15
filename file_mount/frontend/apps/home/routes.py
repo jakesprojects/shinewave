@@ -4,12 +4,15 @@ Copyright (c) 2019 - present AppSeed.us
 """
 
 import json
+import sqlite3
 
 from apps.home import blueprint
 from flask import render_template, request
 from flask_login import login_required
 from jinja2 import TemplateNotFound
 
+ACCOUNT_ID = 1
+DATABASE = '/srv/node_app/handlers/data/test_db.db'
 
 @blueprint.route('/index')
 @login_required
@@ -95,10 +98,24 @@ def handle_special_template(template_name):
 
     if template_name == 'workflow-builder':
 
-        tree_format = {
-            'Parent Node Test 1': [('child node 1', 1), ('child node 2', 2)],
-            'Parent Node Test 2': [('child node 3', 3), ('child node 4', 4)]
-        }
+        tree_format = {}
+        with sqlite3.connect(DATABASE) as conn:
+            cur = conn.cursor()
+            cur.execute(f"""
+                SELECT
+                    workflow_category,
+                    name,
+                    id
+                FROM workflows
+                WHERE
+                    account_id={ACCOUNT_ID}
+                    AND active='TRUE'
+                ORDER BY name
+            """)
+            workflow_data = cur.fetchall()
+        for workflow_category, workflow_name, workflow_id in workflow_data:
+            tree_format.setdefault(workflow_category, [])
+            tree_format[workflow_category].append((workflow_name, workflow_id))
 
         tree_format_code = _workflow_tree_dict_to_json(tree_format)
 
