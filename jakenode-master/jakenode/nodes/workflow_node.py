@@ -71,7 +71,6 @@ class WorkflowNode(BaseNode):
         return template_data
 
 
-
 class NodeTextEdit(NodeBaseWidget):
     """
     Displays as a ``QTextEdit`` in a node.
