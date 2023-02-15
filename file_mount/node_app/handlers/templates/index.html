@@ -1,7 +1,288 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-    <title>Flask-SocketIO Test</title>
+    <title>Node Info</title>
+    <style>
+        body, h1, .h1, h2, .h2, h3, .h3, h4, .h4, h5, .h5, h6, .h6, p, .navbar, .brand, .btn-simple, .alert, a, .td-name, td, button.close {
+          -moz-osx-font-smoothing: grayscale;
+          -webkit-font-smoothing: antialiased;
+          font-family: 'Lato', sans-serif; }
+
+        body {
+          font-size: 14px;
+          color: #c8cac8; }
+
+        a {
+          color: #1572E8; }
+          a:hover, a:focus {
+            color: #1269DB; }
+
+        h1,
+        .h1 {
+          font-size: 1.725rem; }
+
+        h2,
+        .h2 {
+          font-size: 1.35rem; }
+
+        h3,
+        .h3 {
+          font-size: 1.1625rem; }
+
+        h4,
+        .h4 {
+          font-size: 1.0375rem; }
+
+        h5,
+        .h5 {
+          font-size: .9125rem; }
+
+        h6,
+        .h6 {
+          font-size: .825rem; }
+
+        p {
+          font-size: 14px;
+          line-height: 1.82;
+          margin-bottom: 1rem;
+          word-break: break-word; }
+
+        h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+          line-height: 1.4; }
+          h1 a, h2 a, h3 a, h4 a, h5 a, h6 a, .h1 a, .h2 a, .h3 a, .h4 a, .h5 a, .h6 a {
+            color: inherit; }
+
+        small, .small {
+          font-size: 13px; }
+
+        b, .b, strong, .strong {
+          font-weight: 600; }
+
+        .page-pretitle {
+          letter-spacing: .08em;
+          text-transform: uppercase;
+          color: #95aac9; }
+
+        .page-title {
+          font-size: 23px;
+          font-weight: 600;
+          color: #444444;
+          line-height: 30px;
+          margin-bottom: 20px; }
+
+        .page-category {
+          color: #444444;
+          line-height: 1.8;
+          margin-bottom: 25px; }
+
+        .text-primary, .text-primary a {
+          color: #1572E8 !important; }
+          .text-primary:hover, .text-primary a:hover {
+            color: #1572E8 !important; }
+
+        .text-secondary, .text-secondary a {
+          color: #6861CE !important; }
+          .text-secondary:hover, .text-secondary a:hover {
+            color: #6861CE !important; }
+
+        .text-info, .text-info a {
+          color: #48ABF7 !important; }
+          .text-info:hover, .text-info a:hover {
+            color: #48ABF7 !important; }
+
+        .text-success, .text-success a {
+          color: #31CE36 !important; }
+          .text-success:hover, .text-success a:hover {
+            color: #31CE36 !important; }
+
+        .text-warning, .text-warning a {
+          color: #FFAD46 !important; }
+          .text-warning:hover, .text-warning a:hover {
+            color: #FFAD46 !important; }
+
+        .text-danger, .text-danger a {
+          color: #F25961 !important; }
+          .text-danger:hover, .text-danger a:hover {
+            color: #F25961 !important; }
+
+        label {
+          color: #495057 !important;
+          font-size: 14px !important; }
+
+        .text-small {
+          font-size: 11px; }
+
+        .metric-value {
+          margin-bottom: 5px;
+          line-height: 1;
+          white-space: nowrap; }
+
+        .metric-label {
+          font-size: .975rem;
+          font-weight: 500;
+          color: #686f76;
+          white-space: nowrap;
+          margin-bottom: 0; }
+
+        /*   Font-weight    */
+        .fw-light {
+          font-weight: 300 !important; }
+
+        .fw-normal {
+          font-weight: 400 !important; }
+
+        .fw-mediumbold {
+          font-weight: 400 !important; }
+
+        .fw-bold {
+          font-weight: 600 !important; }
+
+        .fw-extrabold {
+          font-weight: 700 !important; }
+
+        /*      Opacity     */
+        .op-9 {
+          opacity: 0.9; }
+
+        .op-8 {
+          opacity: 0.8; }
+
+        .op-7 {
+          opacity: 0.7; }
+
+        .op-6 {
+          opacity: 0.6; }
+
+        .op-5 {
+          opacity: 0.5; }
+
+        .op-4 {
+          opacity: 0.4; }
+
+        .op-3 {
+          opacity: 0.3; }
+
+        /*    Layouts     */
+        body {
+          min-height: 100vh;
+          position: relative;
+          background: #232842; }
+
+        .no-bd {
+          border: 0px !important; }
+
+        .no-box-shadow {
+          box-shadow: none !important; }
+
+        /*    margin-top negative   */
+        .mt--5, .my--5 {
+          margin-top: -3rem !important; }
+
+        .mt--4, .my--4 {
+          margin-top: -1.5rem !important; }
+
+        .mt--3, .my--3 {
+          margin-top: -1rem !important; }
+
+        .mt--2, .my--2 {
+          margin-top: -0.5rem !important; }
+
+        .mt--1, .my--1 {
+          margin-top: -0.25rem !important; }
+
+        /*      Wrapper      */
+        .pull-right {
+          float: right; }
+
+        .pull-left {
+          float: left; }
+
+        .wrapper {
+          min-height: 100vh;
+          position: relative;
+          top: 0;
+          height: 100vh; }
+
+        .main-header {
+          background: #ffffff;
+          min-height: 60px;
+          width: 100%;
+          position: fixed;
+          z-index: 1001;
+          box-shadow: 0px 0px 5px rgba(18, 23, 39, 0.5); }
+          .main-header .navbar-header {
+            min-height: 62px; }
+            .main-header .navbar-header .btn-toggle {
+              margin-right: 30px;
+              margin-left: 20px; }
+
+        .logo-header {
+          float: left;
+          width: 250px;
+          height: 62px;
+          line-height: 60px;
+          color: #333333;
+          z-index: 1001;
+          font-size: 17px;
+          font-weight: 400;
+          padding-left: 25px;
+          padding-right: 25px;
+          z-index: 1001;
+          display: flex;
+          align-items: center;
+          position: relative;
+          transition: all .3s; }
+          .logo-header .big-logo {
+            margin-right: 8px; }
+            .logo-header .big-logo:hover {
+              text-decoration: none; }
+            .logo-header .big-logo .logo-img {
+              width: 35px;
+              height: 35px; }
+          .logo-header .logo {
+            color: #575962;
+            opacity: 1;
+            position: relative;
+            height: 100%; }
+            .logo-header .logo:hover {
+              text-decoration: none; }
+            .logo-header .logo .navbar-brand {
+              padding-top: 0px;
+              padding-bottom: 0px;
+              margin-right: 0px; }
+          .logo-header .nav-toggle {
+            position: absolute;
+            top: 0;
+            right: 18px;
+            z-index: 5; }
+          .logo-header .navbar-toggler {
+            padding-left: 0px;
+            padding-right: 0px;
+            opacity: 0;
+            display: none; }
+            .logo-header .navbar-toggler .navbar-toggler-icon {
+              height: 1em;
+              width: 1em;
+              color: #545454;
+              font-size: 22px; }
+          .logo-header .more {
+            background: transparent;
+            border: 0;
+            font-size: 22px;
+            padding: 0;
+            opacity: 0;
+            width: 0;
+            display: none; }
+
+        .btn-toggle {
+          font-size: 20px !important;
+          line-height: 20px;
+          padding: 0px !important;
+          background: transparent !important;
+          color: #575962 !important; }
+          .btn-toggle:hover, .btn-toggle:focus {
+            opacity: 1; }
+    </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js" integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ==" crossorigin="anonymous"></script>
     <script type="text/javascript" charset="utf-8">
@@ -23,7 +304,10 @@
             // to the client. The data is then displayed in the "Received"
             // section of the page.
             socket.on('info_update', function(msg, cb) {
-                $('#log').empty().append('<br>' + $('<div/>').text('Received #' + msg.title + ': ' + msg.description).html());
+                $('#log').empty().append(
+                    '<h2>' + $('<div/>').text(msg.title).html() + '</h2>'
+                );
+                $('#log').append('<br><h2>' + msg.description + '</h2>');
                 if (cb)
                     cb();
             });
@@ -53,10 +337,11 @@
     </script>
 </head>
 <body>
-    <h1>Flask-SocketIO Test</h1>
-    <p>
+    <h1>Selected Node</h1>
+    <hr class="solid">
+<!--     <p>
       Async mode is: <b>{{ async_mode }}</b><br>
-    </p>
+    </p> -->
 <!--     <h2>Send:</h2>
     <form id="test" method="POST" action="#">
         <input type="submit" value="Test">
@@ -64,7 +349,7 @@
     <form id="broadcast" method="POST" action="#">
         <input type="submit" value="Broadcast">
     </form> -->
-    <h2>Receive:</h2>
+    <!-- <h2>Receive:</h2> -->
     <div id="log"></div>
 </body>
 </html>
