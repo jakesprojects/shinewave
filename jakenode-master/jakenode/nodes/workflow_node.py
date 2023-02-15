@@ -14,60 +14,63 @@ class WorkflowNode(BaseNode):
     # initial default node name.
     NODE_NAME = 'Workflow Base'
 
-    def __init__(self, has_output, has_input):
+    def __init__(
+        self,
+        has_output,
+        has_input,
+        workflow_category=None,
+        database_connection_type='sqlite3',
+        database_connection_kwargs={}
+    ):
         super(WorkflowNode, self).__init__()
+
         if has_output:
             self.add_output('output')
         if has_input:
             self.add_input('input')
-        
-        # self.set_port_deletion_allowed(True)
+        self.workflow_category = workflow_category
+        self.set_database_connection_info()
 
-    # def adjust_port(self, direction, steps=1):
-    #     if direction == 'out':
-    #         ports = len(self.output_ports())
-    #         increment_method = self.add_output
-    #         decrement_method = self.delete_output
-    #     elif direction == 'in':
-    #         ports = len(self.input_ports())
-    #         increment_method = self.add_input
-    #         decrement_method = self.delete_input
+        node_type = self.get_property('type_')
 
-    #     for step in range(abs(steps)):
-    #         if steps > 0:
-    #             ports += 1
-    #             increment_method(f'{direction}_{ports}')
-    #         else:
-    #             print(ports)
-    #             ports -= 1
-    #             decrement_method(ports)
+        self.node_master_type, self.node_parent_type, self.node_detail_type = node_type.split('.')
 
-    # def add_label(self, name, label='', text='', tab=None):
-    #     """
-    #     """
-    #     self.label_name = name
-    #     text = text.replace('\n', '<br>')
-    #     self.create_property(
-    #         name,
-    #         value=text,
-    #         widget_type=NodePropWidgetEnum.QTEXT_EDIT.value,
-    #         tab=tab
-    #     )
-    #     widget = NodeTextEdit(self.view, name, label, text, is_read_only=True)
-    #     widget.value_changed.connect(lambda k, v: self.set_property(k, v))
-    #     self.view.add_widget(widget)
-    #     #: redraw node to address calls outside the "__init__" func.
-    #     self.view.draw_node()
+    def set_database_connection_info(
+        self, account_id=None, database_connection_type='sqlite3', database_connection_kwargs={}
+    ):
+        self.account_id = account_id
+        self.database_connection_type = database_connection_type
+        self.database_connection_kwargs = database_connection_kwargs
 
-    # def update_label(self, text=''):
-    #     """
-    #     """
-    #     self.set_property(self.label_name, text)
-    #     self.view.draw_node()
-    # # def decrement_output(self, steps=1):
-    # #     for step in range(steps):
-    # #         output_number = len(self.output_ports()) + 1
-    # #         self.add_output(f'output_{output_number}')
+    def get_node_template_data(self, template_id=None):
+        if self.account_id is None:
+            raise AttributeError('account_id has not been set.')
+
+        if self.database_connection_type is None:
+            return None
+
+        lookup_where_clause = f"WHERE account_id={self.account_id} AND active='TRUE'"
+        if template_id is not None:
+            lookup_where_clause += f' AND id={template_id}'
+
+        if self.database_connection_type == 'sqlite3':
+            import sqlite3
+            connection_function = sqlite3.connect
+
+        with connection_function(**self.database_connection_kwargs) as conn:
+            cur = conn.cursor()
+            cur.execute(f"SELECT * FROM templates {lookup_where_clause}")
+            node_data = cur.fetchall()
+            field_names = [i[0] for i in cur.description]
+
+        template_data = {}
+        for n, field in enumerate(field_names):
+            template_data[field] = []
+            for row in node_data:
+                template_data[field].append(row[n])
+        return template_data
+
+
 
 class NodeTextEdit(NodeBaseWidget):
     """

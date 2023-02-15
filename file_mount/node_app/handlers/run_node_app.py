@@ -15,6 +15,9 @@ from jakenode.nodes.trigger.api_trigger import APITrigger
 from jakenode.nodes.trigger.time_elapsed_trigger import TimeElapsedTrigger
 from jakenode.nodes.outreach.sms_outreach import SMSOutreach
 
+ACCOUNT_ID = 1
+DATABASE = './data/test_db.db'
+
 def run_node_app(queue=None, socketio=None):
     init_time = datetime.now()
     print(init_time)
@@ -54,6 +57,8 @@ def run_node_app(queue=None, socketio=None):
     sms_outreach = graph.create_node(
         'nodes.outreach.SMSOutreach', text_color='#feab20'
     )
+    sms_outreach.set_database_connection_info(ACCOUNT_ID, database_connection_kwargs={'database': DATABASE})
+    sms_outreach.load_templates()
     
     time_elapsed_trigger = graph.create_node(
         'nodes.trigger.TimeElapsedTrigger', text_color='#feab20'
