@@ -45,7 +45,7 @@ def run_node_app(queue=None, socketio=None):
 
     # show the node graph widget.
     graph_widget = graph.widget
-    graph_widget.resize(1100, 800)
+    graph_widget.resize(900, 600)
     graph_widget.show()
 
     # Create Trigger Node
