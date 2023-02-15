@@ -32,6 +32,11 @@ class SMSOutreach(OutreachNode):
         )
 
     def get_display_info(self, node_templates_root='./data/templates'):
+        """
+            Broadcasts the info to be displayed in the display_window. Output should be a tuple composed of:
+                1. The Node's Name
+                2. An HTML block to display
+        """
 
         if self.template_data == {}:
             return None, None
@@ -51,7 +56,12 @@ class SMSOutreach(OutreachNode):
         with open(template_filepath, 'r') as template_file:
             template_file_contents = template_file.read()
 
-        return selected_template, template_file_contents
+        html = f"""
+            <h3>SMS Template: {selected_template}</h3>
+            <p>{template_file_contents}</p>
+        """
+
+        return self.get_property('name'), html
 
 
 
