@@ -9,6 +9,7 @@ RUN apt-get -y install libnss3
 RUN apt-get -y install libasound2
 RUN apt-get -y install libpulse0
 RUN apt-get -y install libpulse-dev
+RUN apt-get -y install psmisc
 
 COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
