@@ -1,2 +1,2 @@
-id,account_id,name,workflow_category_id,active
-INTEGER,INTEGER,TEXT,INTEGER,TEXT
+id,account_id,workflow_id,app_server_address,xpra_port,info_panel_port
+INTEGER,INTEGER,INTEGER,TEXT,INTEGER,INTEGER
