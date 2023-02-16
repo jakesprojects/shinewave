@@ -79,18 +79,19 @@ def handle_special_template(template_name):
             ]
 
             for child_node_name, child_node_id in workflow_tree_dict[parent_node]:
-                children_list.append(
-                    {
-                        'text': child_node_name,
-                        'id': child_node_id,
-                        'icon': 'jstree-file',
-                        'children': [
-                            {'text': f'Edit Workflow "{child_node_name}"', 'icon': 'jstree-ok'},
-                            {'text': f'Rename Workflow "{child_node_name}"', 'icon': 'jstree-ok'},
-                            {'text': f'Delete Workflow "{child_node_name}"', 'icon': 'jstree-ok'}
-                        ]
-                    }
-                )
+                if child_node_name is not None:
+                    children_list.append(
+                        {
+                            'text': child_node_name,
+                            'id': child_node_id,
+                            'icon': 'jstree-file',
+                            'children': [
+                                {'text': f'Edit Workflow "{child_node_name}"', 'icon': 'jstree-ok'},
+                                {'text': f'Rename Workflow "{child_node_name}"', 'icon': 'jstree-ok'},
+                                {'text': f'Delete Workflow "{child_node_name}"', 'icon': 'jstree-ok'}
+                            ]
+                        }
+                    )
 
             json_list.append({'text': parent_node, 'children': children_list})
 
@@ -103,14 +104,17 @@ def handle_special_template(template_name):
             cur = conn.cursor()
             cur.execute(f"""
                 SELECT
-                    workflow_category,
-                    name,
-                    id
-                FROM workflows
+                    wc.name AS workflow_category,
+                    w.name,
+                    w.id
+                FROM workflow_categories wc
+                LEFT JOIN workflows w ON
+                    wc.id=w.workflow_category_id
+                    AND wc.active=w.active
                 WHERE
-                    account_id={ACCOUNT_ID}
-                    AND active='TRUE'
-                ORDER BY name
+                    wc.account_id={ACCOUNT_ID}
+                    AND wc.active='TRUE'
+                ORDER BY wc.name, w.name
             """)
             workflow_data = cur.fetchall()
         for workflow_category, workflow_name, workflow_id in workflow_data:
