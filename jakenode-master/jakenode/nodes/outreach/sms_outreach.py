@@ -39,11 +39,11 @@ class SMSOutreach(OutreachNode):
         """
 
         if self.template_data == {}:
-            return None, None
+            return self.get_property('name'), ''
 
         selected_template = self.get_property('sms_templates')
         if selected_template == '':
-            return None, None
+            return self.get_property('name'), ''
 
         workflow_category = self.template_data[selected_template]['workflow_category']
         template_id = self.template_data[selected_template]['id']
