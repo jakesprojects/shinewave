@@ -17,6 +17,7 @@ from jakenode.nodes.outreach.sms_outreach import SMSOutreach
 
 ACCOUNT_ID = 1
 DATABASE = './data/test_db.db'
+WORKFLOW_CATEGORY_ID = 1
 
 def run_node_app(queue=None, socketio=None):
     init_time = datetime.now()
@@ -58,6 +59,7 @@ def run_node_app(queue=None, socketio=None):
         'nodes.outreach.SMSOutreach', text_color='#feab20'
     )
     sms_outreach.set_database_connection_info(ACCOUNT_ID, database_connection_kwargs={'database': DATABASE})
+    sms_outreach.set_workflow_category_id(WORKFLOW_CATEGORY_ID)
     sms_outreach.load_templates()
     
     time_elapsed_trigger = graph.create_node(

@@ -18,7 +18,6 @@ class WorkflowNode(BaseNode):
         self,
         has_output,
         has_input,
-        workflow_category=None,
         database_connection_type='sqlite3',
         database_connection_kwargs={}
     ):
@@ -28,7 +27,7 @@ class WorkflowNode(BaseNode):
             self.add_output('output')
         if has_input:
             self.add_input('input')
-        self.workflow_category = workflow_category
+
         self.set_database_connection_info()
 
         node_type = self.get_property('type_')
@@ -42,14 +41,25 @@ class WorkflowNode(BaseNode):
         self.database_connection_type = database_connection_type
         self.database_connection_kwargs = database_connection_kwargs
 
+    def set_workflow_category_id(self, workflow_category_id=None):
+        self.workflow_category_id = workflow_category_id
+
     def get_node_template_data(self, template_id=None):
         if self.account_id is None:
             raise AttributeError('account_id has not been set.')
+        if self.workflow_category_id is None:
+            raise AttributeError('workflow_category_id has not been set.')
 
         if self.database_connection_type is None:
             return None
 
-        lookup_where_clause = f"WHERE account_id={self.account_id} AND active='TRUE'"
+        lookup_where_clause = f"""
+            WHERE
+                t.account_id={self.account_id}
+                AND t.workflow_category_id={self.workflow_category_id}
+                AND t.active='TRUE'
+        """
+
         if template_id is not None:
             lookup_where_clause += f' AND id={template_id}'
 
@@ -59,7 +69,15 @@ class WorkflowNode(BaseNode):
 
         with connection_function(**self.database_connection_kwargs) as conn:
             cur = conn.cursor()
-            cur.execute(f"SELECT * FROM templates {lookup_where_clause}")
+            cur.execute(f"""
+                    SELECT
+                        wc.name AS workflow_category,
+                        t.*
+                    FROM templates t
+                    INNER JOIN workflow_categories wc ON t.workflow_category_id=wc.id
+                    {lookup_where_clause}
+                """
+            )
             node_data = cur.fetchall()
             field_names = [i[0] for i in cur.description]
 

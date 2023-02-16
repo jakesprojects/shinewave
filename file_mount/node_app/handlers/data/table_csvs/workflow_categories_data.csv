@@ -1,0 +1,6 @@
+id,account_id,name,active
+1,1,Appointment Reminders,TRUE
+2,1,Prescription Reminders,TRUE
+3,2,Prescription Reminders,TRUE
+4,2,Appointment Reminders,TRUE
+5,1,Lab Test Results Notifications,TRUE
