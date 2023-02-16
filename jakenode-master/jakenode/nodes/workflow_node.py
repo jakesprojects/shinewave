@@ -3,6 +3,8 @@ from NodeGraphQt.constants import ViewerEnum, NodePropWidgetEnum
 from NodeGraphQt.widgets.node_widgets import NodeBaseWidget, NodeLineEdit
 from Qt import QtCore, QtWidgets
 
+from jakenode.database_connector import run_query
+
 class WorkflowNode(BaseNode):
     """
     A basic node used to construct workflows.
@@ -28,18 +30,15 @@ class WorkflowNode(BaseNode):
         if has_input:
             self.add_input('input')
 
-        self.set_database_connection_info()
+        self.set_account_id()
+        self.set_workflow_category_id()
 
         node_type = self.get_property('type_')
 
         self.node_master_type, self.node_parent_type, self.node_detail_type = node_type.split('.')
 
-    def set_database_connection_info(
-        self, account_id=None, database_connection_type='sqlite3', database_connection_kwargs={}
-    ):
+    def set_account_id(self, account_id=None):
         self.account_id = account_id
-        self.database_connection_type = database_connection_type
-        self.database_connection_kwargs = database_connection_kwargs
 
     def set_workflow_category_id(self, workflow_category_id=None):
         self.workflow_category_id = workflow_category_id
@@ -49,9 +48,6 @@ class WorkflowNode(BaseNode):
             raise AttributeError('account_id has not been set.')
         if self.workflow_category_id is None:
             raise AttributeError('workflow_category_id has not been set.')
-
-        if self.database_connection_type is None:
-            return None
 
         lookup_where_clause = f"""
             WHERE
@@ -63,29 +59,18 @@ class WorkflowNode(BaseNode):
         if template_id is not None:
             lookup_where_clause += f' AND id={template_id}'
 
-        if self.database_connection_type == 'sqlite3':
-            import sqlite3
-            connection_function = sqlite3.connect
+        template_data = run_query(
+            f"""
+                SELECT
+                    wc.name AS workflow_category,
+                    t.*
+                FROM templates t
+                INNER JOIN workflow_categories wc ON t.workflow_category_id=wc.id
+                {lookup_where_clause}
+            """,
+            return_data_format=dict
+        )
 
-        with connection_function(**self.database_connection_kwargs) as conn:
-            cur = conn.cursor()
-            cur.execute(f"""
-                    SELECT
-                        wc.name AS workflow_category,
-                        t.*
-                    FROM templates t
-                    INNER JOIN workflow_categories wc ON t.workflow_category_id=wc.id
-                    {lookup_where_clause}
-                """
-            )
-            node_data = cur.fetchall()
-            field_names = [i[0] for i in cur.description]
-
-        template_data = {}
-        for n, field in enumerate(field_names):
-            template_data[field] = []
-            for row in node_data:
-                template_data[field].append(row[n])
         return template_data
 
 
