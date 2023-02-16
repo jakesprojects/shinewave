@@ -11,8 +11,13 @@ from flask import render_template, request
 from flask_login import login_required
 from jinja2 import TemplateNotFound
 
+from jakenode.database_connector import run_query
+
+
 ACCOUNT_ID = 1
-DATABASE = '/srv/node_app/handlers/data/test_db.db'
+APP_HANDLER_PATH = '/srv/node_app/handlers'
+DATABASE = f'{APP_HANDLER_PATH}/data/test_db.db'
+
 
 @blueprint.route('/index')
 @login_required
@@ -20,8 +25,8 @@ def index():
     return render_template('home/index.html', segment='index')
 
 
-@blueprint.route('/workflow-builder.html', methods=['GET'])
-@blueprint.route('/workflow-builder', methods=['GET'])
+@blueprint.route('/workflow-builder.html')
+@blueprint.route('/workflow-builder')
 @login_required
 def workflow_builder():
     # request.args
@@ -58,9 +63,8 @@ def workflow_builder():
         return json.dumps(json_list)
 
     tree_format = {}
-    with sqlite3.connect(DATABASE) as conn:
-        cur = conn.cursor()
-        cur.execute(f"""
+    workflow_data = run_query(
+        f"""
             SELECT
                 wc.name AS workflow_category,
                 w.name,
@@ -73,8 +77,9 @@ def workflow_builder():
                 wc.account_id={ACCOUNT_ID}
                 AND wc.active='TRUE'
             ORDER BY wc.name, w.name
-        """)
-        workflow_data = cur.fetchall()
+        """,
+        return_data_format=list
+    )
 
     for workflow_category, workflow_name, workflow_id in workflow_data:
         tree_format.setdefault(workflow_category, [])
@@ -96,6 +101,13 @@ def workflow_builder():
     return render_template(
         'home/workflow-builder.html', tree_format_text=tree_format_text, tree_format_code=tree_format_code
     )
+
+@blueprint.route('/workflow-builder-app.html', methods=['GET'])
+@blueprint.route('/workflow-builder-app', methods=['GET'])
+@login_required
+def workflow_builder_app():
+    # request.args
+    return render_template('home/workflow-builder-app.html')
 
 
 @blueprint.route('/<template>')
