@@ -73,8 +73,6 @@ def build_dummy_data(database_connection_type='sqlite', app_data_path=APP_DATA_P
             insert_statement = f'INSERT INTO {table_name} VALUES\n{insert_statement_rows}\n;'
         else:
             insert_statement = ''
-        
-        create_and_insert_statement = f'{create_statement}\n{insert_statement}'
 
         run_query_kwargs = {
             'commit': True,
@@ -83,5 +81,7 @@ def build_dummy_data(database_connection_type='sqlite', app_data_path=APP_DATA_P
         }
         print(drop_statement)
         run_query(drop_statement, **run_query_kwargs)
-        print(create_and_insert_statement)
-        run_query(create_and_insert_statement, **run_query_kwargs)
+        print(create_statement)
+        run_query(create_statement, **run_query_kwargs)
+        print(insert_statement)
+        run_query(insert_statement, **run_query_kwargs)
