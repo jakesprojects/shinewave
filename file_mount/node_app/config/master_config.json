@@ -151,6 +151,97 @@
   },
   {
     "type":"menu",
+    "label":"&Add Node",
+    "items":[
+      {
+        "type":"menu",
+        "label":"&Outreach",
+        "items":[
+          {
+            "type":"command",
+            "label":"API",
+            "file":"./config/hotkeys/hotkey_functions.py",
+            "function_name":"add_node_api_outreach",
+            "shortcut":""
+          },
+          {
+            "type":"command",
+            "label":"Email",
+            "file":"./config/hotkeys/hotkey_functions.py",
+            "function_name":"add_node_email_outreach",
+            "shortcut":""
+          },
+          {
+            "type":"command",
+            "label":"IVR",
+            "file":"./config/hotkeys/hotkey_functions.py",
+            "function_name":"add_node_ivr_outreach",
+            "shortcut":""
+          },
+          {
+            "type":"command",
+            "label":"SMS",
+            "file":"./config/hotkeys/hotkey_functions.py",
+            "function_name":"add_node_sms_outreach",
+            "shortcut":""
+          }
+        ]
+      },
+      {
+        "type":"menu",
+        "label":"&Trigger",
+        "items":[
+          {
+            "type":"command",
+            "label":"API",
+            "file":"./config/hotkeys/hotkey_functions.py",
+            "function_name":"add_node_api_trigger",
+            "shortcut":""
+          },
+          {
+            "type":"command",
+            "label":"At Interval",
+            "file":"./config/hotkeys/hotkey_functions.py",
+            "function_name":"add_node_at_interval_trigger",
+            "shortcut":""
+          },
+          {
+            "type":"command",
+            "label":"File Upload",
+            "file":"./config/hotkeys/hotkey_functions.py",
+            "function_name":"add_node_file_upload_trigger",
+            "shortcut":""
+          },
+          {
+            "type":"command",
+            "label":"Is Time",
+            "file":"./config/hotkeys/hotkey_functions.py",
+            "function_name":"add_node_is_time_trigger",
+            "shortcut":""
+          },
+          {
+            "type":"command",
+            "label":"Response Received",
+            "file":"./config/hotkeys/hotkey_functions.py",
+            "function_name":"add_node_response_received_trigger",
+            "shortcut":""
+          },
+          {
+            "type":"command",
+            "label":"Time Elapsed",
+            "file":"./config/hotkeys/hotkey_functions.py",
+            "function_name":"add_node_time_elapsed_trigger",
+            "shortcut":""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type":"separator"
+  },
+  {
+    "type":"menu",
     "label":"&Graph",
     "items":[
       {

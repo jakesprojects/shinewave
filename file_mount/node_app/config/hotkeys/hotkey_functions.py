@@ -254,3 +254,43 @@ def toggle_node_search(graph):
     show/hide the node search widget.
     """
     graph.toggle_node_search()
+
+
+def add_node_api_outreach(graph):
+    pass
+
+
+def add_node_email_outreach(graph):
+    pass
+
+
+def add_node_ivr_outreach(graph):
+    pass
+
+
+def add_node_sms_outreach(graph):
+    pass
+
+
+def add_node_api_trigger(graph):
+    pass
+
+
+def add_node_at_interval_trigger(graph):
+    pass
+
+
+def add_node_file_upload_trigger(graph):
+    pass
+
+
+def add_node_is_time_trigger(graph):
+    pass
+
+
+def add_node_response_received_trigger(graph):
+    pass
+
+
+def add_node_time_elapsed_trigger(graph):
+    pass
