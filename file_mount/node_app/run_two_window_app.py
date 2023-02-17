@@ -34,7 +34,7 @@ def run_two_window_app(
 
 
     def background_thread(socketio=socketio, account_id=account_id, workflow_category_id=workflow_category_id):
-        run_node_app(socketio=socketio)
+        run_node_app(socketio=socketio, account_id=account_id, workflow_category_id=workflow_category_id)
 
     @app.route('/')
     def index():
