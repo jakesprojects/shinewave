@@ -1,3 +1,0 @@
-id,account_id,workflow_id,app_server_address,xpra_port,info_panel_port
-1,1,1,localhost,49152,49153
-2,1,2,localhost,49154,49155

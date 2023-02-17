@@ -5,7 +5,7 @@ import sqlite3
 import pandas as pd
 
 
-APP_HANDLER_PATH = '/srv/node_app/handlers'
+APP_HANDLER_PATH = '/srv/node_app'
 APP_DATA_PATH = f'{APP_HANDLER_PATH}/data'
 DATABASE = f'{APP_DATA_PATH}/test_db.db'
 
