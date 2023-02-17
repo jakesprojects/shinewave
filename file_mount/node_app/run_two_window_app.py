@@ -28,10 +28,12 @@ socketio = SocketIO(app, async_mode=async_mode)
 thread = None
 thread_lock = Lock()
 
-def run_two_window_app(socketio=socketio, thread_lock=thread_lock):
+def run_two_window_app(
+    socketio=socketio, thread_lock=thread_lock, account_id=account_id, workflow_category_id=workflow_category_id
+):
 
 
-    def background_thread(socketio=socketio):
+    def background_thread(socketio=socketio, account_id=account_id, workflow_category_id=workflow_category_id):
         run_node_app(socketio=socketio)
 
     @app.route('/')
