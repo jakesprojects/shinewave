@@ -1,5 +1,9 @@
 FROM python:3.7
 
+RUN mkdir -p /run/user/1000/xpra
+RUN mkdir /run/xpra
+RUN chmod 777 /run/* -R
+RUN chmod 777 /tmp/* -R
 RUN apt-get update
 RUN apt-get -y install build-essential
 RUN apt-get -y install cmake
@@ -9,6 +13,7 @@ RUN apt-get -y install libnss3
 RUN apt-get -y install libasound2
 RUN apt-get -y install libpulse0
 RUN apt-get -y install libpulse-dev
+RUN apt-get -y install libudev-dev
 RUN apt-get -y install psmisc
 
 COPY requirements.txt requirements.txt
