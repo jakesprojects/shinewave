@@ -1,9 +1,22 @@
-from run_node_app import run_node_app
-
+import argparse
 from threading import Lock
+
 from flask import Flask, render_template, session
 from flask_socketio import SocketIO, emit
 import requests
+
+from run_node_app import run_node_app
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-aid", "--account-id", dest="account_id", default="1", help="Account ID")
+parser.add_argument(
+    "-wcid", "--workflow-category-id", dest="workflow_category_id", default="1", help="Workflow Category ID"
+)
+
+args = parser.parse_args()
+account_id = int(args.account_id)
+workflow_category_id = int(args.workflow_category_id)
 
 # Set this variable to "threading", "eventlet" or "gevent" to test the
 # different async modes, or leave it set to None for the application to choose
