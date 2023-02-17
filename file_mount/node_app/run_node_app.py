@@ -18,7 +18,7 @@ from jakenode.nodes.outreach.sms_outreach import SMSOutreach
 ACCOUNT_ID = 1
 WORKFLOW_CATEGORY_ID = 1
 
-def run_node_app(queue=None, socketio=None):
+def run_node_app(queue=None, socketio=None, account_id=ACCOUNT_ID, workflow_category_id=WORKFLOW_CATEGORY_ID):
     init_time = datetime.now()
     print(init_time)
     print(datetime.now() - init_time)
@@ -57,8 +57,8 @@ def run_node_app(queue=None, socketio=None):
     sms_outreach = graph.create_node(
         'nodes.outreach.SMSOutreach', text_color='#feab20'
     )
-    sms_outreach.set_account_id(ACCOUNT_ID)
-    sms_outreach.set_workflow_category_id(WORKFLOW_CATEGORY_ID)
+    sms_outreach.set_account_id(account_id)
+    sms_outreach.set_workflow_category_id(workflow_category_id)
     sms_outreach.load_templates()
     
     time_elapsed_trigger = graph.create_node(
