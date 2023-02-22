@@ -47,6 +47,8 @@ def run_node_app(queue=None, socketio=None, account_id=ACCOUNT_ID, workflow_cate
     graph_widget = graph.widget
     graph_widget.resize(900, 600)
     graph_widget.show()
+    
+    graph.set_account_properties(account_id=account_id, workflow_category_id=workflow_category_id)
 
     # Create Trigger Node
     api_trigger = graph.create_node(
@@ -57,9 +59,6 @@ def run_node_app(queue=None, socketio=None, account_id=ACCOUNT_ID, workflow_cate
     sms_outreach = graph.create_node(
         'nodes.outreach.SMSOutreach', text_color='#feab20'
     )
-    sms_outreach.set_account_id(account_id)
-    sms_outreach.set_workflow_category_id(workflow_category_id)
-    sms_outreach.load_templates()
     
     time_elapsed_trigger = graph.create_node(
         'nodes.trigger.TimeElapsedTrigger', text_color='#feab20'

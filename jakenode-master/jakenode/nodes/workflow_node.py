@@ -73,6 +73,12 @@ class WorkflowNode(BaseNode):
 
         return template_data
 
+    def load_templates(self):
+        """
+            Dummy method to prevent breakages if this is called on node types that don't support it
+        """
+        pass
+
 
 class NodeTextEdit(NodeBaseWidget):
     """

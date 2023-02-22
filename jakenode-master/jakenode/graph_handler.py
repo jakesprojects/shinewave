@@ -5,7 +5,7 @@ from NodeGraphQt import NodeGraph
 
 class GraphHandler(NodeGraph):
 
-    def __init__(self, queue=None, socketio=None, parent=None):
+    def __init__(self, queue=None, socketio=None, parent=None, account_id=None, workflow_category_id=None):
         self.queue = queue
         self.socketio = socketio
         self.init_time = datetime.now()
@@ -19,6 +19,7 @@ class GraphHandler(NodeGraph):
         # wire signal.
         self.node_selection_changed.connect(self.handle_node_selected)
         self.property_changed.connect(self.handle_property_change)
+        self.set_account_properties(account_id=account_id, workflow_category_id=workflow_category_id)
 
     def handle_node_selected(self, node):
         if (datetime.now() - self.init_time).seconds > self.display_delay_seconds:
@@ -44,3 +45,33 @@ class GraphHandler(NodeGraph):
             self.queue.put((title, description))
         else:
             print(title, description)
+
+    def set_account_properties(self, account_id, workflow_category_id):
+        self.account_id = account_id
+        self.workflow_category_id = workflow_category_id
+
+    def create_node(
+        self,
+        node_type,
+        name=None,
+        selected=True,
+        color=None,
+        text_color=None,
+        pos=None,
+        push_undo=True,
+    ):
+        node = super().create_node(
+            node_type=node_type,
+            name=name,
+            selected=selected,
+            color=color,
+            text_color=text_color,
+            pos=pos,
+            push_undo=push_undo
+        )
+
+        node.set_account_id(account_id=self.account_id)
+        node.set_workflow_category_id(workflow_category_id=self.workflow_category_id)
+        node.load_templates()
+
+        return node
