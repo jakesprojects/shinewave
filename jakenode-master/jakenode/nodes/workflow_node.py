@@ -79,6 +79,12 @@ class WorkflowNode(BaseNode):
         """
         pass
 
+    def get_display_info(self, node_templates_root=None):
+        """
+            Dummy method to prevent breakages if this is called on node types that don't support it
+        """
+        return '', ''
+
 
 class NodeTextEdit(NodeBaseWidget):
     """
