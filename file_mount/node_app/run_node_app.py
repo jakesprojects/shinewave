@@ -17,8 +17,11 @@ from jakenode.nodes.outreach.sms_outreach import SMSOutreach
 
 ACCOUNT_ID = 1
 WORKFLOW_CATEGORY_ID = 1
+WORKFLOW_ID = 1
 
-def run_node_app(queue=None, socketio=None, account_id=ACCOUNT_ID, workflow_category_id=WORKFLOW_CATEGORY_ID):
+def run_node_app(
+    queue=None, socketio=None, account_id=ACCOUNT_ID, workflow_category_id=WORKFLOW_CATEGORY_ID, workflow_id=WORKFLOW_ID
+):
     init_time = datetime.now()
     print(init_time)
     print(datetime.now() - init_time)

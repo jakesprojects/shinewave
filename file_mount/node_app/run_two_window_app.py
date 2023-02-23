@@ -15,10 +15,14 @@ parser.add_argument("-aid", "--account-id", dest="account_id", default="1", help
 parser.add_argument(
     "-wcid", "--workflow-category-id", dest="workflow_category_id", default="1", help="Workflow Category ID"
 )
+parser.add_argument(
+    "-wid", "--workflow-id", dest="workflow_id", default="1", help="Workflow ID"
+)
 
 args = parser.parse_args()
 account_id = int(args.account_id)
 workflow_category_id = int(args.workflow_category_id)
+workflow_id = int(args.workflow_id)
 
 # Set this variable to "threading", "eventlet" or "gevent" to test the
 # different async modes, or leave it set to None for the application to choose
@@ -128,12 +132,20 @@ def assign_next_port(workflow_id):
 
 
 def run_two_window_app(
-    socketio=socketio, thread_lock=thread_lock, account_id=account_id, workflow_category_id=workflow_category_id
+    socketio=socketio,
+    thread_lock=thread_lock,
+    account_id=account_id,
+    workflow_category_id=workflow_category_id,
+    workflow_id=workflow_id
 ):
 
 
-    def background_thread(socketio=socketio, account_id=account_id, workflow_category_id=workflow_category_id):
-        run_node_app(socketio=socketio, account_id=account_id, workflow_category_id=workflow_category_id)
+    def background_thread(
+        socketio=socketio, account_id=account_id, workflow_category_id=workflow_category_id, workflow_id=workflow_id
+    ):
+        run_node_app(
+            socketio=socketio, account_id=account_id, workflow_category_id=workflow_category_id, workflow_id=workflow_id
+        )
 
     @app.route('/')
     def index():
