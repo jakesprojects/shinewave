@@ -1,3 +1,6 @@
+import html
+import re
+
 from jakenode.nodes.trigger.trigger_node import TriggerNode
 
 
@@ -21,3 +24,36 @@ class TimeElapsedTrigger(TriggerNode):
         self.add_text_input('time_number', 'Number of Time Units')
 
         self.set_property('color', (255, 252, 201))
+
+    def get_display_info(self, node_templates_root=None):
+        """
+            Broadcasts the info to be displayed in the display_window. Output should be a tuple composed of:
+                1. The Node's Name
+                2. An HTML block to display
+        """
+
+        time_units = self.get_property('time_units')
+        time_number = self.get_property('time_number').strip()
+        time_number = html.escape(time_number)
+
+        if time_number == '':
+            display_text = '"Number of Time Units" is blank. Enter a value to see this node\'s description.'
+        elif re.sub('[0-9]', '', time_number):
+            display_text = f'"Number of Time Units" must be a positive, whole number. You have entered "{time_number}".'
+        elif time_number.startswith('0'):
+            display_text = '"Number of Time Units" must not be zero or start with zero.'
+            display_text += f'You have entered "{time_number}".'
+        else:
+            time_number = int(time_number)
+
+        if isinstance(time_number, int):
+            if time_number == 1:
+                time_units_text = f'{time_number} {time_units[:-1]} passes'
+            else:
+                time_units_text = f'{time_number} {time_units} pass'
+            display_text = f'<p>The next step in the workflow will be triggered if {time_units_text} without any other'
+            display_text += ' downstream event occurring.</p>'
+        else:
+            display_text = f'<p style="background-color:red;">{display_text}</p>'
+
+        return self.get_property('name'), display_text
