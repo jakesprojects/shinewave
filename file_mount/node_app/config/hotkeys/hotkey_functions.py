@@ -281,7 +281,7 @@ def add_node_api_trigger(graph):
 
 
 def add_node_at_interval_trigger(graph):
-    pass
+    graph.create_node('nodes.trigger.AtIntervalTrigger')
 
 
 def add_node_file_upload_trigger(graph):

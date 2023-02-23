@@ -21,6 +21,9 @@ class GraphHandler(NodeGraph):
         self.property_changed.connect(self.handle_property_change)
         self.set_account_properties(account_id=account_id, workflow_category_id=workflow_category_id)
 
+        node_types = node_handler.fetch_all_node_types()
+        self.register_nodes(node_types)
+
     def handle_node_selected(self, node):
         if (datetime.now() - self.init_time).seconds > self.display_delay_seconds:
             for sub_node in self.all_nodes():

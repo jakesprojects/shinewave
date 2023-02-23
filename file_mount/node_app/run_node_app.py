@@ -37,11 +37,11 @@ def run_node_app(queue=None, socketio=None, account_id=ACCOUNT_ID, workflow_cate
     graph.set_context_menu_from_file('./config/master_config.json')
 
     # registered nodes.
-    graph.register_nodes([
-        APITrigger,
-        TimeElapsedTrigger,
-        SMSOutreach
-    ])
+    # graph.register_nodes([
+    #     APITrigger,
+    #     TimeElapsedTrigger,
+    #     SMSOutreach
+    # ])
 
     # show the node graph widget.
     graph_widget = graph.widget
