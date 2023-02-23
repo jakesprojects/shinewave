@@ -35,12 +35,11 @@ class TimeElapsedTrigger(TriggerNode):
         node_name = html.escape(self.get_property('name'))
 
         try:
-            self.validate_node()
+            time_number = self.get_time_number()
         except ValueError as exception:
             return node_name, f'<p style="background-color:red;">{exception}</p>'
         
         time_units = self.get_property('time_units')
-        time_number = int(self.get_property('time_number').strip())
 
         if time_number == 1:
             time_units_text = f'{time_number} {time_units[:-1]} passes'
@@ -52,11 +51,7 @@ class TimeElapsedTrigger(TriggerNode):
 
         return node_name, display_text
 
-    def validate_node(self):
-        """
-            Raises a ValueError if an invalid value has been entered in the "Number of Time Units" free-text field
-        """
-
+    def get_time_number(self):
         time_number = self.get_property('time_number').strip()
         time_number = html.escape(time_number)
 
@@ -70,3 +65,12 @@ class TimeElapsedTrigger(TriggerNode):
             raise ValueError(
                 f'"Number of Time Units" must not be zero or start with zero. You have entered "{time_number}".'
             )
+
+        return int(time_number)
+
+    def validate_node(self):
+        """
+            Raises a ValueError if an invalid value has been entered in the "Number of Time Units" free-text field
+        """
+
+        self.get_time_number()
