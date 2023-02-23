@@ -1,12 +1,11 @@
 import sqlite3
 
 from jakenode.nodes.trigger.api_trigger import APITrigger
-from jakenode.nodes.trigger.at_interval_trigger import AtIntervalTrigger
 from jakenode.nodes.trigger.time_elapsed_trigger import TimeElapsedTrigger
 from jakenode.nodes.outreach.sms_outreach import SMSOutreach
 
 def fetch_all_node_types():
-	return [APITrigger, AtIntervalTrigger, TimeElapsedTrigger, SMSOutreach]
+	return [APITrigger, TimeElapsedTrigger, SMSOutreach]
 
 
 def fetch_node_display_info(node):

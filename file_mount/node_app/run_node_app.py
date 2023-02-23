@@ -51,9 +51,9 @@ def run_node_app(queue=None, socketio=None, account_id=ACCOUNT_ID, workflow_cate
     graph.set_account_properties(account_id=account_id, workflow_category_id=workflow_category_id)
 
     # Create Trigger Node
-#     api_trigger = graph.create_node(
-#         'nodes.trigger.APITrigger', text_color='#feab20'
-#     )
+    # api_trigger = graph.create_node(
+    #     'nodes.trigger.APITrigger', text_color='#feab20'
+    # )
 
 
 #     sms_outreach = graph.create_node(

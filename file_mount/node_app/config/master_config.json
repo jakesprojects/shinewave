@@ -200,13 +200,6 @@
           },
           {
             "type":"command",
-            "label":"At Interval",
-            "file":"./config/hotkeys/hotkey_functions.py",
-            "function_name":"add_node_at_interval_trigger",
-            "shortcut":""
-          },
-          {
-            "type":"command",
             "label":"File Upload",
             "file":"./config/hotkeys/hotkey_functions.py",
             "function_name":"add_node_file_upload_trigger",
