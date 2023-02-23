@@ -32,28 +32,42 @@ class TimeElapsedTrigger(TriggerNode):
                 2. An HTML block to display
         """
 
+        node_name = html.escape(self.get_property('name'))
+
+        try:
+            self.validate_node()
+        except ValueError as exception:
+            display_text = str(exception)
+            return node_name, f'<p style="background-color:red;">{exception}</p>'
+        
         time_units = self.get_property('time_units')
+        time_number = int(self.get_property('time_number').strip())
+
+        if time_number == 1:
+            time_units_text = f'{time_number} {time_units[:-1]} passes'
+        else:
+            time_units_text = f'{time_number} {time_units} pass'
+
+        display_text = f'<p>The next step in the workflow will be triggered if {time_units_text} without any other'
+        display_text += ' downstream event occurring.</p>'
+
+        return node_name, display_text
+
+    def validate_node(self):
+        """
+            Raises a ValueError if an invalid value has been entered in the "Number of Time Units" free-text field
+        """
+
         time_number = self.get_property('time_number').strip()
         time_number = html.escape(time_number)
 
         if time_number == '':
-            display_text = '"Number of Time Units" is blank. Enter a value to see this node\'s description.'
+            raise ValueError('"Number of Time Units" is blank.')
         elif re.sub('[0-9]', '', time_number):
-            display_text = f'"Number of Time Units" must be a positive, whole number. You have entered "{time_number}".'
+            raise ValueError(
+                f'"Number of Time Units" must be a positive, whole number. You have entered "{time_number}".'
+            )
         elif time_number.startswith('0'):
-            display_text = '"Number of Time Units" must not be zero or start with zero.'
-            display_text += f'You have entered "{time_number}".'
-        else:
-            time_number = int(time_number)
-
-        if isinstance(time_number, int):
-            if time_number == 1:
-                time_units_text = f'{time_number} {time_units[:-1]} passes'
-            else:
-                time_units_text = f'{time_number} {time_units} pass'
-            display_text = f'<p>The next step in the workflow will be triggered if {time_units_text} without any other'
-            display_text += ' downstream event occurring.</p>'
-        else:
-            display_text = f'<p style="background-color:red;">{display_text}</p>'
-
-        return self.get_property('name'), display_text
+            raise ValueError(
+                f'"Number of Time Units" must not be zero or start with zero. You have entered "{time_number}".'
+            )
