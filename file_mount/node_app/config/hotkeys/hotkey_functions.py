@@ -256,6 +256,8 @@ def toggle_node_search(graph):
     graph.toggle_node_search()
 
 
+# OUTREACH NODE CREATION FUNCTIONS
+
 def add_node_api_outreach(graph):
     pass
 
@@ -272,8 +274,10 @@ def add_node_sms_outreach(graph):
     graph.create_node('nodes.outreach.SMSOutreach')
 
 
+# TRIGGER NODE CREATION FUNCTIONS
+
 def add_node_api_trigger(graph):
-    pass
+    graph.create_node('nodes.trigger.APITrigger')
 
 
 def add_node_at_interval_trigger(graph):
