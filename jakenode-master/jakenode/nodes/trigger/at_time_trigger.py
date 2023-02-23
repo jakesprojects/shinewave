@@ -10,6 +10,7 @@ from jakenode.nodes.trigger.trigger_node import TriggerNode
 TO DO:
     * validate that dates are in future
     * add timezone support (Maybe via dropdown?)
+    * Automatically add some time if just a date is selected (Midnight isn't a great default time)
 """
 
 class AtTimeTrigger(TriggerNode):
@@ -43,8 +44,8 @@ class AtTimeTrigger(TriggerNode):
         except ValueError as exception:
             return node_name, f'<p style="background-color:red;">{exception}</p>'
 
-        display_text = f'<p>The next step in the workflow will be triggered at {execution_date} without any other'
-        display_text += ' downstream event occurring first.</p>'
+        display_text = f'<p>The next step in the workflow will be triggered at {execution_date} if no other downstream'
+        display_text += ' event occurs first.</p>'
 
         return node_name, display_text
 
@@ -62,7 +63,7 @@ class AtTimeTrigger(TriggerNode):
         execution_date_text = self.get_property('execution_date').strip()
         execution_date_text = html.escape(execution_date_text)
 
-        if execution_date == '':
+        if execution_date_text == '':
             raise ValueError('"Execution Date/Time" is blank.')
         
         error_msg = ''
