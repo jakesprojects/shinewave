@@ -51,25 +51,25 @@ def run_node_app(queue=None, socketio=None, account_id=ACCOUNT_ID, workflow_cate
     graph.set_account_properties(account_id=account_id, workflow_category_id=workflow_category_id)
 
     # Create Trigger Node
-    api_trigger = graph.create_node(
-        'nodes.trigger.APITrigger', text_color='#feab20'
-    )
+#     api_trigger = graph.create_node(
+#         'nodes.trigger.APITrigger', text_color='#feab20'
+#     )
 
 
-    sms_outreach = graph.create_node(
-        'nodes.outreach.SMSOutreach', text_color='#feab20'
-    )
+#     sms_outreach = graph.create_node(
+#         'nodes.outreach.SMSOutreach', text_color='#feab20'
+#     )
     
-    time_elapsed_trigger = graph.create_node(
-        'nodes.trigger.TimeElapsedTrigger', text_color='#feab20'
-    )
-    # make node connections.
+#     time_elapsed_trigger = graph.create_node(
+#         'nodes.trigger.TimeElapsedTrigger', text_color='#feab20'
+#     )
+#     # make node connections.
 
-    sms_outreach.set_input(0, api_trigger.output(0))
+#     sms_outreach.set_input(0, api_trigger.output(0))
 
 
-    # auto layout nodes.
-    graph.auto_layout_nodes()
+#     # auto layout nodes.
+#     graph.auto_layout_nodes()
 
 
     # fit nodes to the viewer.
