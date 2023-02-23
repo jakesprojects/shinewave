@@ -55,16 +55,19 @@ class GraphHandler(NodeGraph):
         node_type,
         name=None,
         selected=True,
-        color=None,
+        # color=None,
         text_color=None,
         pos=None,
         push_undo=True,
     ):
+        if not text_color:
+            text_color = node_handler.fetch_node_text_color(node_type)
+
         node = super().create_node(
             node_type=node_type,
             name=name,
             selected=selected,
-            color=color,
+            # color=color,
             text_color=text_color,
             pos=pos,
             push_undo=push_undo
