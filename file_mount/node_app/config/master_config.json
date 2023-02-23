@@ -207,9 +207,9 @@
           },
           {
             "type":"command",
-            "label":"Is Time",
+            "label":"At Time",
             "file":"./config/hotkeys/hotkey_functions.py",
-            "function_name":"add_node_is_time_trigger",
+            "function_name":"add_node_at_time_trigger",
             "shortcut":""
           },
           {
