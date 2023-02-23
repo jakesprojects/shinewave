@@ -1,4 +1,4 @@
-import random
+import html
 
 from jakenode.nodes.outreach.outreach_node import OutreachNode
 
@@ -38,12 +38,13 @@ class SMSOutreach(OutreachNode):
                 2. An HTML block to display
         """
 
+        node_name = html.escape(self.get_property('name'))
         if self.template_data == {}:
-            return self.get_property('name'), ''
+            return node_name, ''
 
         selected_template = self.get_property('sms_templates')
         if selected_template == '':
-            return self.get_property('name'), ''
+            return node_name, ''
 
         workflow_category = self.template_data[selected_template]['workflow_category']
         template_id = self.template_data[selected_template]['id']
@@ -56,16 +57,9 @@ class SMSOutreach(OutreachNode):
         with open(template_filepath, 'r') as template_file:
             template_file_contents = template_file.read()
 
-        html = f"""
+        display_text = f"""
             <h3>SMS Template: {selected_template}</h3>
             <p>{template_file_contents}</p>
         """
 
-        return self.get_property('name'), html
-
-
-
-class SMSTemplate():
-    def __init__(self, location=''):
-        self.name = f'SMS Template {random.randint(0, 100)}'
-        self.summary = f"summary line 1\n{self.name}"
+        return self.get_property('name'), display_text
