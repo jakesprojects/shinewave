@@ -39,12 +39,13 @@ class SMSOutreach(OutreachNode):
         """
 
         node_name = html.escape(self.get_property('name'))
-        if self.template_data == {}:
-            return node_name, ''
+
+        try:
+            self.validate_node()
+        except ValueError as exception:
+            return node_name, f'<p style="background-color:red;">{exception}</p>'
 
         selected_template = self.get_property('sms_templates')
-        if selected_template == '':
-            return node_name, ''
 
         workflow_category = self.template_data[selected_template]['workflow_category']
         template_id = self.template_data[selected_template]['id']
@@ -62,4 +63,15 @@ class SMSOutreach(OutreachNode):
             <p>{template_file_contents}</p>
         """
 
-        return self.get_property('name'), display_text
+        return node_name, display_text
+
+    def validate_node(self):
+        """
+            Validates that a template is selected
+        """
+        if self.template_data == {}:
+            raise ValueError(
+                'Template data is not set. Ensure that at least one SMS template exists for this workflow category.'
+            )
+        elif self.get_property('sms_templates') == '':
+            raise ValueError('An SMS template has not been selected for this node.')
