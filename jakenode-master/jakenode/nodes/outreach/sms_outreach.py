@@ -1,5 +1,3 @@
-import html
-
 from jakenode.nodes.outreach.outreach_node import OutreachNode
 
 class SMSOutreach(OutreachNode):
@@ -38,7 +36,7 @@ class SMSOutreach(OutreachNode):
                 2. An HTML block to display
         """
 
-        node_name = html.escape(self.get_property('name'))
+        node_name = self.get_node_name(html_safe=True)
 
         try:
             self.validate_node()

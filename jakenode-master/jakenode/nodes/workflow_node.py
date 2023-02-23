@@ -1,3 +1,5 @@
+import html
+
 from NodeGraphQt import BaseNode
 from NodeGraphQt.constants import ViewerEnum, NodePropWidgetEnum
 from NodeGraphQt.widgets.node_widgets import NodeBaseWidget, NodeLineEdit
@@ -42,6 +44,13 @@ class WorkflowNode(BaseNode):
 
     def set_workflow_category_id(self, workflow_category_id=None):
         self.workflow_category_id = workflow_category_id
+
+    def get_node_name(self, html_safe=False):
+        node_name = self.get_property('name')
+        if html_safe:
+            return html.escape(node_name)
+        else:
+            return node_name
 
     def get_node_template_data(self, template_id=None):
         if self.account_id is None:

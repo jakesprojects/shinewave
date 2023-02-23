@@ -32,7 +32,7 @@ class TimeElapsedTrigger(TriggerNode):
                 2. An HTML block to display
         """
 
-        node_name = html.escape(self.get_property('name'))
+        node_name = self.get_node_name(html_safe=True)
 
         try:
             time_number = self.get_time_number()
