@@ -15,7 +15,7 @@ class AtIntervalTrigger(TriggerNode):
     NODE_NAME = 'At Interval Trigger'
 
     def __init__(self):
-        super(TimeElapsedTrigger, self).__init__(has_input=True)
+        super(AtIntervalTrigger, self).__init__(has_input=True)
 
         self.add_combo_menu(
             'time_units', 'Time Units', items=['minutes', 'hours', 'days', 'weeks', 'months']
