@@ -107,6 +107,12 @@ def workflow_builder():
 def builder_submit():
     if request.method == "POST":
         print('~~~', request.form)
+        folder = request.form.get('folder')
+        node_type = request.form.get('node_type')
+        operation = request.form.get('operation')
+        submitted_name = request.form.get('submitted_name')
+        if operation == 'Edit':
+            return redirect('/workflow-builder-app')
     return redirect(url_for('home_blueprint.workflow_builder'))
 
 @blueprint.route('/workflow-builder-app.html', methods=['GET'])
