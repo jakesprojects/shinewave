@@ -106,16 +106,13 @@ def workflow_builder():
 @login_required
 def builder_submit():
     if request.method == "POST":
-        operationTypes = ["Rename", "New", "Delete", "Edit"]
-        nodeTypes = ["Folder", "Workflow"]
 
-        print('~~~', request.form)
         folder = request.form.get('folder')
         node_type = request.form.get('node_type')
         operation = request.form.get('operation')
         submitted_name = request.form.get('submitted_name')
         workflow = request.form.get('workflow')
-        print('@@@', ACCOUNT_ID)
+
         query_library = {
             "Rename Folder": {
                 'sql': """
