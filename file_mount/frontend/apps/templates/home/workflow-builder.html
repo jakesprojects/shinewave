@@ -78,11 +78,49 @@
 	</style>
 <script>
 	function openGenericPopup(data) {
+		var nodePath = "";
 		var node = data.instance.get_node(data.selected[0]);
-		var parentNode = data.instance.get_node(node.parent);
-		var nodePath = parentNode.text + "/" + node.text
-		document.getElementById("genericPopup").style.display = "block";
-		document.getElementById("genericPopupHeader").innerHTML = nodePath;
+		if(node.icon == "jstree-ok") {
+			var parentNode = data.instance.get_node(node.parent);
+			var nodeText = node.text;
+
+			var operationTypes = ["Rename", "New", "Delete", "Edit"];
+			var nodeTypes = ["Folder", "Workflow"];
+			for (operationType of operationTypes) {
+				for (nodeType of nodeTypes) {
+					var searchString = operationType + " " + nodeType;
+					if(operationType != "New") {
+						searchString += " \"";
+					}
+					if(nodeText.startsWith(searchString)) {
+						var selectedOperationType = operationType;
+						var selectedNodeType = nodeType;
+						var nodePath = parentNode.text + "/" + nodeText.replace(searchString, "");
+						if(operationType != "New") {
+							nodePath = nodePath.slice(0, -1)
+						}
+					}
+				}
+			};
+
+			var displayText = selectedOperationType + " " + selectedNodeType;
+			var parentNodeDisplayText = "";
+			if(selectedNodeType == "Folder" && selectedOperationType != "New") {
+				displayText += " " + parentNode.text;
+			}
+			else if(selectedNodeType != "Folder" && selectedOperationType == "New") {
+				parentNodeDisplayText = parentNode.text + "/...";
+			}
+			else if(selectedNodeType != "Folder") {
+				displayText += " " + parentNode.text
+				parentNodeDisplayText = data.instance.get_node(parentNode.parent).text + "/...";
+			}
+			// genericPopupSubHeader
+
+			document.getElementById("genericPopup").style.display = "block";
+			document.getElementById("genericPopupSubHeader").innerHTML = parentNodeDisplayText;
+			document.getElementById("genericPopupHeader").innerHTML = displayText;
+		}
 	}
 	function closeGenericPopup() {
 		document.getElementById("genericPopup").style.display = "none";
@@ -190,9 +228,9 @@
 										<div class="genericPopup">
 											<div class="formPopup" id="genericPopup">
 												<form action="/action_page.php" class="formContainer">
-													<h2 id="genericPopupHeader">Do Something</h2>
+													<h2 id="genericPopupHeader"></h2>
 													<label for="genericPopupTextField">
-														<strong>Do Something</strong>
+														<strong id="genericPopupSubHeader" style="color:black"></strong>
 													</label>
 													<input type="text" id="genericPopupTextField" placeholder="" name="genericPopupTextField" required>
 													<button type="submit" class="btn">Submit</button>
