@@ -13,16 +13,22 @@ from run_node_app import run_node_app
 parser = argparse.ArgumentParser()
 parser.add_argument("-aid", "--account-id", dest="account_id", default="1", help="Account ID")
 parser.add_argument(
-    "-wcid", "--workflow-category-id", dest="workflow_category_id", default="1", help="Workflow Category ID"
+	"-wcid", "--workflow-category-id", dest="workflow_category_id", default="1", help="Workflow Category ID"
 )
-parser.add_argument(
-    "-wid", "--workflow-id", dest="workflow_id", default="1", help="Workflow ID"
-)
+parser.add_argument("-wid", "--workflow-id", dest="workflow_id", default="1", help="Workflow ID")
+# parser.add_argument("-xp", "xpra-port", dest="xpra_port", default="49153", help="XPRA Port")
+# parser.add_argument("-ipp", "info-panel-port", dest="info_panel_port", default="49153", help="Info Panel Port")
+# parser.add_argument("-ws", "websocket", dest="websocket", default="49153", help="Websocket")
+# parser.add_argument("-xd", "x11-display", dest="x11_display", default="49153", help="X11 Display")
 
 args = parser.parse_args()
 account_id = int(args.account_id)
 workflow_category_id = int(args.workflow_category_id)
 workflow_id = int(args.workflow_id)
+# xpra_port = int(args.xpra_port)
+# info_panel_port = int(args.info_panel_port)
+# websocket = int(args.websocket)
+# x11_display = int(args.x11_display)
 
 # Set this variable to "threading", "eventlet" or "gevent" to test the
 # different async modes, or leave it set to None for the application to choose
