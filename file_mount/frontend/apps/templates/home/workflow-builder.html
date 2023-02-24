@@ -114,17 +114,46 @@
 			else if(selectedNodeType != "Folder") {
 				displayText += " " + parentNode.text
 				parentNodeDisplayText = data.instance.get_node(parentNode.parent).text + "/...";
+				document.getElementById("folder").value = data.instance.get_node(parentNode.parent).text
 			}
-			// genericPopupSubHeader
 
+			if(selectedOperationType == 'Delete') {
+				document.getElementById("genericPopupTextField").value = parentNode.text;
+				// document.getElementById("genericPopupTextField").disabled = true;
+				document.getElementById("genericPopupTextField").style.display = "none";
+				document.getElementById("genericPopupSubmitButton").innerHTML = "Confirm";
+			}
+			else {
+				// document.getElementById("genericPopupTextField").disabled = false;
+				document.getElementById("genericPopupTextField").style.display = "block";
+				document.getElementById("genericPopupSubmitButton").innerHTML = "Submit";
+			}
+
+			document.getElementById("nodeType").value = selectedNodeType;
+			document.getElementById("operation").value = selectedOperationType;
 			document.getElementById("genericPopup").style.display = "block";
 			document.getElementById("genericPopupSubHeader").innerHTML = parentNodeDisplayText;
 			document.getElementById("genericPopupHeader").innerHTML = displayText;
 		}
-	}
+	};
 	function closeGenericPopup() {
 		document.getElementById("genericPopup").style.display = "none";
-	}
+	};
+	function formOperation(operationType, operationTarget, parentFolderName, workflowName) {
+		// if(operationType == "New") {
+
+		// }
+	};
+    $(function() {
+      $('a#popupSubmit').on('click', function(e) {
+        e.preventDefault()
+        $.postJSON('/background_process_test',
+            function(data) {
+          //do nothing
+        });
+        return false;
+      });
+    });
 </script>
 </head>
 	<div class="content">
@@ -227,13 +256,16 @@
 										<!-- Begin Edit Files Forms -->
 										<div class="genericPopup">
 											<div class="formPopup" id="genericPopup">
-												<form action="/action_page.php" class="formContainer">
+												<form action="/builder_submit" class="formContainer" method="post">
 													<h2 id="genericPopupHeader"></h2>
 													<label for="genericPopupTextField">
 														<strong id="genericPopupSubHeader" style="color:black"></strong>
 													</label>
-													<input type="text" id="genericPopupTextField" placeholder="" name="genericPopupTextField" required>
-													<button type="submit" class="btn">Submit</button>
+													<input type="text" id="genericPopupTextField" placeholder="" name="submitted_name" required>
+													<input type="text" id="operation" placeholder="" name="operation" style="display:none" required>
+													<input type="text" id="nodeType" placeholder="" name="node_type" style="display:none" required>
+													<input type="text" id="folder" placeholder="" name="folder" style="display:none">
+													<button type="submit" class="btn" id="genericPopupSubmitButton"></button>
 													<button type="button" class="btn cancel" onclick="closeGenericPopup()">Cancel</button>
 												</form>
 											</div>

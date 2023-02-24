@@ -7,7 +7,7 @@ import json
 import sqlite3
 
 from apps.home import blueprint
-from flask import render_template, request
+from flask import render_template, request, redirect, url_for
 from flask_login import login_required
 from jinja2 import TemplateNotFound
 
@@ -23,7 +23,6 @@ DATABASE = f'{APP_HANDLER_PATH}/data/test_db.db'
 @login_required
 def index():
     return render_template('home/index.html', segment='index')
-
 
 @blueprint.route('/workflow-builder.html')
 @blueprint.route('/workflow-builder')
@@ -101,6 +100,14 @@ def workflow_builder():
     return render_template(
         'home/workflow-builder.html', tree_format_text=tree_format_text, tree_format_code=tree_format_code
     )
+
+      
+@blueprint.route('/builder_submit', methods=["GET", "POST"])
+@login_required
+def builder_submit():
+    if request.method == "POST":
+        print('~~~', request.form)
+    return redirect(url_for('home_blueprint.workflow_builder'))
 
 @blueprint.route('/workflow-builder-app.html', methods=['GET'])
 @blueprint.route('/workflow-builder-app', methods=['GET'])
