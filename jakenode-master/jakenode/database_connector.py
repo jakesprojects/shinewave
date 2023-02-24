@@ -9,28 +9,29 @@ APP_HANDLER_PATH = '/srv/node_app'
 APP_DATA_PATH = f'{APP_HANDLER_PATH}/data'
 DATABASE = f'{APP_DATA_PATH}/test_db.db'
 
-def run_query(sql, return_data_format=list, commit=False, database_connection_type='sqlite', database=DATABASE):
-    with sqlite3.connect(database) as conn:
-        cur = conn.cursor()
-        cur.execute(sql)
+def run_query(sql, return_data_format=list, commit=False, database_connection_type='sqlite', database=DATABASE, sql_parameters=[]):
+    if database_connection_type == 'sqlite':
+        with sqlite3.connect(database) as conn:
+            cur = conn.cursor()
+            cur.execute(sql, sql_parameters)
 
-        if commit == True:
-            conn.commit()
-            return None
+            if commit == True:
+                conn.commit()
+                return None
 
-        rows = cur.fetchall()
-        column_names = [i[0] for i in cur.description]
+            rows = cur.fetchall()
+            column_names = [i[0] for i in cur.description]
 
-    if return_data_format is list:
-        return rows
+        if return_data_format is list:
+            return rows
 
-    elif return_data_format is dict:
-        results_dict = {}
-        for n, column_name in enumerate(column_names):
-            results_dict[column_name] = []
-            for row in rows:
-                results_dict[column_name].append(row[n])
-        return results_dict
+        elif return_data_format is dict:
+            results_dict = {}
+            for n, column_name in enumerate(column_names):
+                results_dict[column_name] = []
+                for row in rows:
+                    results_dict[column_name].append(row[n])
+            return results_dict
 
 def build_dummy_data(database_connection_type='sqlite', app_data_path=APP_DATA_PATH, database=DATABASE):
 
