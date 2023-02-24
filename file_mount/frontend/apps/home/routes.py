@@ -115,80 +115,137 @@ def builder_submit():
 
         query_library = {
             "Rename Folder": {
-                'sql': """
-                    UPDATE workflow_categories
-                    SET name = ?
-                    WHERE
-                        account_id = ?
-                        AND active = 'TRUE'
-                        AND name = ?
-                """,
-                'sql_parameters': (submitted_name, ACCOUNT_ID, folder)
+                'execution': {
+                    'sql': """
+                        UPDATE workflow_categories
+                        SET name = ?
+                        WHERE
+                            account_id = ?
+                            AND active = 'TRUE'
+                            AND name = ?
+                    """,
+                    'sql_parameters': (submitted_name, ACCOUNT_ID, folder)
+                }
             },
             "Rename Workflow": {
-                'sql': """
-                    UPDATE workflows
-                    SET name = ?
-                    WHERE
-                        account_id = ?
-                        AND active = 'TRUE'
-                        AND name = ?
-                        AND workflow_category_id IN (SELECT id FROM workflow_categories WHERE name = ?)
-                """,
-                'sql_parameters': (submitted_name, ACCOUNT_ID, workflow, folder)
+                'execution': {
+                    'sql': """
+                        UPDATE workflows
+                        SET name = ?
+                        WHERE
+                            account_id = ?
+                            AND active = 'TRUE'
+                            AND name = ?
+                            AND workflow_category_id IN (SELECT id FROM workflow_categories WHERE name = ? AND active = 'TRUE')
+                    """,
+                    'sql_parameters': (submitted_name, ACCOUNT_ID, workflow, folder)
+                }
             },
             "New Folder": {
-                'sql': """
-                    INSERT INTO workflow_categories (id, account_id, name, active)
-                    VALUES (
-                        (SELECT MAX(id) + 1 FROM workflow_categories),
-                        ?,
-                        ?,
-                        'TRUE'
-                    )
-                """,
-                'sql_parameters': (ACCOUNT_ID, submitted_name)
+                'execution': {
+                    'sql': """
+                        INSERT INTO workflow_categories (id, account_id, name, active)
+                        VALUES (
+                            (SELECT MAX(id) + 1 FROM workflow_categories),
+                            ?,
+                            ?,
+                            'TRUE'
+                        )
+                    """,
+                    'sql_parameters': (ACCOUNT_ID, submitted_name)
+                },
+                'validation': {
+                    'sql': """
+                        SELECT id
+                        FROM workflow_categories
+                        WHERE
+                            active = 'TRUE'
+                            AND account_id = ?
+                            AND name = ?
+                    """,
+                    'sql_parameters': (ACCOUNT_ID, submitted_name)
+                }
             },
             "New Workflow": {
-                'sql': """
-                    INSERT INTO workflows (id, account_id, name, workflow_category_id, active)
-                    VALUES (
-                        (SELECT MAX(id) + 1 FROM workflows),
-                        ?,
-                        ?,
-                        (SELECT id FROM workflow_categories WHERE name = ?),
-                        'TRUE'
-                    )
-                """,
-                'sql_parameters': (ACCOUNT_ID, submitted_name, folder)
+                'execution': {
+                    'sql': """
+                        INSERT INTO workflows (id, account_id, name, workflow_category_id, active)
+                        VALUES (
+                            (SELECT MAX(id) + 1 FROM workflows),
+                            ?,
+                            ?,
+                            (SELECT id FROM workflow_categories WHERE name = ? AND active = 'TRUE'),
+                            'TRUE'
+                        )
+                    """,
+                    'sql_parameters': (ACCOUNT_ID, submitted_name, folder)
+                },
+                'validation': {
+                    'sql': """
+                        SELECT w.id
+                        FROM workflows w
+                        INNER JOIN workflow_categories wc ON w.workflow_category_id = wc.id
+                        WHERE
+                            w.account_id = ?
+                            AND w.name = ?
+                            AND wc.name = ?
+                            AND w.active = 'TRUE'
+                    """,
+                    'sql_parameters': (ACCOUNT_ID, submitted_name, folder)
+                }
             },
             "Delete Folder": {
-                'sql': """
-                    UPDATE workflow_categories
-                    SET active = 'FALSE'
-                    WHERE
-                        account_id = ?
-                        AND name = ?
-                """,
-                'sql_parameters': (ACCOUNT_ID, folder)
+                'execution': {
+                    'sql': """
+                        UPDATE workflow_categories
+                        SET active = 'FALSE'
+                        WHERE
+                            account_id = ?
+                            AND name = ?
+                    """,
+                    'sql_parameters': (ACCOUNT_ID, folder)
+                },
+                'validation': {
+                    'sql': """
+                        SELECT w.id
+                        FROM workflows w
+                        INNER JOIN workflow_categories wc ON w.workflow_category_id = wc.id
+                        WHERE
+                            w.account_id = ?
+                            AND wc.name = ?
+                            AND w.active = 'TRUE'
+                    """,
+                    'sql_parameters': (ACCOUNT_ID, folder)
+                }
             },
             "Delete Workflow": {
-                'sql': """
-                    UPDATE workflows
-                    SET active = 'FALSE'
-                    WHERE
-                        account_id = ?
-                        AND active = 'TRUE'
-                        AND name = ?
-                        AND workflow_category_id IN (SELECT id FROM workflow_categories WHERE name = ?)
-                """,
-                'sql_parameters': (ACCOUNT_ID, workflow, folder)
+                'execution': {
+                    'sql': """
+                        UPDATE workflows
+                        SET active = 'FALSE'
+                        WHERE
+                            account_id = ?
+                            AND active = 'TRUE'
+                            AND name = ?
+                            AND workflow_category_id IN (SELECT id FROM workflow_categories WHERE name = ?)
+                    """,
+                    'sql_parameters': (ACCOUNT_ID, workflow, folder)
+                }
             }
         }
 
         query_sub_dict = query_library.get(f'{operation} {node_type}')
         if query_sub_dict:
-            run_query(commit=True, **query_sub_dict)
+            validation_dict = query_sub_dict.get('validation')
+            if validation_dict:
+                results = run_query(commit=False, **validation_dict)
+                print(results)
+                if results:
+                    return redirect(url_for('home_blueprint.workflow_builder'))
+
+            execution_dict = query_sub_dict['execution']
+            run_query(commit=True, **execution_dict)
+
         elif operation == 'Edit':
             return redirect('/workflow-builder-app')
 
