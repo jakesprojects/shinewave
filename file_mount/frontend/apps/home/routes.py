@@ -164,7 +164,8 @@ def builder_submit():
                             AND name = ?
                     """,
                     'sql_parameters': (ACCOUNT_ID, submitted_name)
-                }
+                },
+                'validation_failed_msg': 'The submitted folder name already exists. Names must be unique.'
             },
             "New Workflow": {
                 'execution': {
@@ -192,7 +193,10 @@ def builder_submit():
                             AND w.active = 'TRUE'
                     """,
                     'sql_parameters': (ACCOUNT_ID, submitted_name, folder)
-                }
+                },
+                'validation_failed_msg':
+                    'The submitted workflow name already exists in this folder.'
+                    ' Names must be unique.'
             },
             "Delete Folder": {
                 'execution': {
@@ -216,7 +220,8 @@ def builder_submit():
                             AND w.active = 'TRUE'
                     """,
                     'sql_parameters': (ACCOUNT_ID, folder)
-                }
+                },
+                'validation_failed_msg': 'Folders containing workflows cannot be deleted. Delete workflows first.'
             },
             "Delete Workflow": {
                 'execution': {
@@ -239,8 +244,8 @@ def builder_submit():
             validation_dict = query_sub_dict.get('validation')
             if validation_dict:
                 results = run_query(commit=False, **validation_dict)
-                print(results)
                 if results:
+                    print(query_sub_dict['validation_failed_msg'])
                     return redirect(url_for('home_blueprint.workflow_builder'))
 
             execution_dict = query_sub_dict['execution']
