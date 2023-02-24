@@ -25,7 +25,7 @@ def index():
     return render_template('home/index.html', segment='index')
 
 @blueprint.route('/workflow-builder.html')
-@blueprint.route('/workflow-builder')
+@blueprint.route('/workflow-builder', methods=["GET"])
 @login_required
 def workflow_builder():
     # request.args
@@ -97,8 +97,20 @@ def workflow_builder():
     -->
     """
 
+    validation_failure_code_dict = {
+        '1': 'The submitted folder name already exists. Names must be unique.',
+        '2': 'The submitted workflow name already exists in this folder. Names must be unique.',
+        '3': 'Folders containing workflows cannot be deleted. Delete workflows first.'
+    }
+
+    validation_failure_code = request.args.get('validation_failure_code')
+    validation_failure_text = validation_failure_code_dict.get(validation_failure_code, '')
+
     return render_template(
-        'home/workflow-builder.html', tree_format_text=tree_format_text, tree_format_code=tree_format_code
+        'home/workflow-builder.html',
+        tree_format_text=tree_format_text,
+        tree_format_code=tree_format_code,
+        validation_failure_text=validation_failure_text
     )
 
       
@@ -165,7 +177,7 @@ def builder_submit():
                     """,
                     'sql_parameters': (ACCOUNT_ID, submitted_name)
                 },
-                'validation_failed_msg': 'The submitted folder name already exists. Names must be unique.'
+                'validation_failure_code': 1
             },
             "New Workflow": {
                 'execution': {
@@ -194,9 +206,7 @@ def builder_submit():
                     """,
                     'sql_parameters': (ACCOUNT_ID, submitted_name, folder)
                 },
-                'validation_failed_msg':
-                    'The submitted workflow name already exists in this folder.'
-                    ' Names must be unique.'
+                'validation_failure_code': 2
             },
             "Delete Folder": {
                 'execution': {
@@ -221,7 +231,7 @@ def builder_submit():
                     """,
                     'sql_parameters': (ACCOUNT_ID, folder)
                 },
-                'validation_failed_msg': 'Folders containing workflows cannot be deleted. Delete workflows first.'
+                'validation_failure_code': 3
             },
             "Delete Workflow": {
                 'execution': {
@@ -245,14 +255,19 @@ def builder_submit():
             if validation_dict:
                 results = run_query(commit=False, **validation_dict)
                 if results:
-                    print(query_sub_dict['validation_failed_msg'])
-                    return redirect(url_for('home_blueprint.workflow_builder'))
+                    print(query_sub_dict['validation_failure_code'])
+                    return redirect(
+                        url_for(
+                            'home_blueprint.workflow_builder',
+                            validation_failure_code=query_sub_dict['validation_failure_code']
+                        )
+                    )
 
             execution_dict = query_sub_dict['execution']
             run_query(commit=True, **execution_dict)
 
         elif operation == 'Edit':
-            return redirect('/workflow-builder-app')
+            return redirect(url_for('home_blueprint.workflow_builder_app', folder=folder, workflow=workflow))
 
     return redirect(url_for('home_blueprint.workflow_builder'))
 
@@ -260,7 +275,8 @@ def builder_submit():
 @blueprint.route('/workflow-builder-app', methods=['GET'])
 @login_required
 def workflow_builder_app():
-    # request.args
+    folder = request.args.get('folder')
+    workflow = request.args.get('workflow')
     return render_template('home/workflow-builder-app.html')
 
 
