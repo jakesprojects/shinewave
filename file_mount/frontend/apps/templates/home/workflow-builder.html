@@ -105,7 +105,12 @@
 
 			var displayText = selectedOperationType + " " + selectedNodeType;
 			var parentNodeDisplayText = "";
-			if(selectedNodeType == "Folder" && selectedOperationType != "New") {
+			if(selectedOperationType == 'Edit' || (selectedOperationType == 'Delete' && selectedNodeType == "Workflow")) {
+				var folder = data.instance.get_node(parentNode.parent).text;
+				displayText += " " + folder + "/" + parentNode.text
+				document.getElementById("folder").value = folder;
+			}
+			else if(selectedNodeType == "Folder" && selectedOperationType != "New") {
 				displayText += " " + parentNode.text;
 			}
 			else if(selectedNodeType != "Folder" && selectedOperationType == "New") {
@@ -117,7 +122,7 @@
 				document.getElementById("folder").value = data.instance.get_node(parentNode.parent).text
 			}
 
-			if(selectedOperationType == 'Delete') {
+			if(selectedOperationType == 'Delete' || selectedOperationType == 'Edit') {
 				document.getElementById("genericPopupTextField").value = parentNode.text;
 				// document.getElementById("genericPopupTextField").disabled = true;
 				document.getElementById("genericPopupTextField").style.display = "none";
