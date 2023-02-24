@@ -109,17 +109,21 @@
 				var folder = data.instance.get_node(parentNode.parent).text;
 				displayText += " " + folder + "/" + parentNode.text
 				document.getElementById("folder").value = folder;
+				document.getElementById("workflow").value = parentNode.text;
 			}
 			else if(selectedNodeType == "Folder" && selectedOperationType != "New") {
 				displayText += " " + parentNode.text;
+				document.getElementById("folder").value = parentNode.text;
 			}
 			else if(selectedNodeType != "Folder" && selectedOperationType == "New") {
 				parentNodeDisplayText = parentNode.text + "/...";
+				document.getElementById("folder").value = parentNode.text
 			}
 			else if(selectedNodeType != "Folder") {
 				displayText += " " + parentNode.text
 				parentNodeDisplayText = data.instance.get_node(parentNode.parent).text + "/...";
 				document.getElementById("folder").value = data.instance.get_node(parentNode.parent).text
+				document.getElementById("workflow").value = parentNode.text;
 			}
 
 			if(selectedOperationType == 'Delete' || selectedOperationType == 'Edit') {
@@ -270,6 +274,7 @@
 													<input type="text" id="operation" placeholder="" name="operation" style="display:none" required>
 													<input type="text" id="nodeType" placeholder="" name="node_type" style="display:none" required>
 													<input type="text" id="folder" placeholder="" name="folder" style="display:none">
+													<input type="text" id="workflow" placeholder="" name="workflow" style="display:none">
 													<button type="submit" class="btn" id="genericPopupSubmitButton"></button>
 													<button type="button" class="btn cancel" onclick="closeGenericPopup()">Cancel</button>
 												</form>
