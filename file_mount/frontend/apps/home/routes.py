@@ -277,6 +277,9 @@ def builder_submit():
 def workflow_builder_app():
     folder = request.args.get('folder')
     workflow = request.args.get('workflow')
+    # if folder:
+    #     import subprocess
+    #     subprocess.call("cd /srv/node_app && su root -c 'python3 app_launcher.py'", shell=True)
     return render_template('home/workflow-builder-app.html')
 
 
