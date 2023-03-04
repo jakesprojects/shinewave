@@ -1,0 +1,92 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} UI Avatars {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}
+<style>
+	.darkloader,
+	.darkloader:before,
+	.darkloader:after {
+	  border-radius: 50%;
+	  min-height: 10rem;
+	  min-width: 10rem;
+		background: -moz-radial-gradient(center, ellipse cover, rgba(255,255,255,0) 40%, rgba(0,191,255,0.6) 100%);
+		background: -webkit-radial-gradient(center, ellipse cover, rgba(255,255,255,0) 40%,rgba(0,191,255,0.6) 100%);
+		background: radial-gradient(ellipse at center, rgba(255,255,255,0) 40%,rgba(0,191,255,0.6) 100%);
+		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#9900bfff',GradientType=1 );
+	  margin: auto;
+	}
+	.darkloader {
+	  justify-content: center;
+	  align-items: center;
+	  box-shadow: inset 0 0 0 0.1rem lightblue;
+	  animation: pulse3 1s linear infinite;
+	  position: relative;
+	  display: flex;
+		padding: 2rem;
+	  color: white;
+	}
+	.darkloader:before,
+	.darkloader:after {
+	  position: absolute;
+	  display: block;
+	  content: '';
+	}
+	.darkloader:before {
+	  box-shadow: inset 0 0 0 0.1rem skyblue;
+	  animation: pulse2 1s linear infinite;
+		padding: 1rem;
+	}
+	.darkloader:after {
+	  justify-content: center;
+	  align-items: center;
+	  box-shadow: inset 0 0 0 0.1rem deepskyblue;
+	  animation: pulse1 1s linear infinite;
+	  display: flex;
+		padding: 0;
+	  content: 'L O A D I N G';
+	}
+	@keyframes pulse1 {
+	  20%  {padding: 1rem;}
+	  60%  {padding: 0;}
+	}
+	@keyframes pulse2 {
+	  40%  {padding: 2rem;}
+	  80%  {padding: 1rem;}
+	}
+	@keyframes pulse3 {
+	  50%  {padding: 3rem;}
+	  100% {padding: 2rem;}
+	}
+</style>
+{% endblock stylesheets %}
+
+{% block content %}
+
+	<div class="content">
+		<div class="page-inner">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="card">
+						<div class="card-header">
+							<h4 class="card-title">Workflow Builder</h4>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="darkloader" style="box-sizing: content-box;"></div>
+			</div>
+		</div>
+	</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+	<!-- Atlantis DEMO methods, don't include it in your project! -->
+	<script src="/static/assets/js/setting-demo2.js"></script>
+
+{% endblock javascripts %}
