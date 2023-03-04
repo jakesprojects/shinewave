@@ -14,6 +14,7 @@ RUN apt-get -y install libasound2
 RUN apt-get -y install libpulse0
 RUN apt-get -y install libpulse-dev
 RUN apt-get -y install libudev-dev
+RUN apt-get -y install net-tools
 RUN apt-get -y install psmisc
 
 COPY requirements.txt requirements.txt
