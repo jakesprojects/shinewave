@@ -298,14 +298,13 @@ def workflow_builder_app():
         sql_parameters=[account_id, workflow_name, folder_name],
         return_data_format=list
     )
+
     workflow_id = workflow_id[0][0]
-    print('!!!', folder_name, workflow_name, account_id, workflow_id, type(workflow_id))
 
     launcher_api_response = requests.post(
         LAUNCHER_APP_ADDRESS, json={'account_id': str(ACCOUNT_ID), 'workflow_id': str(workflow_id)}
     )
     address_info = json.loads(launcher_api_response.content)
-    print('~~~', address_info)
     app_server_address = address_info['app_server_address']
     xpra_port = address_info['xpra_port']
     info_panel_port = address_info['info_panel_port']
@@ -316,7 +315,6 @@ def workflow_builder_app():
         xpra_port=xpra_port,
         info_panel_port=info_panel_port
     )
-     # = 'http://localhost:49156/')
 
 
 @blueprint.route('/<template>')
