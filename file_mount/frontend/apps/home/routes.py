@@ -6,6 +6,7 @@ Copyright (c) 2019 - present AppSeed.us
 import json
 import sqlite3
 from time import sleep
+import urllib
 
 from apps.home import blueprint
 from flask import render_template, request, redirect, url_for
@@ -270,9 +271,21 @@ def builder_submit():
             run_query(commit=True, **execution_dict)
 
         elif operation == 'Edit':
-            return redirect(url_for('home_blueprint.workflow_builder_app', folder=folder, workflow=workflow))
+            # return redirect(url_for('home_blueprint.workflow_builder_app', folder=folder, workflow=workflow))
+            return redirect(url_for('home_blueprint.workflow_builder_loading_screen', folder=folder, workflow=workflow))
 
     return redirect(url_for('home_blueprint.workflow_builder'))
+
+
+@blueprint.route('/wb-loading-screen.html', methods=['GET'])
+@blueprint.route('/wb-loading-screen', methods=['GET'])
+@login_required
+def workflow_builder_loading_screen():
+    folder_name = request.args.get('folder')
+    workflow_name = request.args.get('workflow')
+    query_string = urllib.parse.urlencode({'folder': folder_name, 'workflow': workflow_name})
+    return render_template('home/wb-loading-screen.html', redirect_url=url_for('home_blueprint.workflow_builder_app', folder=folder_name, workflow=workflow_name))
+
 
 @blueprint.route('/workflow-builder-app.html', methods=['GET'])
 @blueprint.route('/workflow-builder-app', methods=['GET'])
