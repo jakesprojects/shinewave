@@ -5,6 +5,7 @@ Copyright (c) 2019 - present AppSeed.us
 
 import json
 import sqlite3
+from time import sleep
 
 from apps.home import blueprint
 from flask import render_template, request, redirect, url_for
@@ -309,12 +310,28 @@ def workflow_builder_app():
     xpra_port = address_info['xpra_port']
     info_panel_port = address_info['info_panel_port']
 
-    return render_template(
-        'home/workflow-builder-app.html',
-        app_server_address=app_server_address,
-        xpra_port=xpra_port,
-        info_panel_port=info_panel_port
-    )
+    app_loaded = False
+    time_elapsed = 0
+    timeout = False
+    while (not app_loaded) and (not timeout):
+        try:
+            requests.get(f'http://{app_server_address}:{info_panel_port}')
+            app_loaded = True
+        except requests.ConnectionError:
+            sleep(0.5)
+            time_elapsed += 0.5
+        if time_elapsed > 30:
+            timeout = True
+
+    if timeout:
+        return render_template('home/page-500.html'), 500
+    else:
+        return render_template(
+            'home/workflow-builder-app.html',
+            app_server_address=app_server_address,
+            xpra_port=xpra_port,
+            info_panel_port=info_panel_port
+        )
 
 
 @blueprint.route('/<template>')
