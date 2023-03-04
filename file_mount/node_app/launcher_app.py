@@ -158,6 +158,10 @@ def run_xpra_window(queue, account_id, workflow_category_id, x11_screen, xpra_ta
         '--pulseaudio=no',
         '--min-quality=90',
         '--sharing=yes',
+        '--file-transfer=off',
+        '--window-close=ignore',
+        '--tray=no',
+        '--system-tray=off',
         f'--start="python3 {script_filepath}"'
     ]
     
