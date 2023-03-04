@@ -1,0 +1,7 @@
+{
+  "graph":{
+    "acyclic":true,
+    "pipe_collision":false
+  },
+  "nodes":{}
+}
