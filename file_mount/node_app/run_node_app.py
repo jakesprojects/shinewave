@@ -17,7 +17,7 @@ from jakenode.nodes.outreach.sms_outreach import SMSOutreach
 
 ACCOUNT_ID = 1
 WORKFLOW_CATEGORY_ID = 1
-WORKFLOW_ID = 1
+WORKFLOW_ID = 17
 WORKFLOW_DATA_FOLDER = './data/workflows'
 
 def run_node_app(
@@ -122,12 +122,14 @@ def run_node_app(
     [i.setWindowState(QtCore.Qt.WindowMaximized) for i in app.allWindows()]
 
     workflow_file_path = f'{workflow_data_folder}/{workflow_id}.json'
+
     if os.path.isfile(workflow_file_path):
         graph.load_session(workflow_file_path)
     else:
         graph.save_session(workflow_file_path)
+        graph.load_session(workflow_file_path)
 
     app.exec_()
     
-if __name__ == '__main__':
-    run_node_app()
+# if __name__ == '__main__':
+#     run_node_app()
