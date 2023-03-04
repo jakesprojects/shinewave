@@ -10,6 +10,7 @@ from apps.home import blueprint
 from flask import render_template, request, redirect, url_for
 from flask_login import login_required
 from jinja2 import TemplateNotFound
+import requests
 
 from jakenode.database_connector import run_query
 
@@ -17,6 +18,7 @@ from jakenode.database_connector import run_query
 ACCOUNT_ID = 1
 APP_HANDLER_PATH = '/srv/node_app/handlers'
 DATABASE = f'{APP_HANDLER_PATH}/data/test_db.db'
+LAUNCHER_APP_ADDRESS = 'http://localhost:49151/app_launcher'
 
 
 @blueprint.route('/index')
@@ -275,12 +277,46 @@ def builder_submit():
 @blueprint.route('/workflow-builder-app', methods=['GET'])
 @login_required
 def workflow_builder_app():
-    folder = request.args.get('folder')
-    workflow = request.args.get('workflow')
-    # if folder:
-    #     import subprocess
-    #     subprocess.call("cd /srv/node_app && su root -c 'python3 app_launcher.py'", shell=True)
-    return render_template('home/workflow-builder-app.html')
+    folder_name = request.args.get('folder')
+    workflow_name = request.args.get('workflow')
+    account_id = ACCOUNT_ID
+    workflow_id = run_query(
+        f"""
+            SELECT
+                w.id
+            FROM workflow_categories wc
+            LEFT JOIN workflows w ON
+                wc.id=w.workflow_category_id
+                AND wc.active=w.active
+            WHERE
+                wc.account_id=?
+                AND wc.active='TRUE'
+                AND w.active='TRUE'
+                AND w.name = ?
+                AND wc.name = ?
+        """,
+        sql_parameters=[account_id, workflow_name, folder_name],
+        return_data_format=list
+    )
+    workflow_id = workflow_id[0][0]
+    print('!!!', folder_name, workflow_name, account_id, workflow_id, type(workflow_id))
+
+    launcher_api_response = requests.post(
+        LAUNCHER_APP_ADDRESS, json={'account_id': str(ACCOUNT_ID), 'workflow_id': str(workflow_id)}
+    )
+    address_info = json.loads(launcher_api_response.content)
+    print('~~~', address_info)
+    app_server_address = address_info['app_server_address']
+    xpra_port = address_info['xpra_port']
+    info_panel_port = address_info['info_panel_port']
+
+    return render_template(
+        'home/workflow-builder-app.html',
+        app_server_address=app_server_address,
+        xpra_port=xpra_port,
+        info_panel_port=info_panel_port
+    )
+     # = 'http://localhost:49156/')
 
 
 @blueprint.route('/<template>')
