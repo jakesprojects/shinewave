@@ -85,5 +85,10 @@
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
-
+<script>
+  function navigate() {
+    window.location.href = '{{ redirect_url | safe }}';  // redirect when done!
+  }
+  fetch('{{ redirect_url | safe }}').then(navigate); // load the slow url then navigate
+</script>
 {% endblock javascripts %}
