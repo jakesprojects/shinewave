@@ -134,10 +134,11 @@ def extract_ip_address():
     return extracted_text[0]
 
 
-def run_xpra_window(queue, account_id, workflow_category_id, x11_screen, xpra_target_port, info_panel_port):
+def run_xpra_window(queue, account_id, workflow_category_id, x11_screen, xpra_target_port, info_panel_port, workflow_id):
     base_script_flags = [
         f'--account-id {account_id}',
         f'--workflow-category-id {workflow_category_id}',
+        f'--workflow-id {workflow_id}',
         f'--info-panel-port {info_panel_port}'
     ]
     base_script_flags = ' '.join(base_script_flags)
@@ -156,6 +157,7 @@ def run_xpra_window(queue, account_id, workflow_category_id, x11_screen, xpra_ta
         '--webcam=no',
         '--pulseaudio=no',
         '--min-quality=90',
+        '--sharing=yes',
         f'--start="python3 {script_filepath}"'
     ]
     
@@ -228,12 +230,15 @@ def app_launcher():
             workflow_category_id=workflow_category_id,
             x11_screen=assign_port_dict['x11_display'],
             xpra_target_port=assign_port_dict['xpra_port'],
-            info_panel_port=assign_port_dict['info_panel_port']
+            info_panel_port=assign_port_dict['info_panel_port'],
+            workflow_id=workflow_id
         )
         # END LAUNCH APP
 
+        assign_port_dict['app_server_address'] = app_server_address
         return json.dumps(assign_port_dict)
     else:
+        address_info = {key: value[0] for key, value in address_info.items()}
         return json.dumps(address_info)
 
 if __name__ == '__main__':
