@@ -67,6 +67,27 @@
 	                                <span class="btn-label mr-2"> <i class="flaticon-diagram"></i> </span>Workflow Builder</a> 
 							</li>
 						</ul>
+						<li class="nav-item {% if 'om-' in segment %} active {% endif %}">
+							<a data-toggle="collapse" href="#outreach">
+								<i class="flaticon-chat-1"></i>
+								<p>Outreach Management</p>
+								<span class="caret"></span>
+							</a>
+							<div class="collapse {% if 'om-' in segment %} show {% endif %}" id="outreach">
+								<ul class="nav nav-collapse">
+									<li class="{% if 'om-recipient-file-upload' in segment %} active {% endif %}">
+										<a href="/page-404.html">
+											<span class="sub-item">Recipient File Upload</span>
+										</a>
+									</li>
+									<li class="{% if 'om-message-explorer' in segment %} active {% endif %}">
+										<a href="/page-404.html">
+											<span class="sub-item">Message Explorer</span>
+										</a>
+									</li>
+								</ul>
+							</div>
+						</li>
 						<li class="nav-section">
 							<span class="sidebar-mini-icon">
 								<i class="fa fa-ellipsis-h"></i>
