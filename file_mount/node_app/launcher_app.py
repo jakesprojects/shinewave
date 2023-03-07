@@ -162,6 +162,7 @@ def run_xpra_window(queue, account_id, workflow_category_id, x11_screen, xpra_ta
         '--window-close=ignore',
         '--tray=no',
         '--system-tray=off',
+        '--video-scaling=100',
         f'--start="python3 {script_filepath}"'
     ]
     
