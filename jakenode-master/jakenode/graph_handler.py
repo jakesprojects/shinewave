@@ -12,10 +12,6 @@ class GraphHandler(NodeGraph):
         self.display_delay_seconds = 2
         super(GraphHandler, self).__init__(parent)
 
-        # properties bin widget.
-        # self._prop_bin = PropertiesBinWidget(node_graph=self)
-        # self._prop_bin.setWindowFlags(QtCore.Qt.Tool)
-
         # wire signal.
         self.node_selection_changed.connect(self.handle_node_selected)
         self.property_changed.connect(self.handle_property_change)
