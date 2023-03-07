@@ -108,7 +108,13 @@ class GraphHandler(NodeGraph):
 
     def load_graph_from_dict(self, graph_dict):
         """
-            Overwrites default deserialization behavior, because custom properties are not well-supported.
+            Overwrites default deserialization behavior, because custom properties are not well-supported. This method
+            creates a new graph from scratch, using the deserialized JSON that NodeGraphQt saves by default to do so.
+            Parameters
+            ----------
+            graph_dict : dict
+                Deserialized JSON as saved by the NodeGraphQt library. Tip: Use json.loads before calling this method if
+                reading in a file.
         """
 
         prior_nodes = {}
