@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 from imp import reload
+import json
 import os
 import signal
 from time import sleep
@@ -124,7 +125,11 @@ def run_node_app(
     workflow_file_path = f'{workflow_data_folder}/{workflow_id}.json'
 
     if os.path.isfile(workflow_file_path):
-        graph.load_session(workflow_file_path)
+        with open(workflow_file_path, 'r') as file:
+            definition_json = file.read()
+            definition_dict = json.loads(definition_json)
+        graph.load_graph_from_dict(definition_dict)
+        graph.auto_layout_nodes()
     else:
         graph.save_session(workflow_file_path)
         graph.load_session(workflow_file_path)

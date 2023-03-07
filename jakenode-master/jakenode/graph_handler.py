@@ -105,3 +105,31 @@ class GraphHandler(NodeGraph):
         if compiled_error_msg:
             compiled_error_msg = '\n\n'.join(compiled_error_msg)
             raise ValueError(compiled_error_msg)
+
+    def load_graph_from_dict(self, graph_dict):
+        """
+            Overwrites default deserialization behavior, because custom properties are not well-supported.
+        """
+
+        prior_nodes = {}
+
+        for object_id, details in graph_dict.get('nodes', {}).items():
+            node_type = details['type_']
+            node_name = details['name']
+            node_custom_properties = details['custom']
+
+            node = self.create_node(node_type=node_type, name=node_name)
+            print()
+            for prop_name, prop_value in node_custom_properties.items():
+                node.set_property(prop_name, prop_value)
+
+            prior_nodes[object_id] = node
+
+        for details in graph_dict.get('connections', []):
+            port_object_id, port_type = details['in']
+            upstream_node_id = details['out'][0]
+
+            node = prior_nodes[port_object_id]
+            upstream_node = prior_nodes[upstream_node_id]
+
+            node.set_input(0, upstream_node.output(0))
