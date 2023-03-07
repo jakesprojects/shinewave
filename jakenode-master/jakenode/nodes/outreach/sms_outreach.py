@@ -65,7 +65,7 @@ class SMSOutreach(OutreachNode):
 
     def validate_node(self):
         """
-            Validates that a template is selected
+            Validates that a template is selected and node has an upstream trigger.
         """
         if self.template_data == {}:
             raise ValueError(
@@ -73,3 +73,5 @@ class SMSOutreach(OutreachNode):
             )
         elif self.get_property('sms_templates') == '':
             raise ValueError('An SMS template has not been selected for this node.')
+
+        self.validate_has_upstream_trigger()

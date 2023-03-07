@@ -1,4 +1,5 @@
 import html
+from itertools import chain
 
 from NodeGraphQt import BaseNode
 from NodeGraphQt.constants import ViewerEnum, NodePropWidgetEnum
@@ -81,6 +82,31 @@ class WorkflowNode(BaseNode):
         )
 
         return template_data
+
+    def get_upstream_nodes(self):
+        """
+            Currently assuming each port has only one input, and nodes only have one port, but will likely recurse
+            correctly if this changes (UNTESTED).
+        """
+        def _get_upstream_nodes(current_nodes, prior_nodes):
+            all_parents = []
+            for current_node in current_nodes:
+                current_parents = current_node.connected_input_nodes()
+                current_parents = chain(*current_parents.values())
+                current_parents = [i for i in current_parents if i not in prior_nodes]
+                prior_nodes.append(current_node)
+            all_parents += current_parents
+            return all_parents, prior_nodes
+        
+        current_nodes = [self]
+        prior_nodes = []
+        while current_nodes:
+            current_nodes, prior_nodes = _get_upstream_nodes(current_nodes, prior_nodes)
+            
+        del prior_nodes[0]
+
+        return prior_nodes
+
 
     def load_templates(self):
         """
