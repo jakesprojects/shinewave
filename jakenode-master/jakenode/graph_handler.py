@@ -1,4 +1,5 @@
 from datetime import datetime
+import json
 
 from jakenode import node_handler
 from NodeGraphQt import NodeGraph
@@ -135,3 +136,14 @@ class GraphHandler(NodeGraph):
             upstream_node = prior_nodes[upstream_node_id]
 
             node.set_input(0, upstream_node.output(0))
+
+    def get_blank_json(self):
+        blank_json = {
+            "graph": {
+                "acyclic": True,
+                "pipe_collision": False
+            },
+            "nodes": {}
+        }
+
+        return json.dumps(blank_json)
