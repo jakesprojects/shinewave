@@ -66,14 +66,23 @@ def save_session(graph):
     """
     Prompts a file save dialog to serialize a session if required.
     """
-    current = graph.current_session()
-    if current:
-        graph.save_session(current)
-        msg = 'Session layout saved:\n{}'.format(current)
+    try:
+        graph.validate_nodes()
+        current = graph.current_session()
+        if current:
+            graph.save_session(current)
+            msg = 'Session layout saved:\n{}'.format(current)
+            viewer = graph.viewer()
+            viewer.message_dialog(msg, title='Session Saved')
+        else:
+            _save_session_as(graph)
+    except ValueError as e:
+        msg = "Changes could not be saved.\n\n"
+        msg += str(e)
+        msg += '\n\nCorrect these errors and try again.'
         viewer = graph.viewer()
-        viewer.message_dialog(msg, title='Session Saved')
-    else:
-        _save_session_as(graph)
+        viewer.message_dialog(msg, title='Save Failed')
+
 
 
 def save_session_as(graph):

@@ -81,3 +81,27 @@ class GraphHandler(NodeGraph):
         node.load_templates()
 
         return node
+
+    def validate_nodes(self):
+        validation_errors = {}
+        graph_empty = True
+        compiled_error_msg = ['The following validation errors occurred:']
+
+        for node in self.all_nodes():
+            graph_empty = False
+            try:
+                node.validate_node()
+            except ValueError as e:
+                validation_errors[node.name()] = str(e)
+
+        if graph_empty:
+            compiled_error_msg.append('The workspace is empty.')
+        elif validation_errors:
+            for node_name, error in validation_errors.items():
+                compiled_error_msg.append(f'  {node_name}: {error}')
+        else:
+            compiled_error_msg = []
+
+        if compiled_error_msg:
+            compiled_error_msg = '\n\n'.join(compiled_error_msg)
+            raise ValueError(compiled_error_msg)
