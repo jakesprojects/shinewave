@@ -1,0 +1,52 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Workflow Builder {% endblock %} 
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{{url_for('static', filename='/jstree/dist/themes/default/style.min.css')}}" />
+{% endblock stylesheets %}
+
+{% block content %}
+	<div class="content">
+		<div class="page-inner">
+			<div class="row">
+				<div class="col">
+					<div class="card">
+						<div class="card-header">
+							<h4 class="card-title">Edit Templates</h4>
+						</div>
+						<div class="card-body">
+							<div class="row">
+								<div class="col-md-6 col-lg-4">
+									<div class="form-group">
+										<label for="basic-url">Template Name</label>
+										<div class="input-group mb-3">
+											<div class="input-group-prepend">
+												<span class="input-group-text" id="basic-addon3">FOLDER_NAME/</span>
+											</div>
+											<input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3" value="TEMPLATE_NAME">
+										</div>
+									</div>
+									<div class="form-group">
+										<label for="comment">Template</label>
+										<textarea class="form-control" id="comment" rows="5">TEST</textarea>
+									</div>
+									<div class="card-action">
+										<button class="btn btn-success">Submit</button>
+										<button class="btn btn-danger">Cancel</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+{% endblock javascripts %}
