@@ -184,6 +184,13 @@
             "file":"./config/hotkeys/hotkey_functions.py",
             "function_name":"add_node_sms_outreach",
             "shortcut":""
+          },
+          {
+            "type":"command",
+            "label":"Workflow Change",
+            "file":"./config/hotkeys/hotkey_functions.py",
+            "function_name":"add_node_workflow_change_outreach",
+            "shortcut":""
           }
         ]
       },
@@ -224,6 +231,13 @@
             "label":"Time Elapsed",
             "file":"./config/hotkeys/hotkey_functions.py",
             "function_name":"add_node_time_elapsed_trigger",
+            "shortcut":""
+          },
+          {
+            "type":"command",
+            "label":"Workflow Change",
+            "file":"./config/hotkeys/hotkey_functions.py",
+            "function_name":"add_node_workflow_change_trigger",
             "shortcut":""
           }
         ]

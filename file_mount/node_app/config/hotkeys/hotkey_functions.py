@@ -283,6 +283,10 @@ def add_node_sms_outreach(graph):
     graph.create_node('nodes.outreach.SMSOutreach')
 
 
+def add_node_workflow_change_outreach(graph):
+    pass
+
+
 # TRIGGER NODE CREATION FUNCTIONS
 
 def add_node_api_trigger(graph):
@@ -303,3 +307,7 @@ def add_node_response_received_trigger(graph):
 
 def add_node_time_elapsed_trigger(graph):
     graph.create_node('nodes.trigger.TimeElapsedTrigger')
+
+
+def add_node_workflow_change_trigger(graph):
+    pass
