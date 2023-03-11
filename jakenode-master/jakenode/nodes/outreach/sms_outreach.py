@@ -39,7 +39,7 @@ class SMSOutreach(OutreachNode):
         node_name = self.get_node_name(html_safe=True)
 
         try:
-            self.validate_node()
+            self.validate_has_template_selected()
         except ValueError as exception:
             return node_name, f'<p style="background-color:red;">{exception}</p>'
 
@@ -63,9 +63,9 @@ class SMSOutreach(OutreachNode):
 
         return node_name, display_text
 
-    def validate_node(self):
+    def validate_has_template_selected(self):
         """
-            Validates that a template is selected and node has an upstream trigger.
+            Validates that a template is selected.
         """
         if self.template_data == {}:
             raise ValueError(
@@ -73,5 +73,12 @@ class SMSOutreach(OutreachNode):
             )
         elif self.get_property('sms_templates') == '':
             raise ValueError('An SMS template has not been selected for this node.')
+
+
+    def validate_node(self):
+        """
+            Validates that a template is selected and node has an upstream trigger.
+        """
+        validate_has_template_selected()
 
         self.validate_has_upstream_trigger()
