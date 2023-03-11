@@ -11,7 +11,22 @@ TO DO:
     Build the thing
 """
 
-class ExactResponseReceivedTrigger(TriggerNode):
+class ResponseReceivedTrigger(TriggerNode):
+	"""
+		Generic node type designed to be a parent to more-specific response-received nodes.
+	"""
+
+	    # unique node identifier.
+    __identifier__ = 'nodes.trigger'
+
+    # initial default node name.
+    NODE_NAME = 'Response Received'
+
+	def __init__(self):
+        super(ResponseReceivedTrigger, self).__init__(has_input=True)
+
+
+class ExactResponseReceivedTrigger(ResponseReceivedTrigger):
     """
     	Node type designed to handle exact SMS responses. Takes free text, checks if response is an exact match, then
     	processes it accordingly.
@@ -24,7 +39,7 @@ class ExactResponseReceivedTrigger(TriggerNode):
     NODE_NAME = 'Exact Response Received'
 
     def __init__(self):
-        super(BasicResponseReceivedTrigger, self).__init__(has_input=True)
+        super(ExactResponseReceivedTrigger, self).__init__(has_input=True)
 
         self.add_text_input('exact_response', 'Exact Response')
 
@@ -48,7 +63,7 @@ class ExactResponseReceivedTrigger(TriggerNode):
         """
 
 
-class FuzzyResponseReceivedTrigger(TriggerNode):
+class FuzzyResponseReceivedTrigger(ResponseReceivedTrigger):
     """
     	Node type designed to handle fuzzy SMS responses. Takes a response template, checks if response is a match, then
     	processes it accordingly.
@@ -61,7 +76,7 @@ class FuzzyResponseReceivedTrigger(TriggerNode):
     NODE_NAME = 'Fuzzy Response Received'
 
     def __init__(self):
-        super(BasicResponseReceivedTrigger, self).__init__(has_input=True)
+        super(FuzzyResponseReceivedTrigger, self).__init__(has_input=True)
 
         self.add_text_input('response_template', 'Response Template')
 
