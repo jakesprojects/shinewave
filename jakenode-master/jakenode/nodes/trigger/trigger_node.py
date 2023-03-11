@@ -15,3 +15,8 @@ class TriggerNode(WorkflowNode):
     def __init__(self, has_input):
         super(TriggerNode, self).__init__(has_output=True, has_input=has_input)
         self.set_property('color', (151, 219, 215, 200))
+
+    def validate_has_downstream_outreach(self):
+        super().validate_has_downstream_outreach(
+            custom_error_message='Trigger Node is orphaned (lacks a downstream outreach node).'
+        )

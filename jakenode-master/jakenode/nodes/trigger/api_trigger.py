@@ -36,11 +36,10 @@ class APITrigger(TriggerNode):
             if api_preset.name == preset_name:
                 return api_preset.summary
 
-        # create node outputs.
-        # self.add_output('output_1')
-
-    # def test_add_label(self):
-    #     self.add_label(name="TEST NAME", label='label<br>label2', text='text<br>line2')
+    def validate_node(self):
+        """
+        """
+        self.validate_has_downstream_outreach()
 
 
 class APIPreset():

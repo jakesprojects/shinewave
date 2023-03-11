@@ -85,3 +85,4 @@ class TimeElapsedTrigger(TriggerNode):
 
         self.get_time_number()
         self.validate_has_upstream_trigger(custom_error_message=upstream_trigger_error_msg)
+        self.validate_has_downstream_outreach()

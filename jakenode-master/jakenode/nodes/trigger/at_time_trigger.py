@@ -134,6 +134,7 @@ class AtTimeTrigger(TriggerNode):
         """
 
         execution_date = self.get_execution_date()
+        self.validate_has_downstream_outreach()
 
         timezones = self.get_timezones()
         execution_timezone = self.get_property('timezone')
