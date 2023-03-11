@@ -1,0 +1,252 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Edit Templates {% endblock %} 
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{{url_for('static', filename='/jstree/dist/themes/default/style.min.css')}}" />
+<link rel="stylesheet" href="./../../dist/themes/default/style.min.css" />
+{% endblock stylesheets %}
+
+{% block content %}
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="{{url_for('static', filename='/jstree/dist/jstree.min.js')}}"></script>
+	<style>
+		.demo { overflow:auto; border:1px solid silver; min-height:100px; }
+		.openBtn {
+			display: flex;
+			justify-content: left;
+		}
+		.openButton {
+			border: none;
+			border-radius: 5px;
+			background-color: #1c87c9;
+			color: white;
+			padding: 14px 20px;
+			cursor: pointer;
+			position: fixed;
+		}
+		.newWorkflow {
+			position: relative;
+			text-align: center;
+			width: 100%;
+		}
+		.formPopup {
+			display: none;
+			position: fixed;
+			left: 45%;
+			top: 5%;
+			transform: translate(-50%, 5%);
+			border: 3px solid #999999;
+			z-index: 9;
+		}
+		.formContainer {
+			max-width: 300px;
+			padding: 20px;
+			background-color: #fff;
+		}
+		.formContainer input[type=text],
+		.formContainer input[type=text] {
+			width: 100%;
+			padding: 15px;
+			margin: 5px 0 20px 0;
+			border: none;
+			background: #eee;
+		}
+		/*.formContainer input[type=text]:focus,*/
+/*		.formContainer input[type=password]:focus {
+			background-color: #ddd;
+			outline: none;
+		}*/
+		.formContainer .btn {
+			padding: 12px 20px;
+			border: none;
+			background-color: #8ebf42;
+			color: #fff;
+			cursor: pointer;
+			width: 100%;
+			margin-bottom: 15px;
+			opacity: 0.8;
+		}
+		.formContainer .cancel {
+			background-color: #cc0000;
+		}
+		.formContainer .btn:hover,
+		.openButton:hover {
+			opacity: 1;
+		}
+	</style>
+<script>
+	function openGenericPopup(data) {
+		var nodePath = "";
+		var node = data.instance.get_node(data.selected[0]);
+		if(node.icon == "jstree-ok") {
+			var parentNode = data.instance.get_node(node.parent);
+			var nodeText = node.text;
+
+			var operationTypes = ["Rename", "New", "Delete", "Edit"];
+			var nodeTypes = ["Folder", "Workflow"];
+			for (operationType of operationTypes) {
+				for (nodeType of nodeTypes) {
+					var searchString = operationType + " " + nodeType;
+					if(operationType != "New") {
+						searchString += " \"";
+					}
+					if(nodeText.startsWith(searchString)) {
+						var selectedOperationType = operationType;
+						var selectedNodeType = nodeType;
+						var nodePath = parentNode.text + "/" + nodeText.replace(searchString, "");
+						if(operationType != "New") {
+							nodePath = nodePath.slice(0, -1)
+						}
+					}
+				}
+			};
+
+			var displayText = selectedOperationType + " " + selectedNodeType;
+			var parentNodeDisplayText = "";
+			if(selectedOperationType == 'Edit' || (selectedOperationType == 'Delete' && selectedNodeType == "Workflow")) {
+				var folder = data.instance.get_node(parentNode.parent).text;
+				displayText += " " + folder + "/" + parentNode.text
+				document.getElementById("folder").value = folder;
+				document.getElementById("workflow").value = parentNode.text;
+			}
+			else if(selectedNodeType == "Folder" && selectedOperationType != "New") {
+				displayText += " " + parentNode.text;
+				document.getElementById("folder").value = parentNode.text;
+			}
+			else if(selectedNodeType != "Folder" && selectedOperationType == "New") {
+				parentNodeDisplayText = parentNode.text + "/...";
+				document.getElementById("folder").value = parentNode.text
+			}
+			else if(selectedNodeType != "Folder") {
+				displayText += " " + parentNode.text
+				parentNodeDisplayText = data.instance.get_node(parentNode.parent).text + "/...";
+				document.getElementById("folder").value = data.instance.get_node(parentNode.parent).text
+				document.getElementById("workflow").value = parentNode.text;
+			}
+
+			if(selectedOperationType == 'Delete' || selectedOperationType == 'Edit') {
+				document.getElementById("genericPopupTextField").value = parentNode.text;
+				// document.getElementById("genericPopupTextField").disabled = true;
+				document.getElementById("genericPopupTextField").style.display = "none";
+				document.getElementById("genericPopupSubmitButton").innerHTML = "Confirm";
+			}
+			else {
+				// document.getElementById("genericPopupTextField").disabled = false;
+				document.getElementById("genericPopupTextField").style.display = "block";
+				document.getElementById("genericPopupSubmitButton").innerHTML = "Submit";
+			}
+
+			document.getElementById("nodeType").value = selectedNodeType;
+			document.getElementById("operation").value = selectedOperationType;
+			document.getElementById("genericPopup").style.display = "block";
+			document.getElementById("genericPopupSubHeader").innerHTML = parentNodeDisplayText;
+			document.getElementById("genericPopupHeader").innerHTML = displayText;
+		}
+	};
+	function closeGenericPopup() {
+		document.getElementById("genericPopup").style.display = "none";
+	};
+	function formOperation(operationType, operationTarget, parentFolderName, workflowName) {
+		// if(operationType == "New") {
+
+		// }
+	};
+    $(function() {
+      $('a#popupSubmit').on('click', function(e) {
+        e.preventDefault()
+        $.postJSON('/background_process_test',
+            function(data) {
+          //do nothing
+        });
+        return false;
+      });
+    });
+</script>
+</head>
+	<div class="content">
+		<div class="page-inner">
+			<div class="row">
+				<div class="col">
+					{{ validation_error_card | safe}}
+					<div class="card">
+						<div class="card-header">
+							<h4 class="card-title">Edit Templates</h4>
+						</div>
+						<div class="card-body">
+							<div class="row">
+								<div class="col-5 col-md-4">
+									<div class="nav flex-column nav-pills nav-secondary" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+										<a class="nav-link active" id="v-pills-email-tab" data-toggle="pill" href="#v-pills-email" role="tab" aria-controls="v-pills-email" aria-selected="true">Email Templates</a>
+										<a class="nav-link" id="v-pills-sms-tab" data-toggle="pill" href="#v-pills-sms" role="tab" aria-controls="v-pills-sms" aria-selected="false">SMS Templates</a>
+									</div>
+								</div>
+								<div class="col-7 col-md-8">
+									<div class="tab-content" id="v-pills-tabContent">
+										<div class="tab-pane fade show active" id="v-pills-email" role="tabpanel" aria-labelledby="v-pills-email-tab">
+											<h1>Email Templates</h1>
+											<h4 style="color:red">{{validation_failure_text}}</h4>
+										</div>
+										<div class="tab-pane fade" id="v-pills-sms" role="tabpanel" aria-labelledby="v-pills-sms-tab">
+											<ul class="nav nav-pills nav-secondary" id="pills-tab" role="tablist">
+													<li class="nav-item">
+														<a class="nav-link active" id="pills-outbound-sms-tab" data-toggle="pill" href="#pills-outbound-sms" role="tab" aria-controls="pills-outbound-sms" aria-selected="true">Outbound</a>
+													</li>
+													<li class="nav-item">
+														<a class="nav-link" id="pills-inbound-sms-tab" data-toggle="pill" href="#pills-inbound-sms" role="tab" aria-controls="pills-inbound-sms" aria-selected="false">Inbound</a>
+													</li>
+											</ul>
+											<div class="tab-content mt-2 mb-3" id="pills-tabContent">
+												<div class="tab-pane fade show active" id="pills-outbound-sms" role="tabpanel" aria-labelledby="pills-outbound-sms-tab">
+													<p>Outbound bro!</p>
+												</div>
+												<div class="tab-pane fade" id="pills-inbound-sms" role="tabpanel" aria-labelledby="pills-inbound-sms-tab">
+													<p>Inbound dude!</p>
+												</div>
+											</div>
+										</div>
+										<div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">
+											<p>Pityful a rethoric question ran over her cheek, then she continued her way. On her way she met a copy. The copy warned the Little Blind Text, that where it came from it would have been rewritten a thousand times and everything that was left from its origin would be the word "and" and the Little Blind Text should turn around and return to its own, safe country.</p>
+
+											<p> But nothing the copy said could convince her and so it didn’t take long until a few insidious Copy Writers ambushed her, made her drunk with Longe and Parole and dragged her into their agency, where they abused her for their</p>
+										</div>
+										<!-- Begin Edit Files Forms -->
+										<div class="genericPopup">
+											<div class="formPopup" id="genericPopup">
+												<form action="/builder_submit" class="formContainer" method="post">
+													<h2 id="genericPopupHeader"></h2>
+													<label for="genericPopupTextField">
+														<strong id="genericPopupSubHeader" style="color:black"></strong>
+													</label>
+													<input type="text" id="genericPopupTextField" placeholder="" name="submitted_name" required>
+													<input type="text" id="operation" placeholder="" name="operation" style="display:none" required>
+													<input type="text" id="nodeType" placeholder="" name="node_type" style="display:none" required>
+													<input type="text" id="folder" placeholder="" name="folder" style="display:none">
+													<input type="text" id="workflow" placeholder="" name="workflow" style="display:none">
+													<button type="submit" class="btn" id="genericPopupSubmitButton"></button>
+													<button type="button" class="btn cancel" onclick="closeGenericPopup()">Cancel</button>
+												</form>
+											</div>
+										</div>
+										<!-- End Edit Files Forms -->
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+	<!-- Atlantis DEMO methods, don't include it in your project! -->
+	<script src="/static/assets/js/setting-demo2.js"></script>
+	<script src="{{url_for('static', filename='/jstree/dist/jstree.min.js')}}"></script>
+
+{% endblock javascripts %}
