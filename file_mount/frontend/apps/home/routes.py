@@ -494,21 +494,6 @@ def edit_templates():
     )
 
 
-@blueprint.route('/editor-test.html', methods=['GET', 'POST'])
-@blueprint.route('/editor-test', methods=['GET', 'POST'])
-@login_required
-def editor_test():
-    """Standard `contact` form."""
-    form = ContactForm()
-    if form.validate_on_submit():
-        return redirect(url_for("success"))
-    return render_template(
-        "home/editor-test.html",
-        form=form,
-        template="form-template"
-    )
-
-
 # Helper - Extract current page name from request
 def get_segment(request):
 
