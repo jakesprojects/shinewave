@@ -444,13 +444,13 @@ def route_template(template):
         return render_template('home/page-500.html'), 500
 
 
-@blueprint.route('/template-builder.html', methods=['GET'])
-@blueprint.route('/template-builder', methods=['GET'])
+@blueprint.route('/edit-templates.html', methods=['GET'])
+@blueprint.route('/edit-templates', methods=['GET'])
 @login_required
-def template_builder():
+def edit_templates():
 
     return render_template(
-        'home/template-builder.html',
+        'home/edit-templates.html',
         validation_error_card=get_validation_error_card('')
     )
 
