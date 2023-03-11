@@ -11,6 +11,7 @@ import subprocess
 
 from apps.home import blueprint
 from flask import render_template, request, redirect, url_for
+from flask_wtf import FlaskForm
 from flask_login import login_required
 from jinja2 import TemplateNotFound
 import requests
@@ -23,18 +24,20 @@ DATABASE = f'{APP_HANDLER_PATH}/data/test_db.db'
 LAUNCHER_APP_ADDRESS = 'http://localhost:49151/app_launcher'
 
 
-def tree_dict_to_json(tree_dict, tree_type):
-    json_list = [
-        {'text': 'New Folder', 'icon': 'jstree-ok'}
-    ]
+def tree_dict_to_json(tree_dict, tree_type, include_folder_operations):
+    json_list = []
+    if include_folder_operations:
+        json_list.append({'text': 'New Folder', 'icon': 'jstree-ok'})
 
     for parent_node in tree_dict:
 
-        children_list = [
-            {'text': f'New {tree_type}', 'icon': 'jstree-ok'},
-            {'text': f'Rename Folder "{parent_node}"', 'icon': 'jstree-ok'},
-            {'text': f'Delete Folder "{parent_node}"', 'icon': 'jstree-ok'}
-        ]
+        children_list = [{'text': f'New {tree_type}', 'icon': 'jstree-ok'}]
+
+        if include_folder_operations:
+            children_list += [
+                {'text': f'Rename Folder "{parent_node}"', 'icon': 'jstree-ok'},
+                {'text': f'Delete Folder "{parent_node}"', 'icon': 'jstree-ok'}
+            ]
 
         for child_node_name, child_node_id in tree_dict[parent_node]:
             if child_node_name is not None:
@@ -131,7 +134,7 @@ def workflow_builder():
         tree_format.setdefault(workflow_category, [])
         tree_format[workflow_category].append((workflow_name, workflow_id))
 
-    tree_format_code = tree_dict_to_json(tree_format, tree_type='Workflow')
+    tree_format_code = tree_dict_to_json(tree_format, tree_type='Workflow', include_folder_operations=True)
 
     # Not sure how this is used
     tree_format_text = """<!-- 
@@ -318,7 +321,7 @@ def builder_submit():
             execution_dict = query_sub_dict['execution']
             run_query(commit=True, **execution_dict)
 
-        elif operation == 'Edit':
+        elif operation == 'Edit' and node_type == 'Workflow':
             workflow_id = get_workflow_id_by_name(
                 account_id=ACCOUNT_ID, workflow_name=workflow, folder_name=folder
             )
@@ -458,10 +461,51 @@ def route_template(template):
 @blueprint.route('/edit-templates', methods=['GET'])
 @login_required
 def edit_templates():
+    tree_format = {}
+    workflow_data = run_query(
+        f"""
+            SELECT
+                wc.name AS workflow_category,
+                t.name,
+                t.id
+            FROM workflow_categories wc
+            LEFT JOIN templates t ON
+                wc.id=t.workflow_category_id
+                AND wc.active=t.active
+            WHERE
+                wc.account_id={ACCOUNT_ID}
+                AND wc.active='TRUE'
+            ORDER BY wc.name, t.name
+        """,
+        return_data_format=list
+    )
+
+    for workflow_category, workflow_name, workflow_id in workflow_data:
+        tree_format.setdefault(workflow_category, [])
+        tree_format[workflow_category].append((workflow_name, workflow_id))
+
+    tree_format_code = tree_dict_to_json(tree_format, tree_type='Template', include_folder_operations=False)
 
     return render_template(
         'home/edit-templates.html',
-        validation_error_card=get_validation_error_card('')
+        validation_error_card=get_validation_error_card(''),
+        tree_format_text='',
+        tree_format_code=tree_format_code
+    )
+
+
+@blueprint.route('/editor-test.html', methods=['GET', 'POST'])
+@blueprint.route('/editor-test', methods=['GET', 'POST'])
+@login_required
+def editor_test():
+    """Standard `contact` form."""
+    form = ContactForm()
+    if form.validate_on_submit():
+        return redirect(url_for("success"))
+    return render_template(
+        "home/editor-test.html",
+        form=form,
+        template="form-template"
     )
 
 
