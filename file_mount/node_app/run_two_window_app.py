@@ -1,19 +1,16 @@
 import argparse
-from itertools import chain
 from threading import Lock
 
 from flask import Flask, render_template, session
 from flask_socketio import SocketIO, emit
-import requests
 
-from jakenode.database_connector import run_query
 from run_node_app import run_node_app
 
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-aid", "--account-id", dest="account_id", default="1", help="Account ID")
 parser.add_argument(
-	"-wcid", "--workflow-category-id", dest="workflow_category_id", default="1", help="Workflow Category ID"
+    "-wcid", "--workflow-category-id", dest="workflow_category_id", default="1", help="Workflow Category ID"
 )
 parser.add_argument("-wid", "--workflow-id", dest="workflow_id", default="1", help="Workflow ID")
 # parser.add_argument("-xp", "xpra-port", dest="xpra_port", default="49153", help="XPRA Port")
@@ -39,6 +36,7 @@ app = Flask(__name__)
 socketio = SocketIO(app, async_mode=async_mode)
 thread = None
 thread_lock = Lock()
+
 
 def run_two_window_app(
     socketio=socketio,
@@ -91,6 +89,7 @@ def run_two_window_app(
         port=info_panel_port,
         allow_unsafe_werkzeug=True
     )
+
 
 if __name__ == '__main__':
     run_two_window_app()

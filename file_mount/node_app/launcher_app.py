@@ -1,7 +1,6 @@
 from datetime import datetime
 from itertools import chain
 import json
-from multiprocessing import Process, Queue
 import re
 import subprocess
 
@@ -10,8 +9,14 @@ from flask import Flask, request
 from jakenode.database_connector import run_query
 # from run_two_window_app import run_two_window_app
 
+
 ACCOUNT_ID = 1
+APP_HANDLER_PATH = '/srv/node_app/handlers'
+DATABASE = f'{APP_HANDLER_PATH}/data/test_db.db'
 LAUNCHER_PORT = 49151
+
+app = Flask('app_launcher')
+
 
 # Functions to handle port assignment
 def invert_address_types(address_types):
@@ -21,8 +26,9 @@ def invert_address_types(address_types):
             column_types[column_name] = address_type
     return column_types
 
+
 def generate_fetch_query(columns, destination_server):
-    address_select_clause = f",\n            ".join(columns)
+    address_select_clause = ",\n            ".join(columns)
 
     return f"""
         SELECT
@@ -32,11 +38,12 @@ def generate_fetch_query(columns, destination_server):
             app_server_address='{destination_server}'
             AND active = 'TRUE'
     """
-    
+
+
 def fetch_taken_addresses(column_types, destination_server):
-            
+
     query = generate_fetch_query(column_types.keys(), destination_server)
-    
+
     taken_addresses = run_query(query, return_data_format=dict)
     filtered_taken_addresses = {}
     for column_name, address_type in column_types.items():
@@ -45,9 +52,10 @@ def fetch_taken_addresses(column_types, destination_server):
 
     return filtered_taken_addresses
 
+
 def fetch_address_info(account_id, workflow_id):
     workflow_info = run_query(
-        f"""
+        """
             SELECT *
             FROM workflows
             WHERE
@@ -63,7 +71,7 @@ def fetch_address_info(account_id, workflow_id):
         raise ValueError("No workflow exists for provided IDs")
 
     address_info = run_query(
-        f"""
+        """
             SELECT *
             FROM workflow_routes
             WHERE
@@ -76,20 +84,21 @@ def fetch_address_info(account_id, workflow_id):
     )
     return address_info
 
+
 def assign_next_port(workflow_id, destination_server):
-    
+
     address_search_ranges = {
         'ports': (49152, 65535),
         'websockets': (49152, 65535),
         'x11_displays': (80, 1000)
     }
-    
+
     address_types = {
         'ports': ['xpra_port', 'info_panel_port'],
         'websockets': ['websocket'],
         'x11_displays': ['x11_display']
     }
-    
+
     column_types = invert_address_types(address_types)
 
     workflow_addresses = run_query(
@@ -104,7 +113,7 @@ def assign_next_port(workflow_id, destination_server):
     taken_address_dict = fetch_taken_addresses(column_types, destination_server)
     print(taken_address_dict)
     update_column_dict = {}
-    
+
     if not list(chain(*workflow_addresses.values())):
         # If no values are returned by query, do this:
         for column_name in workflow_addresses:
@@ -127,6 +136,7 @@ def assign_next_port(workflow_id, destination_server):
             update_column_dict[column_name] = assigned_address
         return update_column_dict
 
+
 # Functions for Flask app
 def extract_ip_address():
     ifconfig = subprocess.check_output('ifconfig eth0', shell=True).decode()
@@ -134,7 +144,9 @@ def extract_ip_address():
     return extracted_text[0]
 
 
-def run_xpra_window(queue, account_id, workflow_category_id, x11_screen, xpra_target_port, info_panel_port, workflow_id):
+def run_xpra_window(
+    queue, account_id, workflow_category_id, x11_screen, xpra_target_port, info_panel_port, workflow_id
+):
     base_script_flags = [
         f'--account-id {account_id}',
         f'--workflow-category-id {workflow_category_id}',
@@ -147,7 +159,7 @@ def run_xpra_window(queue, account_id, workflow_category_id, x11_screen, xpra_ta
     user = f'appuser_{account_id}_{workflow_id}'
     subprocess.call(f'adduser --disabled-password --gecos "" {user}', shell=True)
     subprocess.call('chmod 777 -R /tmp/:*.log', shell=True)
-    
+
     current_working_directory = subprocess.check_output('pwd')
     current_working_directory = current_working_directory.decode().strip()
     script_filepath = f'{current_working_directory}/{script_target}'
@@ -167,18 +179,14 @@ def run_xpra_window(queue, account_id, workflow_category_id, x11_screen, xpra_ta
         '--video-scaling=100',
         f'--start="python3 {script_filepath}"'
     ]
-    
+
     flags = ' '.join(flags)
-     
+
     command = f"su {user} -c '{base_command} {flags}'"
     print(command)
     subprocess.call(command, shell=True)
     return extract_ip_address()
 
-APP_HANDLER_PATH = '/srv/node_app/handlers'
-DATABASE = f'{APP_HANDLER_PATH}/data/test_db.db'
-
-app = Flask('app_launcher')
 
 @app.route('/app_launcher', methods=["POST"])
 def app_launcher():
@@ -216,7 +224,7 @@ def app_launcher():
         for column_name, value in assign_port_dict.items():
             insert_columns.append(column_name)
             insert_values.append(value)
-        
+
         insert_substitutions = ['?' for i in insert_values]
 
         insert_statement = f"""
@@ -247,6 +255,7 @@ def app_launcher():
     else:
         address_info = {key: value[0] for key, value in address_info.items()}
         return json.dumps(address_info)
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=LAUNCHER_PORT)

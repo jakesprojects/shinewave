@@ -1,25 +1,19 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 from datetime import datetime
-from imp import reload
 import json
 import os
-import signal
-from time import sleep
 
 from NodeGraphQt import NodesPaletteWidget, NodesTreeWidget, PropertiesBinWidget
 from Qt import QtCore, QtWidgets
 
 from jakenode.graph_handler import GraphHandler
-from jakenode.nodes.pre_built import basic_nodes, custom_ports_node, group_node, widget_nodes
-from jakenode.nodes.trigger.api_trigger import APITrigger
-from jakenode.nodes.trigger.time_elapsed_trigger import TimeElapsedTrigger
-from jakenode.nodes.outreach.sms_outreach import SMSOutreach
 
 ACCOUNT_ID = 1
 WORKFLOW_CATEGORY_ID = 1
 WORKFLOW_ID = 17
 WORKFLOW_DATA_FOLDER = './data/workflows'
+
 
 def run_node_app(
     queue=None,
@@ -56,30 +50,8 @@ def run_node_app(
     graph_widget = graph.widget
     graph_widget.resize(900, 600)
     graph_widget.show()
-    
+
     graph.set_account_properties(account_id=account_id, workflow_category_id=workflow_category_id)
-
-    # Create Trigger Node
-    # api_trigger = graph.create_node(
-    #     'nodes.trigger.APITrigger', text_color='#feab20'
-    # )
-
-
-#     sms_outreach = graph.create_node(
-#         'nodes.outreach.SMSOutreach', text_color='#feab20'
-#     )
-    
-#     time_elapsed_trigger = graph.create_node(
-#         'nodes.trigger.TimeElapsedTrigger', text_color='#feab20'
-#     )
-#     # make node connections.
-
-#     sms_outreach.set_input(0, api_trigger.output(0))
-
-
-#     # auto layout nodes.
-#     graph.auto_layout_nodes()
-
 
     # fit nodes to the viewer.
     graph.clear_selection()
@@ -108,7 +80,6 @@ def run_node_app(
     nodes_tree.set_category_label('nodes.widget', 'Widget Nodes')
     nodes_tree.set_category_label('nodes.basic', 'Basic Nodes')
     nodes_tree.set_category_label('nodes.group', 'Group Nodes')
-    # nodes_tree.show()
 
     # create a node palette widget.
     nodes_palette = NodesPaletteWidget(node_graph=graph)
@@ -117,8 +88,7 @@ def run_node_app(
     nodes_palette.set_category_label('nodes.widget', 'Widget Nodes')
     nodes_palette.set_category_label('nodes.basic', 'Basic Nodes')
     nodes_palette.set_category_label('nodes.group', 'Group Nodes')
-    # nodes_palette.show()
-    
+
     # Maximize Windows (There's probably a much better way to do this)
     [i.setWindowState(QtCore.Qt.WindowMaximized) for i in app.allWindows()]
 
@@ -145,6 +115,3 @@ def run_node_app(
         graph.load_session(workflow_file_path)
 
     app.exec_()
-    
-# if __name__ == '__main__':
-#     run_node_app()
