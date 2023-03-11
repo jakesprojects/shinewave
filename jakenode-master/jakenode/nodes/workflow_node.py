@@ -84,29 +84,43 @@ class WorkflowNode(BaseNode):
 
         return template_data
 
-    def get_upstream_nodes(self):
+    def get_node_chain(self, direction):
         """
-            Currently assuming each port has only one input, and nodes only have one port, but will likely recurse
-            correctly if this changes (UNTESTED).
+            Universal method for getting all upstream or downstream nodes.
         """
-        def _get_upstream_nodes(current_nodes, prior_nodes):
-            all_parents = []
-            for current_node in current_nodes:
-                current_parents = current_node.connected_input_nodes()
-                current_parents = chain(*current_parents.values())
-                current_parents = [i for i in current_parents if i not in prior_nodes]
-                prior_nodes.append(current_node)
-            all_parents += current_parents
-            return all_parents, prior_nodes
         
+        if direction == 'upstream':
+            connection_method = 'connected_input_nodes'
+        elif direction == 'downstream':
+            connection_method = 'connected_output_nodes'
+        else:
+            raise ValueError('Parameter "direction" must be either "upstream" or "downstream"')
+
+        def _get_node_chain(current_nodes, prior_nodes, connection_method):
+            all_connected = []
+            for current_node in current_nodes:
+                get_direct_connections = getattr(current_node, connection_method)
+                current_connected = get_direct_connections()
+                current_connected = chain(*current_connected.values())
+                current_connected = [i for i in current_connected if i not in prior_nodes]
+                prior_nodes.append(current_node)
+            all_connected += current_connected
+            return all_connected, prior_nodes
+
         current_nodes = [self]
         prior_nodes = []
         while current_nodes:
-            current_nodes, prior_nodes = _get_upstream_nodes(current_nodes, prior_nodes)
-            
+            current_nodes, prior_nodes = _get_node_chain(current_nodes, prior_nodes, connection_method)
+
         del prior_nodes[0]
 
         return prior_nodes
+
+    def get_upstream_nodes(self):
+        return self.get_node_chain('upstream')
+
+    def get_downstream_nodes(self):
+        return self.get_node_chain('downstream')
 
 
     def load_templates(self):
@@ -137,6 +151,17 @@ class WorkflowNode(BaseNode):
         upstream_nodes = self.get_upstream_nodes()
         upstream_node_parent_types = [i.node_parent_type for i in upstream_nodes]
         if 'trigger' not in upstream_node_parent_types:
+            raise ValueError(error_message)
+
+    def validate_has_downstream_outreach(self, custom_error_message=None):
+        if not custom_error_message:
+            error_message = 'Node is orphaned (lacks a downstream outreach node).'
+        else:
+            error_message = custom_error_message
+
+        downstream_nodes = self.get_downstream_nodes()
+        downstream_node_parent_types = [i.node_parent_type for i in downstream_nodes]
+        if 'outreach' not in downstream_node_parent_types:
             raise ValueError(error_message)
 
 
