@@ -29,9 +29,9 @@ class WorkflowNode(BaseNode):
         super(WorkflowNode, self).__init__()
 
         if has_output:
-            self.add_output('output')
+            self.add_output('output', multi_output=True)
         if has_input:
-            self.add_input('input')
+            self.add_input('input', multi_input=True)
 
         self.set_account_id()
         self.set_workflow_category_id()
