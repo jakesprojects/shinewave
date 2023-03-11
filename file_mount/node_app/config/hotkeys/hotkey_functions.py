@@ -293,16 +293,20 @@ def add_node_api_trigger(graph):
     graph.create_node('nodes.trigger.APITrigger')
 
 
+def add_node_exact_response_received_trigger(graph):
+    pass
+
+
 def add_node_file_upload_trigger(graph):
+    pass
+
+
+def add_node_fuzzy_response_received_trigger(graph):
     pass
 
 
 def add_node_at_time_trigger(graph):
     graph.create_node('nodes.trigger.AtTimeTrigger')
-
-
-def add_node_response_received_trigger(graph):
-    pass
 
 
 def add_node_time_elapsed_trigger(graph):

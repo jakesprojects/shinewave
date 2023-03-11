@@ -220,11 +220,24 @@
             "shortcut":""
           },
           {
-            "type":"command",
-            "label":"Response Received",
-            "file":"./config/hotkeys/hotkey_functions.py",
-            "function_name":"add_node_response_received_trigger",
-            "shortcut":""
+            "type":"menu",
+            "label":"&Response Received",
+            "items":[
+              {
+                "type":"command",
+                "label":"Exact Response",
+                "file":"./config/hotkeys/hotkey_functions.py",
+                "function_name":"add_node_exact_response_received_trigger",
+                "shortcut":""
+              },
+              {
+                "type":"command",
+                "label":"Fuzzy Response",
+                "file":"./config/hotkeys/hotkey_functions.py",
+                "function_name":"add_node_fuzzy_response_received_trigger",
+                "shortcut":""
+              }
+            ]
           },
           {
             "type":"command",
