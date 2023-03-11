@@ -54,10 +54,6 @@
 			background: #eee;
 		}
 		/*.formContainer input[type=text]:focus,*/
-/*		.formContainer input[type=password]:focus {
-			background-color: #ddd;
-			outline: none;
-		}*/
 		.formContainer .btn {
 			padding: 12px 20px;
 			border: none;
@@ -245,8 +241,6 @@
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
 
-	<!-- Atlantis DEMO methods, don't include it in your project! -->
-	<script src="/static/assets/js/setting-demo2.js"></script>
-	<script src="{{url_for('static', filename='/jstree/dist/jstree.min.js')}}"></script>
+<script src="{{url_for('static', filename='/jstree/dist/jstree.min.js')}}"></script>
 
 {% endblock javascripts %}
