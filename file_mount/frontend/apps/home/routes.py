@@ -140,7 +140,8 @@ def workflow_builder():
     validation_failure_code_dict = {
         '1': 'The submitted folder name already exists. Names must be unique.',
         '2': 'The submitted workflow name already exists in this folder. Names must be unique.',
-        '3': 'Folders containing workflows cannot be deleted. Delete workflows first.'
+        '3': 'Folders containing workflows cannot be deleted. Delete workflows first.',
+        '4': 'The submitted workflow name was greater than the 150-character limit.'
     }
 
     validation_failure_code = request.args.get('validation_failure_code')
@@ -291,20 +292,22 @@ def builder_submit():
             }
         }
 
-        query_sub_dict = query_library.get(f'{operation} {node_type}')
-        if query_sub_dict:
-            validation_dict = query_sub_dict.get('validation')
-            if validation_dict:
-                results = run_query(commit=False, **validation_dict)
-                if results:
-                    print(query_sub_dict['validation_failure_code'])
-                    return redirect(
-                        url_for(
-                            'home_blueprint.workflow_builder',
-                            validation_failure_code=query_sub_dict['validation_failure_code']
-                        )
-                    )
+        query_sub_dict = query_library.get(f'{operation} {node_type}', {})
+        validation_dict = query_sub_dict.get('validation')
 
+        if validation_dict and len(submitted_name) > 150:
+            validation_failure_code = 4
+        elif validation_dict and run_query(commit=False, **validation_dict):
+            validation_failure_code = query_sub_dict['validation_failure_code']
+        else:
+            validation_failure_code = None
+
+        if validation_failure_code is not None:
+            return redirect(
+                url_for('home_blueprint.workflow_builder', validation_failure_code=validation_failure_code)
+            )
+
+        if query_sub_dict:
             execution_dict = query_sub_dict['execution']
             run_query(commit=True, **execution_dict)
 
