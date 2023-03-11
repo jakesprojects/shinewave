@@ -60,17 +60,31 @@
 							<h4 class="text-section">Configuration</h4>
 							<!-- flaticon-diagram -->
 						</li>
-						<ul class="nav nav-primary">
-							<li class="mx-4 mt-2">
-	                            <a href="/workflow-builder.html"
-	                               class="btn btn-default btn-block">
-	                                <span class="btn-label mr-2"> <i class="flaticon-diagram"></i> </span>Workflow Builder</a> 
-							</li>
-						</ul>
+						<li class="nav-item {% if 'om-' in segment %} active {% endif %}">
+							<a data-toggle="collapse" href="#workflows">
+								<i class="flaticon-diagram"></i>
+								<p>Workflows</p>
+								<span class="caret"></span>
+							</a>
+							<div class="collapse {% if 'om-' in segment %} show {% endif %}" id="workflows">
+								<ul class="nav nav-collapse">
+									<li class="{% if 'om-recipient-file-upload' in segment %} active {% endif %}">
+										<a href="/workflow-builder.html">
+											<span class="sub-item">Edit Workflows</span>
+										</a>
+									</li>
+									<li class="{% if 'om-message-explorer' in segment %} active {% endif %}">
+										<a href="/template-builder.html">
+											<span class="sub-item">Edit Templates</span>
+										</a>
+									</li>
+								</ul>
+							</div>
+						</li>
 						<li class="nav-item {% if 'om-' in segment %} active {% endif %}">
 							<a data-toggle="collapse" href="#outreach">
 								<i class="flaticon-chat-1"></i>
-								<p>Outreach Management</p>
+								<p>Recipient Management</p>
 								<span class="caret"></span>
 							</a>
 							<div class="collapse {% if 'om-' in segment %} show {% endif %}" id="outreach">

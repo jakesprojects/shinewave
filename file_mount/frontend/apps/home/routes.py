@@ -16,7 +16,7 @@ from jinja2 import TemplateNotFound
 import requests
 
 from jakenode.database_connector import run_query
-
+import jakenode.flask_frontend_helpers as helpers
 
 ACCOUNT_ID = 1
 APP_HANDLER_PATH = '/srv/node_app/handlers'
@@ -33,39 +33,6 @@ def index():
 @blueprint.route('/workflow-builder', methods=["GET"])
 @login_required
 def workflow_builder():
-    # request.args
-    def _workflow_tree_dict_to_json(workflow_tree_dict):
-        json_list = [
-            {'text': 'New Folder', 'icon': 'jstree-ok'}
-        ]
-
-        for parent_node in workflow_tree_dict:
-
-            children_list = [
-                {'text': 'New Workflow', 'icon': 'jstree-ok'},
-                {'text': f'Rename Folder "{parent_node}"', 'icon': 'jstree-ok'},
-                {'text': f'Delete Folder "{parent_node}"', 'icon': 'jstree-ok'}
-            ]
-
-            for child_node_name, child_node_id in workflow_tree_dict[parent_node]:
-                if child_node_name is not None:
-                    children_list.append(
-                        {
-                            'text': child_node_name,
-                            'id': child_node_id,
-                            'icon': 'jstree-file',
-                            'children': [
-                                {'text': f'Edit Workflow "{child_node_name}"', 'icon': 'jstree-ok'},
-                                {'text': f'Rename Workflow "{child_node_name}"', 'icon': 'jstree-ok'},
-                                {'text': f'Delete Workflow "{child_node_name}"', 'icon': 'jstree-ok'}
-                            ]
-                        }
-                    )
-
-            json_list.append({'text': parent_node, 'children': children_list})
-
-        return json.dumps(json_list)
-
     tree_format = {}
     workflow_data = run_query(
         f"""
@@ -89,7 +56,7 @@ def workflow_builder():
         tree_format.setdefault(workflow_category, [])
         tree_format[workflow_category].append((workflow_name, workflow_id))
 
-    tree_format_code = _workflow_tree_dict_to_json(tree_format)
+    tree_format_code = helpers.tree_dict_to_json(tree_format, tree_type='Workflow')
 
     # Not sure how this is used
     tree_format_text = """<!-- 
@@ -433,6 +400,17 @@ def route_template(template):
 
     except:
         return render_template('home/page-500.html'), 500
+
+
+@blueprint.route('/template-builder.html', methods=['GET'])
+@blueprint.route('/template-builder', methods=['GET'])
+@login_required
+def template_builder():
+
+    return render_template(
+        'home/workflow-builder.html',
+        validation_failure_text=helpers.test()
+    )
 
 
 # Helper - Extract current page name from request
