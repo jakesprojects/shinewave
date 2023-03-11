@@ -79,6 +79,6 @@ class SMSOutreach(OutreachNode):
         """
             Validates that a template is selected and node has an upstream trigger.
         """
-        validate_has_template_selected()
+        self.validate_has_template_selected()
 
         self.validate_has_upstream_trigger()
