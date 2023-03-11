@@ -63,7 +63,7 @@ class WorkflowNode(BaseNode):
             WHERE
                 t.account_id={self.account_id}
                 AND t.workflow_category_id={self.workflow_category_id}
-                AND t.template_type='{self.node_master_type}.{self.node_parent_type}.{self.node_detail_type}'
+                AND t.template_type='{self.get_property('type_')}'
                 AND t.active='TRUE'
         """
 
