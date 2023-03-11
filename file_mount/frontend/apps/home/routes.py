@@ -152,7 +152,9 @@ def builder_submit():
                             account_id = ?
                             AND active = 'TRUE'
                             AND name = ?
-                            AND workflow_category_id IN (SELECT id FROM workflow_categories WHERE name = ? AND active = 'TRUE')
+                            AND workflow_category_id IN (
+                                SELECT id FROM workflow_categories WHERE name = ? AND active = 'TRUE'
+                            )
                     """,
                     'sql_parameters': (submitted_name, ACCOUNT_ID, workflow, folder)
                 }
@@ -284,7 +286,10 @@ def workflow_builder_loading_screen():
     folder_name = request.args.get('folder')
     workflow_name = request.args.get('workflow')
     query_string = urllib.parse.urlencode({'folder': folder_name, 'workflow': workflow_name})
-    return render_template('home/wb-loading-screen.html', redirect_url=url_for('home_blueprint.workflow_builder_app', folder=folder_name, workflow=workflow_name))
+    return render_template(
+        'home/wb-loading-screen.html',
+        redirect_url=url_for('home_blueprint.workflow_builder_app', folder=folder_name, workflow=workflow_name)
+    )
 
 
 @blueprint.route('/workflow-builder-app.html', methods=['GET'])
