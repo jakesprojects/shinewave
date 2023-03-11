@@ -69,6 +69,29 @@ def get_validation_error_card(validation_error_text):
         return ''
 
 
+def get_workflow_id_by_name(account_id, workflow_name, folder_name):
+    query_results_dict = run_query(
+        """
+            SELECT w.id
+            FROM workflows w
+            INNER JOIN workflow_categories wc ON
+                w.workflow_category_id=wc.id
+                AND w.account_id=wc.account_id
+            WHERE
+                w.account_id = ?
+                AND w.name=?
+                AND wc.name = ?
+                AND w.active = 'TRUE'
+        """,
+        sql_parameters=[account_id, workflow_name, folder_name],
+        return_data_format=dict
+    )
+
+    id_list = query_results_dict.get('id', [])
+    if id_list:
+        return id_list[0]
+
+
 @blueprint.route('/index')
 @login_required
 def index():
