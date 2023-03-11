@@ -56,6 +56,19 @@ def tree_dict_to_json(tree_dict, tree_type):
     return json.dumps(json_list)
 
 
+def get_validation_error_card(validation_error_text):
+    if validation_error_text:
+        return f"""
+            <div class="card">
+                <div class="card-header">
+                    <h4 style="color:red">{validation_error_text}</h4>
+                </div>
+            </div>
+        """
+    else:
+        return ''
+
+
 @blueprint.route('/index')
 @login_required
 def index():
@@ -114,7 +127,7 @@ def workflow_builder():
         'home/workflow-builder.html',
         tree_format_text=tree_format_text,
         tree_format_code=tree_format_code,
-        validation_failure_text=validation_failure_text
+        validation_error_card=get_validation_error_card(validation_failure_text)
     )
 
       
@@ -441,7 +454,7 @@ def template_builder():
 
     return render_template(
         'home/template-builder.html',
-        validation_failure_text='helpers.test()'
+        validation_error_card=get_validation_error_card('')
     )
 
 
