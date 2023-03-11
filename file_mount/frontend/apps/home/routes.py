@@ -348,7 +348,8 @@ def workflow_builder_app():
             'home/workflow-builder-app.html',
             app_server_address=app_server_address,
             xpra_port=xpra_port,
-            info_panel_port=info_panel_port
+            info_panel_port=info_panel_port,
+            workflow_id=workflow_id
         )
 
 
