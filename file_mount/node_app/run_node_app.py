@@ -40,11 +40,6 @@ def run_node_app(
     graph.set_context_menu_from_file('./config/master_config.json')
 
     # registered nodes.
-    # graph.register_nodes([
-    #     APITrigger,
-    #     TimeElapsedTrigger,
-    #     SMSOutreach
-    # ])
 
     # show the node graph widget.
     graph_widget = graph.widget
