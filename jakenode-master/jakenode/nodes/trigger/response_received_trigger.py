@@ -78,7 +78,7 @@ class FuzzyResponseReceivedTrigger(ResponseReceivedTrigger):
     def __init__(self):
         super(FuzzyResponseReceivedTrigger, self).__init__(has_input=True)
 
-        self.add_text_input('response_template', 'Response Template')
+        self.add_combo_menu('response_template', 'Response Template', items=[''])
 
         # self.set_property('color', (215, 254, 203))
 
