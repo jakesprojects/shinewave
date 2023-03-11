@@ -81,7 +81,7 @@
 			var nodeText = node.text;
 
 			var operationTypes = ["Rename", "New", "Delete", "Edit"];
-			var nodeTypes = ["Folder", "Workflow"];
+			var nodeTypes = ["Folder", "Template"];
 			for (operationType of operationTypes) {
 				for (nodeType of nodeTypes) {
 					var searchString = operationType + " " + nodeType;
@@ -101,11 +101,11 @@
 
 			var displayText = selectedOperationType + " " + selectedNodeType;
 			var parentNodeDisplayText = "";
-			if(selectedOperationType == 'Edit' || (selectedOperationType == 'Delete' && selectedNodeType == "Workflow")) {
+			if(selectedOperationType == 'Edit' || (selectedOperationType == 'Delete' && selectedNodeType == "Template")) {
 				var folder = data.instance.get_node(parentNode.parent).text;
 				displayText += " " + folder + "/" + parentNode.text
 				document.getElementById("folder").value = folder;
-				document.getElementById("workflow").value = parentNode.text;
+				document.getElementById("template").value = parentNode.text;
 			}
 			else if(selectedNodeType == "Folder" && selectedOperationType != "New") {
 				displayText += " " + parentNode.text;
@@ -119,7 +119,7 @@
 				displayText += " " + parentNode.text
 				parentNodeDisplayText = data.instance.get_node(parentNode.parent).text + "/...";
 				document.getElementById("folder").value = data.instance.get_node(parentNode.parent).text
-				document.getElementById("workflow").value = parentNode.text;
+				document.getElementById("template").value = parentNode.text;
 			}
 
 			if(selectedOperationType == 'Delete' || selectedOperationType == 'Edit') {
@@ -144,7 +144,7 @@
 	function closeGenericPopup() {
 		document.getElementById("genericPopup").style.display = "none";
 	};
-	function formOperation(operationType, operationTarget, parentFolderName, workflowName) {
+	function formOperation(operationType, operationTarget, parentFolderName, templateName) {
 		// if(operationType == "New") {
 
 		// }
@@ -195,7 +195,29 @@
 											</ul>
 											<div class="tab-content mt-2 mb-3" id="pills-tabContent">
 												<div class="tab-pane fade show active" id="pills-outbound-sms" role="tabpanel" aria-labelledby="pills-outbound-sms-tab">
-													<p>Outbound bro!</p>
+													<div id="evts" class="demo">
+														<ul>
+															{{tree_format_text | safe}}
+														</ul>
+													</div>
+
+													<script>
+														// interaction and events
+														$('#evts_button').on("click", function () {
+															var instance = $('#evts').jstree(true);
+															instance.deselect_all();
+															instance.select_node('1');
+														});
+														$('#evts')
+															.on("changed.jstree", function (e, data) {
+																if(data.selected.length) {
+																	openGenericPopup(data)
+																	// openGenericPopup(data.instance.get_node(data.instance.get_node(data.selected[0]).parent).text)
+																		// data.instance.get_node(data.selected[0]).text)
+																}
+															})
+															.jstree({{ tree_format_code | safe }});
+													</script>
 												</div>
 												<div class="tab-pane fade" id="pills-inbound-sms" role="tabpanel" aria-labelledby="pills-inbound-sms-tab">
 													<p>Inbound dude!</p>
@@ -219,7 +241,7 @@
 													<input type="text" id="operation" placeholder="" name="operation" style="display:none" required>
 													<input type="text" id="nodeType" placeholder="" name="node_type" style="display:none" required>
 													<input type="text" id="folder" placeholder="" name="folder" style="display:none">
-													<input type="text" id="workflow" placeholder="" name="workflow" style="display:none">
+													<input type="text" id="template" placeholder="" name="template" style="display:none">
 													<button type="submit" class="btn" id="genericPopupSubmitButton"></button>
 													<button type="button" class="btn cancel" onclick="closeGenericPopup()">Cancel</button>
 												</form>
