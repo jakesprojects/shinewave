@@ -7,6 +7,7 @@ import json
 import sqlite3
 from time import sleep
 import urllib
+import subprocess
 
 from apps.home import blueprint
 from flask import render_template, request, redirect, url_for
@@ -286,6 +287,56 @@ def workflow_builder_loading_screen():
     folder_name = request.args.get('folder')
     workflow_name = request.args.get('workflow')
     query_string = urllib.parse.urlencode({'folder': folder_name, 'workflow': workflow_name})
+    return render_template(
+        'home/wb-loading-screen.html',
+        redirect_url=url_for('home_blueprint.workflow_builder_app', folder=folder_name, workflow=workflow_name)
+    )
+
+
+@blueprint.route('/wb-reload.html', methods=['GET'])
+@blueprint.route('/wb-reload', methods=['GET'])
+@login_required
+def workflow_builder_reload():
+    account_id = ACCOUNT_ID
+    workflow_id = request.args.get('workflow_id')
+
+    workflow_dict = run_query(
+        """
+            SELECT
+                w.name AS workflow_name,
+                wc.name AS folder_name
+            FROM workflows w
+            INNER JOIN workflow_categories wc ON w.workflow_category_id=wc.id
+            WHERE
+                w.active = 'TRUE'
+                AND w.account_id = ?
+                AND w.id = ?
+        """,
+        sql_parameters=[account_id, workflow_id],
+        return_data_format=dict
+    )
+
+    if not workflow_dict.get('workflow_name'):
+        return render_template('home/page-500.html'), 500
+
+    workflow_name = workflow_dict['workflow_name'][0]
+    folder_name = workflow_dict['folder_name'][0]
+
+    workflow_dict = run_query(
+        """
+            UPDATE workflow_routes
+            SET active = 'FALSE'
+            WHERE
+                active = 'TRUE'
+                AND account_id = ?
+                AND workflow_id = ?
+        """,
+        sql_parameters=[account_id, workflow_id],
+        commit=True
+    )
+
+    subprocess.call(f'killall -u appuser_{account_id}_{workflow_id}', shell=True)
+
     return render_template(
         'home/wb-loading-screen.html',
         redirect_url=url_for('home_blueprint.workflow_builder_app', folder=folder_name, workflow=workflow_name)
