@@ -4,6 +4,7 @@ Copyright (c) 2019 - present AppSeed.us
 """
 
 from flask import Flask
+from flask_ckeditor import CKEditor
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from importlib import import_module
@@ -41,4 +42,5 @@ def create_app(config):
     register_extensions(app)
     register_blueprints(app)
     configure_database(app)
+    ckeditor = CKEditor(app)
     return app
