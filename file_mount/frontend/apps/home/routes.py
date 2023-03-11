@@ -102,6 +102,29 @@ def get_workflow_id_by_name(account_id, workflow_name, folder_name):
         return id_list[0]
 
 
+def get_template_id_by_name(account_id, template_name, folder_name):
+    query_results_dict = run_query(
+        """
+            SELECT t.id
+            FROM templates t
+            INNER JOIN workflow_categories wc ON
+                t.workflow_category_id=wc.id
+                AND t.account_id=wc.account_id
+            WHERE
+                t.account_id = ?
+                AND t.name=?
+                AND wc.name = ?
+                AND t.active = 'TRUE'
+        """,
+        sql_parameters=[account_id, template_name, folder_name],
+        return_data_format=dict
+    )
+
+    id_list = query_results_dict.get('id', [])
+    if id_list:
+        return id_list[0]
+
+
 @blueprint.route('/index')
 @login_required
 def index():
@@ -175,6 +198,7 @@ def builder_submit():
         operation = request.form.get('operation')
         submitted_name = request.form.get('submitted_name')
         workflow = request.form.get('workflow')
+        template = request.form.get('template')
 
         query_library = {
             "Rename Folder": {
@@ -320,12 +344,16 @@ def builder_submit():
         if query_sub_dict:
             execution_dict = query_sub_dict['execution']
             run_query(commit=True, **execution_dict)
-
         elif operation == 'Edit' and node_type == 'Workflow':
             workflow_id = get_workflow_id_by_name(
                 account_id=ACCOUNT_ID, workflow_name=workflow, folder_name=folder
             )
             return redirect(url_for('home_blueprint.workflow_builder_loading_screen', workflow_id=workflow_id))
+        elif operation == 'Edit' and node_type == 'Template':
+            template_id = get_template_id_by_name(
+                account_id=ACCOUNT_ID, template_name=template, folder_name=folder
+            )
+            return redirect(url_for('home_blueprint.edit_templates_app', template_id=template_id))
 
     return redirect(url_for('home_blueprint.workflow_builder'))
 
@@ -492,6 +520,41 @@ def edit_templates():
         tree_format_text='',
         tree_format_code=tree_format_code
     )
+
+
+@blueprint.route('/edit-templates-app.html', methods=['GET'])
+@blueprint.route('/edit-templates-app', methods=['GET'])
+@login_required
+def edit_templates_app():
+    account_id = ACCOUNT_ID
+    template_id = request.args.get('template_id')
+    template_data = run_query(
+        f"""
+            SELECT
+                wc.name AS workflow_category,
+                t.name AS template_name
+            FROM workflow_categories wc
+            LEFT JOIN templates t ON
+                wc.id=t.workflow_category_id
+                AND wc.active=t.active
+            WHERE
+                wc.account_id=?
+                AND wc.active='TRUE'
+                AND t.id=?
+        """,
+        sql_parameters=[account_id, template_id],
+        return_data_format=dict
+    )
+
+    folder_name = template_data.get('workflow_category')
+    template_name = template_data.get('template_name')
+
+    if template_name and folder_name:
+        folder_name = folder_name[0]
+        template_name = template_name[0]
+        return render_template('home/edit-templates-app.html', folder_name=folder_name, template_name=template_name)
+    else:
+        return render_template('home/page-404.html'), 404
 
 
 # Helper - Extract current page name from request
