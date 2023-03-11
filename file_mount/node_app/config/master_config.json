@@ -236,6 +236,13 @@
                 "file":"./config/hotkeys/hotkey_functions.py",
                 "function_name":"add_node_fuzzy_response_received_trigger",
                 "shortcut":""
+              },
+              {
+                "type":"command",
+                "label":"Templatized Response",
+                "file":"./config/hotkeys/hotkey_functions.py",
+                "function_name":"add_node_templatized_response_received_trigger",
+                "shortcut":""
               }
             ]
           },
