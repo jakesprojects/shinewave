@@ -126,6 +126,7 @@ def run_node_app(
 
     if os.path.isfile(workflow_file_path):
         with open(workflow_file_path, 'r+') as file:
+            print(f'~~~~LOADING FILE: {workflow_file_path}')
             definition_json = file.read()
             definition_dict = json.loads(definition_json)
 
@@ -134,7 +135,9 @@ def run_node_app(
             file.truncate()
             graph.load_session(workflow_file_path)
 
-            graph.load_graph_from_dict(definition_dict)
+            if definition_dict.get('nodes', {}):
+                graph.load_graph_from_dict(definition_dict)
+
             graph.auto_layout_nodes()
             graph.save_session(workflow_file_path)
     else:
