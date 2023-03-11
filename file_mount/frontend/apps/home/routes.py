@@ -53,7 +53,14 @@ def tree_dict_to_json(tree_dict, tree_type):
 
         json_list.append({'text': parent_node, 'children': children_list})
 
-    return json.dumps(json_list)
+    full_json = {
+        'core' : {
+            'multiple' : False,
+            'data' : json_list
+        }
+    }
+
+    return json.dumps(full_json)
 
 
 def get_validation_error_card(validation_error_text):
