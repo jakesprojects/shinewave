@@ -309,8 +309,10 @@ def builder_submit():
             run_query(commit=True, **execution_dict)
 
         elif operation == 'Edit':
-            # return redirect(url_for('home_blueprint.workflow_builder_app', folder=folder, workflow=workflow))
-            return redirect(url_for('home_blueprint.workflow_builder_loading_screen', folder=folder, workflow=workflow))
+            workflow_id = get_workflow_id_by_name(
+                account_id=ACCOUNT_ID, workflow_name=workflow, folder_name=folder
+            )
+            return redirect(url_for('home_blueprint.workflow_builder_loading_screen', workflow_id=workflow_id))
 
     return redirect(url_for('home_blueprint.workflow_builder'))
 
@@ -319,12 +321,10 @@ def builder_submit():
 @blueprint.route('/wb-loading-screen', methods=['GET'])
 @login_required
 def workflow_builder_loading_screen():
-    folder_name = request.args.get('folder')
-    workflow_name = request.args.get('workflow')
-    query_string = urllib.parse.urlencode({'folder': folder_name, 'workflow': workflow_name})
+    workflow_id = request.args.get('workflow_id')
     return render_template(
         'home/wb-loading-screen.html',
-        redirect_url=url_for('home_blueprint.workflow_builder_app', folder=folder_name, workflow=workflow_name)
+        redirect_url=url_for('home_blueprint.workflow_builder_app', workflow_id=workflow_id)
     )
 
 
@@ -335,29 +335,7 @@ def workflow_builder_reload():
     account_id = ACCOUNT_ID
     workflow_id = request.args.get('workflow_id')
 
-    workflow_dict = run_query(
-        """
-            SELECT
-                w.name AS workflow_name,
-                wc.name AS folder_name
-            FROM workflows w
-            INNER JOIN workflow_categories wc ON w.workflow_category_id=wc.id
-            WHERE
-                w.active = 'TRUE'
-                AND w.account_id = ?
-                AND w.id = ?
-        """,
-        sql_parameters=[account_id, workflow_id],
-        return_data_format=dict
-    )
-
-    if not workflow_dict.get('workflow_name'):
-        return render_template('home/page-500.html'), 500
-
-    workflow_name = workflow_dict['workflow_name'][0]
-    folder_name = workflow_dict['folder_name'][0]
-
-    workflow_dict = run_query(
+    run_query(
         """
             UPDATE workflow_routes
             SET active = 'FALSE'
@@ -374,7 +352,7 @@ def workflow_builder_reload():
 
     return render_template(
         'home/wb-loading-screen.html',
-        redirect_url=url_for('home_blueprint.workflow_builder_app', folder=folder_name, workflow=workflow_name)
+        redirect_url=url_for('home_blueprint.workflow_builder_app', workflow_id=workflow_id)
     )
 
 
@@ -382,27 +360,23 @@ def workflow_builder_reload():
 @blueprint.route('/workflow-builder-app', methods=['GET'])
 @login_required
 def workflow_builder_app():
-    folder_name = request.args.get('folder')
-    workflow_name = request.args.get('workflow')
+    workflow_id = request.args.get('workflow_id')
     account_id = ACCOUNT_ID
     workflow_id = run_query(
         f"""
             SELECT
-                w.id
-            FROM workflow_categories wc
-            LEFT JOIN workflows w ON
-                wc.id=w.workflow_category_id
-                AND wc.active=w.active
+                id
+            FROM workflows
             WHERE
-                wc.account_id=?
-                AND wc.active='TRUE'
-                AND w.active='TRUE'
-                AND w.name = ?
-                AND wc.name = ?
+                account_id=?
+                AND active='TRUE'
+                AND id=?
         """,
-        sql_parameters=[account_id, workflow_name, folder_name],
+        sql_parameters=[account_id, workflow_id],
         return_data_format=list
     )
+    if not workflow_id:
+        return render_template('home/page-404.html'), 404
 
     workflow_id = workflow_id[0][0]
 
