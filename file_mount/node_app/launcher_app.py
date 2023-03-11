@@ -144,7 +144,9 @@ def run_xpra_window(queue, account_id, workflow_category_id, x11_screen, xpra_ta
     base_script_flags = ' '.join(base_script_flags)
 
     script_target = f'run_two_window_app.py {base_script_flags}'
-    user = 'myuser'
+    user = f'myuser_{account_id}_{workflow_id}'
+    subprocess.call(f'adduser --disabled-password --gecos "" {user}', shell=True)
+    # user = 'myuser'
     
     current_working_directory = subprocess.check_output('pwd')
     current_working_directory = current_working_directory.decode().strip()
@@ -168,7 +170,7 @@ def run_xpra_window(queue, account_id, workflow_category_id, x11_screen, xpra_ta
     
     flags = ' '.join(flags)
      
-    command = f"su myuser -c '{base_command} {flags}'"
+    command = f"su {user} -c '{base_command} {flags}'"
     print(command)
     subprocess.call(command, shell=True)
     return extract_ip_address()
