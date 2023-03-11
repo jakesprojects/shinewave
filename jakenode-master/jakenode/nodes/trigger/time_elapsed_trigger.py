@@ -53,20 +53,26 @@ class TimeElapsedTrigger(TriggerNode):
 
     def get_time_number(self):
         time_number = self.get_property('time_number').strip()
-        time_number = html.escape(time_number)
+        time_number = html.escape(time_number)[:150]
 
         if time_number == '':
             raise ValueError('"Number of Time Units" is blank.')
         elif re.sub('[0-9]', '', time_number):
-            raise ValueError(
-                f'"Number of Time Units" must be a positive, whole number. You have entered "{time_number}".'
-            )
+            error_msg = '"Number of Time Units" must be a positive, whole number, entered without commas.'
+            error_msg += f' You have entered "{time_number}".'
+            raise ValueError(error_msg)
         elif time_number.startswith('0'):
             raise ValueError(
                 f'"Number of Time Units" must not be zero or start with zero. You have entered "{time_number}".'
             )
 
-        return int(time_number)
+        time_number = int(time_number)
+        if time_number > 10000:
+            raise ValueError(
+                f'"Number of Time Units" must be at or below 10000. You have entered "{time_number}".'
+            )
+
+        return time_number
 
     def validate_node(self):
         """
