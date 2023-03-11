@@ -127,6 +127,18 @@ class WorkflowNode(BaseNode):
         return '', ''
 
 
+    def validate_has_upstream_trigger(self, custom_error_message=None):
+        if not custom_error_message:
+            error_message = 'Node is orphaned (lacks an upstream trigger node).'
+        else:
+            error_message = custom_error_message
+
+        upstream_nodes = self.get_upstream_nodes()
+        upstream_node_parent_types = [i.node_parent_type for i in upstream_nodes]
+        if 'trigger' not in upstream_node_parent_types:
+            raise ValueError(error_message)
+
+
 class NodeTextEdit(NodeBaseWidget):
     """
     Displays as a ``QTextEdit`` in a node.

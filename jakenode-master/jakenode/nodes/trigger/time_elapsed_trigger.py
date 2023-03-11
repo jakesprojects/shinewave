@@ -73,4 +73,9 @@ class TimeElapsedTrigger(TriggerNode):
             Raises a ValueError if an invalid value has been entered in the "Number of Time Units" free-text field
         """
 
+        upstream_trigger_error_msg = 'This node type must be downstream from one of the following:'
+        for upstream_node_type in ['API Trigger', 'File Upload Trigger', 'At Time Trigger']:
+            upstream_trigger_error_msg += f'\n    {upstream_node_type}'
+
         self.get_time_number()
+        self.validate_has_upstream_trigger(custom_error_message=upstream_trigger_error_msg)
