@@ -23,8 +23,16 @@ APP_HANDLER_PATH = '/srv/node_app/handlers'
 DATABASE = f'{APP_HANDLER_PATH}/data/test_db.db'
 LAUNCHER_APP_ADDRESS = 'http://localhost:49151/app_launcher'
 
+def get_validation_failure_codes(node_type):
+    return {
+        '1': 'The submitted folder name already exists. Names must be unique.',
+        '2': f'The submitted {node_type} name already exists in this folder. Names must be unique.',
+        '3': 'Folders containing workflows cannot be deleted. Delete workflows first.',
+        '4': f'The submitted {node_type} name was greater than the 150-character limit.'
+    }
 
-def tree_dict_to_json(tree_dict, tree_type, include_folder_operations):
+
+def tree_dict_to_json(tree_dict, tree_type, include_folder_operations, include_rename_operations):
     json_list = []
     if include_folder_operations:
         json_list.append({'text': 'New Folder', 'icon': 'jstree-ok'})
@@ -41,17 +49,19 @@ def tree_dict_to_json(tree_dict, tree_type, include_folder_operations):
 
         for child_node_name, child_node_id in tree_dict[parent_node]:
             if child_node_name is not None:
+                operations = ['Edit']
+                if include_rename_operations:
+                    operations.append('Rename')
+                operations.append('Delete')
+
+                children_sub_list = []
+                for operation in operations:
+                    children_sub_list.append(
+                        {'text': f'{operation} {tree_type} "{child_node_name}"', 'icon': 'jstree-ok'}
+                    )
+
                 children_list.append(
-                    {
-                        'text': child_node_name,
-                        'id': child_node_id,
-                        'icon': 'jstree-file',
-                        'children': [
-                            {'text': f'Edit {tree_type} "{child_node_name}"', 'icon': 'jstree-ok'},
-                            {'text': f'Rename {tree_type} "{child_node_name}"', 'icon': 'jstree-ok'},
-                            {'text': f'Delete {tree_type} "{child_node_name}"', 'icon': 'jstree-ok'}
-                        ]
-                    }
+                    {'text': child_node_name, 'id': child_node_id, 'icon': 'jstree-file', 'children': children_sub_list}
                 )
 
         json_list.append({'text': parent_node, 'children': children_list})
@@ -157,7 +167,9 @@ def workflow_builder():
         tree_format.setdefault(workflow_category, [])
         tree_format[workflow_category].append((workflow_name, workflow_id))
 
-    tree_format_code = tree_dict_to_json(tree_format, tree_type='Workflow', include_folder_operations=True)
+    tree_format_code = tree_dict_to_json(
+        tree_format, tree_type='Workflow', include_folder_operations=True, include_rename_operations=True
+    )
 
     # Not sure how this is used
     tree_format_text = """<!-- 
@@ -170,12 +182,7 @@ def workflow_builder():
     -->
     """
 
-    validation_failure_code_dict = {
-        '1': 'The submitted folder name already exists. Names must be unique.',
-        '2': 'The submitted workflow name already exists in this folder. Names must be unique.',
-        '3': 'Folders containing workflows cannot be deleted. Delete workflows first.',
-        '4': 'The submitted workflow name was greater than the 150-character limit.'
-    }
+    validation_failure_code_dict = get_validation_failure_codes('workflow')
 
     validation_failure_code = request.args.get('validation_failure_code')
     validation_failure_text = validation_failure_code_dict.get(validation_failure_code, '')
@@ -323,8 +330,58 @@ def builder_submit():
                     """,
                     'sql_parameters': (ACCOUNT_ID, workflow, folder)
                 }
+            },
+            "New Template": {
+                'execution': {
+                    'sql': """
+                        INSERT INTO templates (id, account_id, name, workflow_category_id, active)
+                        VALUES (
+                            (SELECT MAX(id) + 1 FROM templates),
+                            ?,
+                            ?,
+                            (SELECT id FROM workflow_categories WHERE name = ? AND active = 'TRUE'),
+                            'TRUE'
+                        )
+                    """,
+                    'sql_parameters': (ACCOUNT_ID, submitted_name, folder)
+                },
+                'validation': {
+                    'sql': """
+                        SELECT t.id
+                        FROM templates t
+                        INNER JOIN workflow_categories wc ON t.workflow_category_id = wc.id
+                        WHERE
+                            t.account_id = ?
+                            AND t.name = ?
+                            AND wc.name = ?
+                            AND t.active = 'TRUE'
+                    """,
+                    'sql_parameters': (ACCOUNT_ID, submitted_name, folder)
+                },
+                'validation_failure_code': 2
+            },
+            "Delete Template": {
+                'execution': {
+                    'sql': """
+                        UPDATE templates
+                        SET active = 'FALSE'
+                        WHERE
+                            account_id = ?
+                            AND active = 'TRUE'
+                            AND name = ?
+                            AND workflow_category_id IN (SELECT id FROM workflow_categories WHERE name = ?)
+                    """,
+                    'sql_parameters': (ACCOUNT_ID, template, folder)
+                }
             }
         }
+
+        if node_type == 'Workflow':
+            redirect_page = 'home_blueprint.workflow_builder'
+        elif node_type == 'Template':
+            redirect_page = 'home_blueprint.edit_templates'
+        else:
+            return render_template('home/page-404.html'), 404
 
         query_sub_dict = query_library.get(f'{operation} {node_type}', {})
         validation_dict = query_sub_dict.get('validation')
@@ -338,24 +395,29 @@ def builder_submit():
 
         if validation_failure_code is not None:
             return redirect(
-                url_for('home_blueprint.workflow_builder', validation_failure_code=validation_failure_code)
+                url_for(redirect_page, validation_failure_code=validation_failure_code)
             )
 
         if query_sub_dict:
             execution_dict = query_sub_dict['execution']
             database_connector.run_query(commit=True, **execution_dict)
-        elif operation == 'Edit' and node_type == 'Workflow':
+            if node_type == 'Workflow':
+                workflow = submitted_name
+            elif node_type == 'Template':
+                template = submitted_name
+
+        if operation in ['Edit', 'New'] and node_type == 'Workflow':
             workflow_id = get_workflow_id_by_name(
                 account_id=ACCOUNT_ID, workflow_name=workflow, folder_name=folder
             )
             return redirect(url_for('home_blueprint.workflow_builder_loading_screen', workflow_id=workflow_id))
-        elif operation == 'Edit' and node_type == 'Template':
+        elif operation in ['Edit', 'New'] and node_type == 'Template':
             template_id = get_template_id_by_name(
                 account_id=ACCOUNT_ID, template_name=template, folder_name=folder
             )
             return redirect(url_for('home_blueprint.edit_templates_app', template_id=template_id))
 
-    return redirect(url_for('home_blueprint.workflow_builder'))
+    return redirect(url_for(redirect_page))
 
 
 @blueprint.route('/wb-loading-screen.html', methods=['GET'])
@@ -512,11 +574,18 @@ def edit_templates():
         tree_format.setdefault(workflow_category, [])
         tree_format[workflow_category].append((workflow_name, workflow_id))
 
-    tree_format_code = tree_dict_to_json(tree_format, tree_type='Template', include_folder_operations=False)
+    tree_format_code = tree_dict_to_json(
+        tree_format, tree_type='Template', include_folder_operations=False, include_rename_operations=False
+    )
+
+    validation_failure_code_dict = get_validation_failure_codes('template')
+
+    validation_failure_code = request.args.get('validation_failure_code')
+    validation_failure_text = validation_failure_code_dict.get(validation_failure_code, '')
 
     return render_template(
         'home/edit-templates.html',
-        validation_error_card=get_validation_error_card(''),
+        validation_error_card=get_validation_error_card(validation_failure_text),
         tree_format_text='',
         tree_format_code=tree_format_code
     )
@@ -552,7 +621,21 @@ def edit_templates_app():
     if template_name and folder_name:
         folder_name = folder_name[0]
         template_name = template_name[0]
-        return render_template('home/edit-templates-app.html', folder_name=folder_name, template_name=template_name)
+        try:
+            template_contents = database_connector.fetch_template(
+                node_parent_type='outreach',
+                node_detail_type='SMSOutreach',
+                workflow_category=folder_name,
+                template_id=template_id
+            )
+        except FileNotFoundError:
+            template_contents = ''
+        return render_template(
+            'home/edit-templates-app.html',
+            folder_name=folder_name,
+            template_name=template_name,
+            template_contents=template_contents
+        )
     else:
         return render_template('home/page-404.html'), 404
 
