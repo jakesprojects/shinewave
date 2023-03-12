@@ -45,20 +45,12 @@ class SMSOutreach(OutreachNode):
 
         selected_template = self.get_property('sms_templates')
 
-        workflow_category = self.template_data[selected_template]['workflow_category']
         template_id = self.template_data[selected_template]['id']
-
-        template_filepath_components = [
-            node_templates_root, self.node_parent_type, self.node_detail_type, workflow_category, str(template_id)
-        ]
-
-        template_filepath = '/'.join(template_filepath_components) + '.txt'
-        with open(template_filepath, 'r') as template_file:
-            template_file_contents = template_file.read()
+        template_contents = self.get_node_template_contents(template_id=template_id)
 
         display_text = f"""
             <h3>SMS Template: {selected_template}</h3>
-            <p>{template_file_contents}</p>
+            <p>{template_contents}</p>
         """
 
         return node_name, display_text

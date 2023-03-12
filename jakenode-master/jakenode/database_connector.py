@@ -1,5 +1,6 @@
 import csv
 import os
+from pathlib import Path
 import sqlite3
 
 import pandas as pd
@@ -8,8 +9,35 @@ import pandas as pd
 APP_HANDLER_PATH = '/srv/node_app'
 APP_DATA_PATH = f'{APP_HANDLER_PATH}/data'
 DATABASE = f'{APP_DATA_PATH}/test_db.db'
+TEMPLATES_PATH = f'{APP_DATA_PATH}/templates'
 
-def run_query(sql, return_data_format=list, commit=False, database_connection_type='sqlite', database=DATABASE, sql_parameters=[]):
+def fetch_template(
+    node_parent_type, node_detail_type, workflow_category, template_id, templates_folder_path=TEMPLATES_PATH
+):
+    template_filepath_components = [
+        templates_folder_path, node_parent_type, node_detail_type, workflow_category, str(template_id)
+    ]
+
+    template_filepath = '/'.join(template_filepath_components) + '.txt'
+    with open(template_filepath, 'r') as template_file:
+        template_file_contents = template_file.read()
+    return template_file_contents
+
+def edit_template(
+    contents, node_parent_type, node_detail_type, workflow_category, template_id, templates_folder_path=TEMPLATES_PATH
+):
+    template_filepath_components = [templates_folder_path, node_parent_type, node_detail_type, workflow_category]
+
+    template_filepath = '/'.join(template_filepath_components)
+    Path(template_filepath).mkdir(parents=True, exist_ok=True)
+    template_filepath += f'{template_id}.txt'
+
+    with open(template_filepath, 'w+') as template_file:
+        template_file.write(contents)
+
+def run_query(
+    sql, return_data_format=list, commit=False, database_connection_type='sqlite', database=DATABASE, sql_parameters=[]
+):
     if database_connection_type == 'sqlite':
         with sqlite3.connect(database) as conn:
             cur = conn.cursor()

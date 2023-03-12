@@ -6,7 +6,7 @@ from NodeGraphQt.constants import ViewerEnum, NodePropWidgetEnum
 from NodeGraphQt.widgets.node_widgets import NodeBaseWidget, NodeLineEdit
 from Qt import QtCore, QtWidgets
 
-from jakenode.database_connector import run_query
+from jakenode.database_connector import fetch_template, run_query
 
 class WorkflowNode(BaseNode):
     """
@@ -68,7 +68,7 @@ class WorkflowNode(BaseNode):
         """
 
         if template_id is not None:
-            lookup_where_clause += f' AND id={template_id}'
+            lookup_where_clause += f' AND t.id={template_id}'
 
         template_data = run_query(
             f"""
@@ -83,6 +83,18 @@ class WorkflowNode(BaseNode):
         )
 
         return template_data
+
+    def get_node_template_contents(self, template_id, workflow_category=None):
+        if workflow_category is None:
+            template_data = self.get_node_template_data(template_id)
+            workflow_category = template_data['workflow_category']
+
+        if isinstance(workflow_category, list) and len(workflow_category) > 0:
+            workflow_category = workflow_category[0]
+        elif not isinstance(workflow_category, str):
+            raise ValueError(f'Workflow data not found for template id {template_id}')
+
+        return fetch_template(self.node_parent_type, self.node_detail_type, workflow_category, template_id)
 
     def get_node_chain(self, direction):
         """
