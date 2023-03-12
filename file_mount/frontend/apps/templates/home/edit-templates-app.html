@@ -18,23 +18,21 @@
 						<div class="card-body">
 							<div class="row">
 								<div class="col">
-									<div class="form-group">
+									<form action="/template_submit" method="post" id="template-form">
 										<label for="basic-url">Template Name</label>
 										<div class="input-group mb-3">
 											<div class="input-group-prepend">
 												<span class="input-group-text" id="basic-addon3">{{ folder_name }}/</span>
 											</div>
-											<input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3" value="{{ template_name }}">
+											<input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3" value="{{ template_name }}" name='template_name'>
 										</div>
-									</div>
-									<div class="form-group">
 										<label for="comment">Template</label>
-										<textarea class="form-control" id="comment" rows="5">{{ template_contents }}</textarea>
-									</div>
-									<div class="card-action">
-										<button class="btn btn-success">Submit</button>
-										<button class="btn btn-danger">Cancel</button>
-									</div>
+										<textarea class="form-control" id="comment" rows="5" name="template_contents">{{ template_contents }}</textarea>
+										<input type="text" id="template_id" name="template_id" style="display:none" value="{{ template_id }}">
+										<input type="text" id="template_type" name="template_type" style="display:none" value="{{ template_type }}">
+										<button type="submit" class="btn btn-success">Submit</button>
+										<button class="btn btn-danger" href="https://www.google.com">Cancel</button>
+									</form>
 								</div>
 							</div>
 						</div>

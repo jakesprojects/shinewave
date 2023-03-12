@@ -194,7 +194,59 @@ def workflow_builder():
         validation_error_card=get_validation_error_card(validation_failure_text)
     )
 
-      
+
+
+@blueprint.route('/template_submit', methods=["GET", "POST"])
+@login_required
+def template_submit():
+    account_id = ACCOUNT_ID
+
+    if request.method == "POST":
+        template_name = request.form.get('template_name')
+        template_contents = request.form.get('template_contents')
+        template_id = request.form.get('template_id')
+        database_connector.run_query(
+            sql="""
+                UPDATE templates
+                SET name = ?
+                WHERE
+                    id = ?
+                    AND account_id = ?
+                    AND active = 'TRUE'
+            """,
+            sql_parameters=[template_name, template_id, account_id],
+            commit=True
+        )
+        template_data = database_connector.run_query(
+            sql="""
+                SELECT
+                    t.template_type,
+                    wc.name AS workflow_category
+                FROM templates t
+                INNER JOIN workflow_categories wc ON t.workflow_category_id=wc.id
+                WHERE
+                    t.name = ?
+                    AND t.id = ?
+                    AND t.account_id = ?
+                    AND t.active = 'TRUE'
+            """,
+            sql_parameters=[template_name, template_id, account_id],
+            return_data_format=dict
+        )
+        template_type = template_data.get('template_type', [None])[0]
+        workflow_category = template_data.get('workflow_category', [None])[0]
+        if template_type and workflow_category:
+            node_master_type, node_parent_type, node_detail_type = template_type.split('.')
+            database_connector.edit_template(
+                contents=template_contents,
+                node_parent_type=node_parent_type,
+                node_detail_type=node_detail_type,
+                workflow_category=workflow_category,
+                template_id=template_id
+            )
+
+    return redirect(url_for('home_blueprint.edit_templates'))
+
 @blueprint.route('/builder_submit', methods=["GET", "POST"])
 @login_required
 def builder_submit():
@@ -206,6 +258,7 @@ def builder_submit():
         submitted_name = request.form.get('submitted_name')
         workflow = request.form.get('workflow')
         template = request.form.get('template')
+        template_type = request.form.get('template_type')
 
         query_library = {
             "Rename Folder": {
@@ -334,16 +387,17 @@ def builder_submit():
             "New Template": {
                 'execution': {
                     'sql': """
-                        INSERT INTO templates (id, account_id, name, workflow_category_id, active)
+                        INSERT INTO templates (id, account_id, template_type, name, workflow_category_id, active)
                         VALUES (
                             (SELECT MAX(id) + 1 FROM templates),
+                            ?,
                             ?,
                             ?,
                             (SELECT id FROM workflow_categories WHERE name = ? AND active = 'TRUE'),
                             'TRUE'
                         )
                     """,
-                    'sql_parameters': (ACCOUNT_ID, submitted_name, folder)
+                    'sql_parameters': (ACCOUNT_ID, template_type, submitted_name, folder)
                 },
                 'validation': {
                     'sql': """
@@ -415,7 +469,9 @@ def builder_submit():
             template_id = get_template_id_by_name(
                 account_id=ACCOUNT_ID, template_name=template, folder_name=folder
             )
-            return redirect(url_for('home_blueprint.edit_templates_app', template_id=template_id))
+            return redirect(
+                url_for('home_blueprint.edit_templates_app', template_id=template_id, template_type=template_type)
+            )
 
     return redirect(url_for(redirect_page))
 
@@ -634,7 +690,8 @@ def edit_templates_app():
             'home/edit-templates-app.html',
             folder_name=folder_name,
             template_name=template_name,
-            template_contents=template_contents
+            template_contents=template_contents,
+            template_id=template_id
         )
     else:
         return render_template('home/page-404.html'), 404
