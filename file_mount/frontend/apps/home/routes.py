@@ -16,7 +16,7 @@ from flask_login import login_required
 from jinja2 import TemplateNotFound
 import requests
 
-from jakenode.database_connector import run_query
+from jakenode import database_connector
 
 ACCOUNT_ID = 1
 APP_HANDLER_PATH = '/srv/node_app/handlers'
@@ -80,7 +80,7 @@ def get_validation_error_card(validation_error_text):
 
 
 def get_workflow_id_by_name(account_id, workflow_name, folder_name):
-    query_results_dict = run_query(
+    query_results_dict = database_connector.run_query(
         """
             SELECT w.id
             FROM workflows w
@@ -103,7 +103,7 @@ def get_workflow_id_by_name(account_id, workflow_name, folder_name):
 
 
 def get_template_id_by_name(account_id, template_name, folder_name):
-    query_results_dict = run_query(
+    query_results_dict = database_connector.run_query(
         """
             SELECT t.id
             FROM templates t
@@ -135,7 +135,7 @@ def index():
 @login_required
 def workflow_builder():
     tree_format = {}
-    workflow_data = run_query(
+    workflow_data = database_connector.run_query(
         f"""
             SELECT
                 wc.name AS workflow_category,
@@ -331,7 +331,7 @@ def builder_submit():
 
         if validation_dict and len(submitted_name) > 150:
             validation_failure_code = 4
-        elif validation_dict and run_query(commit=False, **validation_dict):
+        elif validation_dict and database_connector.run_query(commit=False, **validation_dict):
             validation_failure_code = query_sub_dict['validation_failure_code']
         else:
             validation_failure_code = None
@@ -343,7 +343,7 @@ def builder_submit():
 
         if query_sub_dict:
             execution_dict = query_sub_dict['execution']
-            run_query(commit=True, **execution_dict)
+            database_connector.run_query(commit=True, **execution_dict)
         elif operation == 'Edit' and node_type == 'Workflow':
             workflow_id = get_workflow_id_by_name(
                 account_id=ACCOUNT_ID, workflow_name=workflow, folder_name=folder
@@ -376,7 +376,7 @@ def workflow_builder_reload():
     account_id = ACCOUNT_ID
     workflow_id = request.args.get('workflow_id')
 
-    run_query(
+    database_connector.run_query(
         """
             UPDATE workflow_routes
             SET active = 'FALSE'
@@ -403,7 +403,7 @@ def workflow_builder_reload():
 def workflow_builder_app():
     workflow_id = request.args.get('workflow_id')
     account_id = ACCOUNT_ID
-    workflow_id = run_query(
+    workflow_id = database_connector.run_query(
         f"""
             SELECT
                 id
@@ -490,7 +490,7 @@ def route_template(template):
 @login_required
 def edit_templates():
     tree_format = {}
-    workflow_data = run_query(
+    workflow_data = database_connector.run_query(
         f"""
             SELECT
                 wc.name AS workflow_category,
@@ -528,7 +528,7 @@ def edit_templates():
 def edit_templates_app():
     account_id = ACCOUNT_ID
     template_id = request.args.get('template_id')
-    template_data = run_query(
+    template_data = database_connector.run_query(
         f"""
             SELECT
                 wc.name AS workflow_category,
