@@ -30,7 +30,7 @@ def edit_template(
 
     template_filepath = '/'.join(template_filepath_components)
     Path(template_filepath).mkdir(parents=True, exist_ok=True)
-    template_filepath += f'{template_id}.txt'
+    template_filepath += f'/{template_id}.txt'
 
     with open(template_filepath, 'w+') as template_file:
         template_file.write(contents)
