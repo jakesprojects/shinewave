@@ -140,8 +140,8 @@ def get_template_id_by_name(account_id, template_name, folder_name):
 def index():
     return render_template('home/index.html', segment='index')
 
-@blueprint.route('/workflow-builder.html')
-@blueprint.route('/workflow-builder', methods=["GET"])
+@blueprint.route('/wb-workflow-builder.html')
+@blueprint.route('/wb-workflow-builder', methods=["GET"])
 @login_required
 def workflow_builder():
     tree_format = {}
@@ -188,10 +188,11 @@ def workflow_builder():
     validation_failure_text = validation_failure_code_dict.get(validation_failure_code, '')
 
     return render_template(
-        'home/workflow-builder.html',
+        'home/wb-workflow-builder.html',
         tree_format_text=tree_format_text,
         tree_format_code=tree_format_code,
-        validation_error_card=get_validation_error_card(validation_failure_text)
+        validation_error_card=get_validation_error_card(validation_failure_text),
+        segment=get_segment(request)
     )
 
 
@@ -483,7 +484,8 @@ def workflow_builder_loading_screen():
     workflow_id = request.args.get('workflow_id')
     return render_template(
         'home/wb-loading-screen.html',
-        redirect_url=url_for('home_blueprint.workflow_builder_app', workflow_id=workflow_id)
+        redirect_url=url_for('home_blueprint.workflow_builder_app', workflow_id=workflow_id),
+        segment=get_segment(request)
     )
 
 
@@ -511,12 +513,13 @@ def workflow_builder_reload():
 
     return render_template(
         'home/wb-loading-screen.html',
-        redirect_url=url_for('home_blueprint.workflow_builder_app', workflow_id=workflow_id)
+        redirect_url=url_for('home_blueprint.workflow_builder_app', workflow_id=workflow_id),
+        segment=get_segment(request)
     )
 
 
-@blueprint.route('/workflow-builder-app.html', methods=['GET'])
-@blueprint.route('/workflow-builder-app', methods=['GET'])
+@blueprint.route('/wb-workflow-builder-app.html', methods=['GET'])
+@blueprint.route('/wb-workflow-builder-app', methods=['GET'])
 @login_required
 def workflow_builder_app():
     workflow_id = request.args.get('workflow_id')
@@ -564,11 +567,12 @@ def workflow_builder_app():
         return render_template('home/page-500.html'), 500
     else:
         return render_template(
-            'home/workflow-builder-app.html',
+            'home/wb-workflow-builder-app.html',
             app_server_address=app_server_address,
             xpra_port=xpra_port,
             info_panel_port=info_panel_port,
-            workflow_id=workflow_id
+            workflow_id=workflow_id,
+            segment=get_segment(request)
         )
 
 
@@ -603,8 +607,8 @@ def route_template(template):
         return render_template('home/page-500.html'), 500
 
 
-@blueprint.route('/edit-templates.html', methods=['GET'])
-@blueprint.route('/edit-templates', methods=['GET'])
+@blueprint.route('/et-edit-templates.html', methods=['GET'])
+@blueprint.route('/et-edit-templates', methods=['GET'])
 @login_required
 def edit_templates():
     tree_format = {}
@@ -640,16 +644,17 @@ def edit_templates():
     validation_failure_text = validation_failure_code_dict.get(validation_failure_code, '')
 
     return render_template(
-        'home/edit-templates.html',
+        'home/et-edit-templates.html',
         validation_error_card=get_validation_error_card(validation_failure_text),
         tree_format_text='',
         tree_format_code=tree_format_code,
-        template_type='nodes.outreach.SMSOutreach'
+        template_type='nodes.outreach.SMSOutreach',
+        segment=get_segment(request)
     )
 
 
-@blueprint.route('/edit-templates-app.html', methods=['GET'])
-@blueprint.route('/edit-templates-app', methods=['GET'])
+@blueprint.route('/et-edit-templates-app.html', methods=['GET'])
+@blueprint.route('/et-edit-templates-app', methods=['GET'])
 @login_required
 def edit_templates_app():
     account_id = ACCOUNT_ID
@@ -688,11 +693,12 @@ def edit_templates_app():
         except FileNotFoundError:
             template_contents = ''
         return render_template(
-            'home/edit-templates-app.html',
+            'home/et-edit-templates-app.html',
             folder_name=folder_name,
             template_name=template_name,
             template_contents=template_contents,
-            template_id=template_id
+            template_id=template_id,
+            segment=get_segment(request)
         )
     else:
         return render_template('home/page-404.html'), 404
