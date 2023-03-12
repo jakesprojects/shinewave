@@ -643,7 +643,8 @@ def edit_templates():
         'home/edit-templates.html',
         validation_error_card=get_validation_error_card(validation_failure_text),
         tree_format_text='',
-        tree_format_code=tree_format_code
+        tree_format_code=tree_format_code,
+        template_type='nodes.outreach.SMSOutreach'
     )
 
 
