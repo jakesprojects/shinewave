@@ -611,32 +611,51 @@ def route_template(template):
 @blueprint.route('/et-edit-templates', methods=['GET'])
 @login_required
 def edit_templates():
-    tree_format = {}
-    workflow_data = database_connector.run_query(
-        f"""
-            SELECT
-                wc.name AS workflow_category,
-                t.name,
-                t.id
-            FROM workflow_categories wc
-            LEFT JOIN templates t ON
-                wc.id=t.workflow_category_id
-                AND wc.active=t.active
-            WHERE
-                wc.account_id={ACCOUNT_ID}
-                AND wc.active='TRUE'
-            ORDER BY wc.name, t.name
-        """,
-        return_data_format=list
-    )
+    return render_template_editor(None)
 
-    for workflow_category, workflow_name, workflow_id in workflow_data:
-        tree_format.setdefault(workflow_category, [])
-        tree_format[workflow_category].append((workflow_name, workflow_id))
 
-    tree_format_code = tree_dict_to_json(
-        tree_format, tree_type='Template', include_folder_operations=False, include_rename_operations=False
-    )
+@blueprint.route('/et-edit-sms-templates.html', methods=['GET'])
+@blueprint.route('/et-edit-sms-templates', methods=['GET'])
+@login_required
+def edit_sms_templates():
+    return render_template_editor()
+
+
+def render_template_editor(outbound_template_types=['nodes.outreach.SMSOutreach'], inbound_template_types=[]):
+    account_id = ACCOUNT_ID
+    def _generate_formatted_tree(account_id, template_types):
+        template_type_substitutions = ['?' for i in template_types]
+        template_type_substitutions = ', '.join(template_type_substitutions)
+        template_data = database_connector.run_query(
+            f"""
+                SELECT
+                    wc.name AS workflow_category,
+                    t.name,
+                    t.id
+                FROM workflow_categories wc
+                LEFT JOIN templates t ON
+                    wc.id=t.workflow_category_id
+                    AND wc.active=t.active
+                WHERE
+                    wc.account_id = ?
+                    AND wc.active='TRUE'
+                    AND t.template_type IN ({template_type_substitutions})
+                ORDER BY wc.name, t.name
+            """,
+            sql_parameters=[account_id] + template_types,
+            return_data_format=list
+        )
+
+        tree_format = {}
+        for workflow_category, template_name, template_id in template_data:
+            tree_format.setdefault(workflow_category, [])
+            tree_format[workflow_category].append((template_name, template_id))
+
+        return tree_dict_to_json(
+            tree_format, tree_type='Template', include_folder_operations=False, include_rename_operations=False
+        )
+
+    tree_format_code = _generate_formatted_tree(account_id, outbound_template_types)
 
     validation_failure_code_dict = get_validation_failure_codes('template')
 
