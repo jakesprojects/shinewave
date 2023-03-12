@@ -7,6 +7,11 @@
 {% endblock stylesheets %}
 
 {% block content %}
+<script>
+	function cancelSubmission() {
+		window.location.replace('/edit-templates');
+	}
+</script>
 	<div class="content">
 		<div class="page-inner">
 			<div class="row">
@@ -31,7 +36,7 @@
 										<input type="text" id="template_id" name="template_id" style="display:none" value="{{ template_id }}">
 										<input type="text" id="template_type" name="template_type" style="display:none" value="{{ template_type }}">
 										<button type="submit" class="btn btn-success">Submit</button>
-										<button class="btn btn-danger" href="https://www.google.com">Cancel</button>
+										<button type="button" class="btn btn-danger" onclick="cancelSubmission()">Cancel</button>
 									</form>
 								</div>
 							</div>
