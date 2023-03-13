@@ -73,7 +73,7 @@
 		}
 	</style>
 <script>
-	function openOutboundPopup(data) {
+	function openPopup(data, direction) {
 		var nodePath = "";
 		var node = data.instance.get_node(data.selected[0]);
 		if(node.icon == "jstree-ok") {
@@ -104,45 +104,45 @@
 			if(selectedOperationType == 'Edit' || (selectedOperationType == 'Delete' && selectedNodeType == "Template")) {
 				var folder = data.instance.get_node(parentNode.parent).text;
 				displayText += " " + folder + "/" + parentNode.text
-				document.getElementById("folder").value = folder;
-				document.getElementById("template").value = parentNode.text;
+				document.getElementById(direction + "Folder").value = folder;
+				document.getElementById(direction + "Template").value = parentNode.text;
 			}
 			else if(selectedNodeType == "Folder" && selectedOperationType != "New") {
 				displayText += " " + parentNode.text;
-				document.getElementById("folder").value = parentNode.text;
+				document.getElementById(direction + "Folder").value = parentNode.text;
 			}
 			else if(selectedNodeType != "Folder" && selectedOperationType == "New") {
 				parentNodeDisplayText = parentNode.text + "/...";
-				document.getElementById("folder").value = parentNode.text
+				document.getElementById(direction + "Folder").value = parentNode.text
 			}
 			else if(selectedNodeType != "Folder") {
 				displayText += " " + parentNode.text
 				parentNodeDisplayText = data.instance.get_node(parentNode.parent).text + "/...";
-				document.getElementById("folder").value = data.instance.get_node(parentNode.parent).text
-				document.getElementById("template").value = parentNode.text;
+				document.getElementById(direction + "Folder").value = data.instance.get_node(parentNode.parent).text
+				document.getElementById(direction + "Template").value = parentNode.text;
 			}
 
 			if(selectedOperationType == 'Delete' || selectedOperationType == 'Edit') {
-				document.getElementById("outboundPopupTextField").value = parentNode.text;
+				document.getElementById(direction + "PopupTextField").value = parentNode.text;
 				// document.getElementById("outboundPopupTextField").disabled = true;
-				document.getElementById("outboundPopupTextField").style.display = "none";
-				document.getElementById("outboundPopupSubmitButton").innerHTML = "Confirm";
+				document.getElementById(direction + "PopupTextField").style.display = "none";
+				document.getElementById(direction + "PopupSubmitButton").innerHTML = "Confirm";
 			}
 			else {
 				// document.getElementById("outboundPopupTextField").disabled = false;
-				document.getElementById("outboundPopupTextField").style.display = "block";
-				document.getElementById("outboundPopupSubmitButton").innerHTML = "Submit";
+				document.getElementById(direction + "PopupTextField").style.display = "block";
+				document.getElementById(direction + "PopupSubmitButton").innerHTML = "Submit";
 			}
 
-			document.getElementById("nodeType").value = selectedNodeType;
-			document.getElementById("operation").value = selectedOperationType;
-			document.getElementById("outboundPopup").style.display = "block";
-			document.getElementById("outboundPopupSubHeader").innerHTML = parentNodeDisplayText;
-			document.getElementById("outboundPopupHeader").innerHTML = displayText;
+			document.getElementById(direction + "NodeType").value = selectedNodeType;
+			document.getElementById(direction + "Operation").value = selectedOperationType;
+			document.getElementById(direction + "Popup").style.display = "block";
+			document.getElementById(direction + "PopupSubHeader").innerHTML = parentNodeDisplayText;
+			document.getElementById(direction + "PopupHeader").innerHTML = displayText;
 		}
 	};
-	function closeOutboundPopup() {
-		document.getElementById("outboundPopup").style.display = "none";
+	function closePopup(direction) {
+		document.getElementById(direction + "Popup").style.display = "none";
 	};
 	function formOperation(operationType, operationTarget, parentFolderName, templateName) {
 		// if(operationType == "New") {
@@ -186,7 +186,7 @@
 								$('#evts')
 									.on("changed.jstree", function (e, data) {
 										if(data.selected.length) {
-											openOutboundPopup(data)
+											openPopup(data, 'outbound')
 											// openOutboundPopup(data.instance.get_node(data.instance.get_node(data.selected[0]).parent).text)
 												// data.instance.get_node(data.selected[0]).text)
 										}
@@ -202,13 +202,14 @@
 											<strong id="outboundPopupSubHeader" style="color:black"></strong>
 										</label>
 										<input type="text" id="outboundPopupTextField" placeholder="" name="submitted_name" required>
-										<input type="text" id="operation" placeholder="" name="operation" style="display:none" required>
-										<input type="text" id="nodeType" placeholder="" name="node_type" style="display:none" required>
-										<input type="text" id="folder" placeholder="" name="folder" style="display:none">
-										<input type="text" id="template" placeholder="" name="template" style="display:none">
-										<input type="text" id="template_type" name="template_type" style="display:none" value="{{ outbound_template_type }}">
+										<input type="text" id="outboundOperation" placeholder="" name="operation" style="display:none" required>
+										<input type="text" id="outboundNodeType" placeholder="" name="node_type" style="display:none" required>
+										<input type="text" id="outboundFolder" placeholder="" name="folder" style="display:none">
+										<input type="text" id="outboundTemplate" placeholder="" name="template" style="display:none">
+										<input type="text" id="outboundTemplateType" name="template_type" style="display:none" value="{{ outbound_template_type }}">
+										<input type="text" id="outboundTemplateTypeName" name="template_type_name" style="display:none" value="{{ template_type_name }}">
 										<button type="submit" class="btn" id="outboundPopupSubmitButton"></button>
-										<button type="button" class="btn cancel" onclick="closeOutboundPopup()">Cancel</button>
+										<button type="button" class="btn cancel" onclick="closePopup('outbound')">Cancel</button>
 									</form>
 								</div>
 							</div>
@@ -222,7 +223,46 @@
 							<h4 class="card-title">Inbound {{ template_type_name }} Templates</h4>
 						</div>
 						<div class="card-body">
-							<p>TEST 2</p>
+							<div id="inbound-tree" class="demo">
+								<ul>
+									{{inbound_tree_format_text | safe}}
+								</ul>
+							</div>
+
+							<script>
+								// interaction and events
+								$('#inbound-tree-button').on("click", function () {
+									var instance = $('#inbound-tree').jstree(true);
+									instance.deselect_all();
+									instance.select_node('1');
+								});
+								$('#inbound-tree')
+									.on("changed.jstree", function (e, data) {
+										if(data.selected.length) {
+											openPopup(data, 'inbound')
+										}
+									})
+									.jstree({{ inbound_tree_format_code | safe }});
+							</script>
+							<div class="inboundPopup">
+								<div class="formPopup" id="inboundPopup">
+									<form action="/builder_submit" class="formContainer" method="post">
+										<h2 id="inboundPopupHeader"></h2>
+										<label for="inboundPopupTextField">
+											<strong id="inboundPopupSubHeader" style="color:black"></strong>
+										</label>
+										<input type="text" id="inboundPopupTextField" placeholder="" name="submitted_name" required>
+										<input type="text" id="inboundOperation" placeholder="" name="operation" style="display:none" required>
+										<input type="text" id="inboundNodeType" placeholder="" name="node_type" style="display:none" required>
+										<input type="text" id="inboundFolder" placeholder="" name="folder" style="display:none">
+										<input type="text" id="inboundTemplate" placeholder="" name="template" style="display:none">
+										<input type="text" id="inboundTemplateType" name="template_type" style="display:none" value="{{ inbound_template_type }}">
+										<input type="text" id="inboundTemplateTypeName" name="template_type_name" style="display:none" value="{{ template_type_name }}">
+										<button type="submit" class="btn" id="inboundPopupSubmitButton"></button>
+										<button type="button" class="btn cancel" onclick="closePopup('inbound')">Cancel</button>
+									</form>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>

@@ -206,6 +206,7 @@ def template_submit():
         template_name = request.form.get('template_name')
         template_contents = request.form.get('template_contents')
         template_id = request.form.get('template_id')
+        template_type_name = request.form.get('template_type_name')
         database_connector.run_query(
             sql="""
                 UPDATE templates
@@ -245,8 +246,18 @@ def template_submit():
                 workflow_category=workflow_category,
                 template_id=template_id
             )
+            print(f"""@@@database_connector.edit_template(
+                contents={template_contents},
+                node_parent_type={node_parent_type},
+                node_detail_type={node_detail_type},
+                workflow_category={workflow_category},
+                template_id={template_id}
+                {request.form}
+            )""")
+        else:
+            print('!!!', request.form)
 
-    return redirect(url_for('home_blueprint.edit_templates'))
+    return redirect(url_for(f'home_blueprint.edit_{template_type_name.lower()}_templates'))
 
 @blueprint.route('/builder_submit', methods=["GET", "POST"])
 @login_required
@@ -260,6 +271,7 @@ def builder_submit():
         workflow = request.form.get('workflow')
         template = request.form.get('template')
         template_type = request.form.get('template_type')
+        template_type_name = request.form.get('template_type_name')
 
         query_library = {
             "Rename Folder": {
@@ -434,7 +446,7 @@ def builder_submit():
         if node_type == 'Workflow':
             redirect_page = 'home_blueprint.workflow_builder'
         elif node_type == 'Template':
-            redirect_page = 'home_blueprint.edit_templates'
+            redirect_page = f'home_blueprint.edit_{template_type_name.lower()}_templates'
         else:
             return render_template('home/page-404.html'), 404
 
@@ -471,7 +483,12 @@ def builder_submit():
                 account_id=ACCOUNT_ID, template_name=template, folder_name=folder
             )
             return redirect(
-                url_for('home_blueprint.edit_templates_app', template_id=template_id, template_type=template_type)
+                url_for(
+                    'home_blueprint.edit_templates_app',
+                    template_id=template_id,
+                    template_type=template_type,
+                    template_type_name=template_type_name
+                )
             )
 
     return redirect(url_for(redirect_page))
@@ -607,11 +624,11 @@ def route_template(template):
         return render_template('home/page-500.html'), 500
 
 
-@blueprint.route('/et-edit-templates.html', methods=['GET'])
-@blueprint.route('/et-edit-templates', methods=['GET'])
-@login_required
-def edit_templates():
-    return render_template_editor()
+# @blueprint.route('/et-edit-templates.html', methods=['GET'])
+# @blueprint.route('/et-edit-templates', methods=['GET'])
+# @login_required
+# def edit_templates():
+#     return render_template_editor()
 
 
 @blueprint.route('/et-edit-sms-templates.html', methods=['GET'])
@@ -621,7 +638,7 @@ def edit_sms_templates():
     return render_template_editor()
 
 
-def render_template_editor(template_type_name='SMS', outbound_template_type='nodes.outreach.SMSOutreach', inbound_template_type=''):
+def render_template_editor(template_type_name='SMS', outbound_template_type='nodes.outreach.SMSOutreach', inbound_template_type='nodes.trigger.TemplatizedResponseReceivedTrigger'):
     account_id = ACCOUNT_ID
     def _generate_formatted_tree(account_id, template_type):
         template_data = database_connector.run_query(
@@ -653,7 +670,8 @@ def render_template_editor(template_type_name='SMS', outbound_template_type='nod
             tree_format, tree_type='Template', include_folder_operations=False, include_rename_operations=False
         )
 
-    tree_format_code = _generate_formatted_tree(account_id, outbound_template_type)
+    outbound_tree_format_code = _generate_formatted_tree(account_id, outbound_template_type)
+    inbound_tree_format_code = _generate_formatted_tree(account_id, inbound_template_type)
 
     validation_failure_code_dict = get_validation_failure_codes('template')
 
@@ -664,8 +682,11 @@ def render_template_editor(template_type_name='SMS', outbound_template_type='nod
         'home/et-edit-templates.html',
         validation_error_card=get_validation_error_card(validation_failure_text),
         outbound_tree_format_text='',
-        outbound_tree_format_code=tree_format_code,
+        outbound_tree_format_code=outbound_tree_format_code,
         outbound_template_type='nodes.outreach.SMSOutreach',
+        inbound_tree_format_text='',
+        inbound_tree_format_code=inbound_tree_format_code,
+        inbound_template_type=inbound_template_type,
         template_type_name=template_type_name,
         segment=get_segment(request)
     )
@@ -677,11 +698,13 @@ def render_template_editor(template_type_name='SMS', outbound_template_type='nod
 def edit_templates_app():
     account_id = ACCOUNT_ID
     template_id = request.args.get('template_id')
+    template_type_name = request.args.get('template_type_name')
     template_data = database_connector.run_query(
         f"""
             SELECT
                 wc.name AS workflow_category,
-                t.name AS template_name
+                t.name AS template_name,
+                t.template_type
             FROM workflow_categories wc
             LEFT JOIN templates t ON
                 wc.id=t.workflow_category_id
@@ -697,14 +720,17 @@ def edit_templates_app():
 
     folder_name = template_data.get('workflow_category')
     template_name = template_data.get('template_name')
+    template_type = template_data.get('template_type')
 
-    if template_name and folder_name:
+    if template_name and folder_name and template_type:
         folder_name = folder_name[0]
         template_name = template_name[0]
+        template_type = template_type[0]
+        node_master_type, node_parent_type, node_detail_type = template_type.split('.')
         try:
             template_contents = database_connector.fetch_template(
-                node_parent_type='outreach',
-                node_detail_type='SMSOutreach',
+                node_parent_type=node_parent_type,
+                node_detail_type=node_detail_type,
                 workflow_category=folder_name,
                 template_id=template_id
             )
@@ -716,6 +742,7 @@ def edit_templates_app():
             template_name=template_name,
             template_contents=template_contents,
             template_id=template_id,
+            template_type_name=template_type_name,
             segment=get_segment(request)
         )
     else:
