@@ -112,7 +112,7 @@ def get_workflow_id_by_name(account_id, workflow_name, folder_name):
         return id_list[0]
 
 
-def get_template_id_by_name(account_id, template_name, folder_name):
+def get_template_id_by_name(account_id, template_name, folder_name, template_type):
     query_results_dict = database_connector.run_query(
         """
             SELECT t.id
@@ -125,8 +125,9 @@ def get_template_id_by_name(account_id, template_name, folder_name):
                 AND t.name=?
                 AND wc.name = ?
                 AND t.active = 'TRUE'
+                AND t.template_type = ?
         """,
-        sql_parameters=[account_id, template_name, folder_name],
+        sql_parameters=[account_id, template_name, folder_name, template_type],
         return_data_format=dict
     )
 
@@ -422,8 +423,9 @@ def builder_submit():
                             AND t.name = ?
                             AND wc.name = ?
                             AND t.active = 'TRUE'
+                            AND t.template_type = ?
                     """,
-                    'sql_parameters': (ACCOUNT_ID, submitted_name, folder)
+                    'sql_parameters': (ACCOUNT_ID, submitted_name, folder, template_type)
                 },
                 'validation_failure_code': 2
             },
@@ -480,7 +482,7 @@ def builder_submit():
             return redirect(url_for('home_blueprint.workflow_builder_loading_screen', workflow_id=workflow_id))
         elif operation in ['Edit', 'New'] and node_type == 'Template':
             template_id = get_template_id_by_name(
-                account_id=ACCOUNT_ID, template_name=template, folder_name=folder
+                account_id=ACCOUNT_ID, template_name=template, folder_name=folder, template_type=template_type
             )
             return redirect(
                 url_for(
@@ -635,10 +637,27 @@ def route_template(template):
 @blueprint.route('/et-edit-sms-templates', methods=['GET'])
 @login_required
 def edit_sms_templates():
-    return render_template_editor()
+    return render_template_editor(
+        template_type_name='SMS',
+        outbound_template_type='nodes.outreach.SMSOutreach',
+        inbound_template_type='nodes.trigger.TemplatizedResponseReceivedTrigger',
+        disable_inbound_templates=False
+    )
 
+@blueprint.route('/et-edit-email-templates.html', methods=['GET'])
+@blueprint.route('/et-edit-email-templates', methods=['GET'])
+@login_required
+def edit_email_templates():
+    return render_template_editor(
+        template_type_name='Email',
+        outbound_template_type='nodes.outreach.EmailOutreach',
+        inbound_template_type='',
+        disable_inbound_templates=True
+    )
 
-def render_template_editor(template_type_name='SMS', outbound_template_type='nodes.outreach.SMSOutreach', inbound_template_type='nodes.trigger.TemplatizedResponseReceivedTrigger'):
+def render_template_editor(
+    template_type_name, outbound_template_type, inbound_template_type, disable_inbound_templates
+):
     account_id = ACCOUNT_ID
     def _generate_formatted_tree(account_id, template_type):
         template_data = database_connector.run_query(
@@ -678,17 +697,26 @@ def render_template_editor(template_type_name='SMS', outbound_template_type='nod
     validation_failure_code = request.args.get('validation_failure_code')
     validation_failure_text = validation_failure_code_dict.get(validation_failure_code, '')
 
+    if disable_inbound_templates:
+        edit_inbound_disabled_start = '<!--'
+        edit_inbound_disabled_end = '-->'
+    else:
+        edit_inbound_disabled_start = ''
+        edit_inbound_disabled_end = ''
+
     return render_template(
         'home/et-edit-templates.html',
         validation_error_card=get_validation_error_card(validation_failure_text),
         outbound_tree_format_text='',
         outbound_tree_format_code=outbound_tree_format_code,
-        outbound_template_type='nodes.outreach.SMSOutreach',
+        outbound_template_type=outbound_template_type,
         inbound_tree_format_text='',
         inbound_tree_format_code=inbound_tree_format_code,
         inbound_template_type=inbound_template_type,
         template_type_name=template_type_name,
-        segment=get_segment(request)
+        segment=get_segment(request),
+        edit_inbound_disabled_start=edit_inbound_disabled_start,
+        edit_inbound_disabled_end=edit_inbound_disabled_end
     )
 
 
