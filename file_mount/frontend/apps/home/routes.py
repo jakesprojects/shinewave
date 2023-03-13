@@ -611,7 +611,7 @@ def route_template(template):
 @blueprint.route('/et-edit-templates', methods=['GET'])
 @login_required
 def edit_templates():
-    return render_template_editor(None)
+    return render_template_editor()
 
 
 @blueprint.route('/et-edit-sms-templates.html', methods=['GET'])
