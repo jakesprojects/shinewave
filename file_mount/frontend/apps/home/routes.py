@@ -621,11 +621,9 @@ def edit_sms_templates():
     return render_template_editor()
 
 
-def render_template_editor(outbound_template_types=['nodes.outreach.SMSOutreach'], inbound_template_types=[]):
+def render_template_editor(template_type_name='SMS', outbound_template_type='nodes.outreach.SMSOutreach', inbound_template_type=''):
     account_id = ACCOUNT_ID
-    def _generate_formatted_tree(account_id, template_types):
-        template_type_substitutions = ['?' for i in template_types]
-        template_type_substitutions = ', '.join(template_type_substitutions)
+    def _generate_formatted_tree(account_id, template_type):
         template_data = database_connector.run_query(
             f"""
                 SELECT
@@ -636,13 +634,13 @@ def render_template_editor(outbound_template_types=['nodes.outreach.SMSOutreach'
                 LEFT JOIN templates t ON
                     wc.id=t.workflow_category_id
                     AND wc.active=t.active
+                    AND t.template_type = ?
                 WHERE
                     wc.account_id = ?
                     AND wc.active='TRUE'
-                    AND t.template_type IN ({template_type_substitutions})
                 ORDER BY wc.name, t.name
             """,
-            sql_parameters=[account_id] + template_types,
+            sql_parameters=[template_type, account_id],
             return_data_format=list
         )
 
@@ -655,7 +653,7 @@ def render_template_editor(outbound_template_types=['nodes.outreach.SMSOutreach'
             tree_format, tree_type='Template', include_folder_operations=False, include_rename_operations=False
         )
 
-    tree_format_code = _generate_formatted_tree(account_id, outbound_template_types)
+    tree_format_code = _generate_formatted_tree(account_id, outbound_template_type)
 
     validation_failure_code_dict = get_validation_failure_codes('template')
 
@@ -665,9 +663,10 @@ def render_template_editor(outbound_template_types=['nodes.outreach.SMSOutreach'
     return render_template(
         'home/et-edit-templates.html',
         validation_error_card=get_validation_error_card(validation_failure_text),
-        tree_format_text='',
-        tree_format_code=tree_format_code,
-        template_type='nodes.outreach.SMSOutreach',
+        outbound_tree_format_text='',
+        outbound_tree_format_code=tree_format_code,
+        outbound_template_type='nodes.outreach.SMSOutreach',
+        template_type_name=template_type_name,
         segment=get_segment(request)
     )
 

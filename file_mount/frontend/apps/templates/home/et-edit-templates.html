@@ -73,7 +73,7 @@
 		}
 	</style>
 <script>
-	function openGenericPopup(data) {
+	function openOutboundPopup(data) {
 		var nodePath = "";
 		var node = data.instance.get_node(data.selected[0]);
 		if(node.icon == "jstree-ok") {
@@ -123,26 +123,26 @@
 			}
 
 			if(selectedOperationType == 'Delete' || selectedOperationType == 'Edit') {
-				document.getElementById("genericPopupTextField").value = parentNode.text;
-				// document.getElementById("genericPopupTextField").disabled = true;
-				document.getElementById("genericPopupTextField").style.display = "none";
-				document.getElementById("genericPopupSubmitButton").innerHTML = "Confirm";
+				document.getElementById("outboundPopupTextField").value = parentNode.text;
+				// document.getElementById("outboundPopupTextField").disabled = true;
+				document.getElementById("outboundPopupTextField").style.display = "none";
+				document.getElementById("outboundPopupSubmitButton").innerHTML = "Confirm";
 			}
 			else {
-				// document.getElementById("genericPopupTextField").disabled = false;
-				document.getElementById("genericPopupTextField").style.display = "block";
-				document.getElementById("genericPopupSubmitButton").innerHTML = "Submit";
+				// document.getElementById("outboundPopupTextField").disabled = false;
+				document.getElementById("outboundPopupTextField").style.display = "block";
+				document.getElementById("outboundPopupSubmitButton").innerHTML = "Submit";
 			}
 
 			document.getElementById("nodeType").value = selectedNodeType;
 			document.getElementById("operation").value = selectedOperationType;
-			document.getElementById("genericPopup").style.display = "block";
-			document.getElementById("genericPopupSubHeader").innerHTML = parentNodeDisplayText;
-			document.getElementById("genericPopupHeader").innerHTML = displayText;
+			document.getElementById("outboundPopup").style.display = "block";
+			document.getElementById("outboundPopupSubHeader").innerHTML = parentNodeDisplayText;
+			document.getElementById("outboundPopupHeader").innerHTML = displayText;
 		}
 	};
-	function closeGenericPopup() {
-		document.getElementById("genericPopup").style.display = "none";
+	function closeOutboundPopup() {
+		document.getElementById("outboundPopup").style.display = "none";
 	};
 	function formOperation(operationType, operationTarget, parentFolderName, templateName) {
 		// if(operationType == "New") {
@@ -164,88 +164,65 @@
 	<div class="content">
 		<div class="page-inner">
 			<div class="row">
-				<div class="col">
-					{{ validation_error_card | safe}}
+				<div class="col-md-6">
 					<div class="card">
 						<div class="card-header">
-							<h4 class="card-title">Edit Templates</h4>
+							<h4 class="card-title">Outbound {{ template_type_name }} Templates</h4>
 						</div>
 						<div class="card-body">
-							<div class="row">
-								<div class="col-5 col-md-4">
-									<div class="nav flex-column nav-pills nav-secondary" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-										<a class="nav-link active" id="v-pills-email-tab" data-toggle="pill" href="#v-pills-email" role="tab" aria-controls="v-pills-email" aria-selected="true">Email Templates</a>
-										<a class="nav-link" id="v-pills-sms-tab" data-toggle="pill" href="#v-pills-sms" role="tab" aria-controls="v-pills-sms" aria-selected="false">SMS Templates</a>
-									</div>
-								</div>
-								<div class="col-7 col-md-8">
-									<div class="tab-content" id="v-pills-tabContent">
-										<div class="tab-pane fade show active" id="v-pills-email" role="tabpanel" aria-labelledby="v-pills-email-tab">
-											<h1>Email Templates</h1>
-										</div>
-										<div class="tab-pane fade" id="v-pills-sms" role="tabpanel" aria-labelledby="v-pills-sms-tab">
-											<ul class="nav nav-pills nav-secondary" id="pills-tab" role="tablist">
-													<li class="nav-item">
-														<a class="nav-link active" id="pills-outbound-sms-tab" data-toggle="pill" href="#pills-outbound-sms" role="tab" aria-controls="pills-outbound-sms" aria-selected="true">Outbound</a>
-													</li>
-													<li class="nav-item">
-														<a class="nav-link" id="pills-inbound-sms-tab" data-toggle="pill" href="#pills-inbound-sms" role="tab" aria-controls="pills-inbound-sms" aria-selected="false">Inbound</a>
-													</li>
-											</ul>
-											<div class="tab-content mt-2 mb-3" id="pills-tabContent">
-												<div class="tab-pane fade show active" id="pills-outbound-sms" role="tabpanel" aria-labelledby="pills-outbound-sms-tab">
-													<div id="evts" class="demo">
-														<ul>
-															{{tree_format_text | safe}}
-														</ul>
-													</div>
+							<div id="evts" class="demo">
+								<ul>
+									{{outbound_tree_format_text | safe}}
+								</ul>
+							</div>
 
-													<script>
-														// interaction and events
-														$('#evts_button').on("click", function () {
-															var instance = $('#evts').jstree(true);
-															instance.deselect_all();
-															instance.select_node('1');
-														});
-														$('#evts')
-															.on("changed.jstree", function (e, data) {
-																if(data.selected.length) {
-																	openGenericPopup(data)
-																	// openGenericPopup(data.instance.get_node(data.instance.get_node(data.selected[0]).parent).text)
-																		// data.instance.get_node(data.selected[0]).text)
-																}
-															})
-															.jstree({{ tree_format_code | safe }});
-													</script>
-												</div>
-												<div class="tab-pane fade" id="pills-inbound-sms" role="tabpanel" aria-labelledby="pills-inbound-sms-tab">
-													<p>Inbound dude!</p>
-												</div>
-											</div>
-										</div>
-										<!-- Begin Edit Files Forms -->
-										<div class="genericPopup">
-											<div class="formPopup" id="genericPopup">
-												<form action="/builder_submit" class="formContainer" method="post">
-													<h2 id="genericPopupHeader"></h2>
-													<label for="genericPopupTextField">
-														<strong id="genericPopupSubHeader" style="color:black"></strong>
-													</label>
-													<input type="text" id="genericPopupTextField" placeholder="" name="submitted_name" required>
-													<input type="text" id="operation" placeholder="" name="operation" style="display:none" required>
-													<input type="text" id="nodeType" placeholder="" name="node_type" style="display:none" required>
-													<input type="text" id="folder" placeholder="" name="folder" style="display:none">
-													<input type="text" id="template" placeholder="" name="template" style="display:none">
-													<input type="text" id="template_type" name="template_type" style="display:none" value="{{ template_type }}">
-													<button type="submit" class="btn" id="genericPopupSubmitButton"></button>
-													<button type="button" class="btn cancel" onclick="closeGenericPopup()">Cancel</button>
-												</form>
-											</div>
-										</div>
-										<!-- End Edit Files Forms -->
-									</div>
+							<script>
+								// interaction and events
+								$('#evts_button').on("click", function () {
+									var instance = $('#evts').jstree(true);
+									instance.deselect_all();
+									instance.select_node('1');
+								});
+								$('#evts')
+									.on("changed.jstree", function (e, data) {
+										if(data.selected.length) {
+											openOutboundPopup(data)
+											// openOutboundPopup(data.instance.get_node(data.instance.get_node(data.selected[0]).parent).text)
+												// data.instance.get_node(data.selected[0]).text)
+										}
+									})
+									.jstree({{ outbound_tree_format_code | safe }});
+							</script>
+							<!-- Begin Edit Files Forms -->
+							<div class="outboundPopup">
+								<div class="formPopup" id="outboundPopup">
+									<form action="/builder_submit" class="formContainer" method="post">
+										<h2 id="outboundPopupHeader"></h2>
+										<label for="outboundPopupTextField">
+											<strong id="outboundPopupSubHeader" style="color:black"></strong>
+										</label>
+										<input type="text" id="outboundPopupTextField" placeholder="" name="submitted_name" required>
+										<input type="text" id="operation" placeholder="" name="operation" style="display:none" required>
+										<input type="text" id="nodeType" placeholder="" name="node_type" style="display:none" required>
+										<input type="text" id="folder" placeholder="" name="folder" style="display:none">
+										<input type="text" id="template" placeholder="" name="template" style="display:none">
+										<input type="text" id="template_type" name="template_type" style="display:none" value="{{ outbound_template_type }}">
+										<button type="submit" class="btn" id="outboundPopupSubmitButton"></button>
+										<button type="button" class="btn cancel" onclick="closeOutboundPopup()">Cancel</button>
+									</form>
 								</div>
 							</div>
+							<!-- End Edit Files Forms -->
+						</div>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="card">
+						<div class="card-header">
+							<h4 class="card-title">Inbound {{ template_type_name }} Templates</h4>
+						</div>
+						<div class="card-body">
+							<p>TEST 2</p>
 						</div>
 					</div>
 				</div>
