@@ -28,6 +28,8 @@ class WorkflowNode(BaseNode):
     ):
         super(WorkflowNode, self).__init__()
 
+        self.allow_forced_template_id_changes = True
+
         if has_output:
             self.add_output('output', multi_output=True)
         if has_input:
@@ -134,26 +136,6 @@ class WorkflowNode(BaseNode):
     def get_downstream_nodes(self):
         return self.get_node_chain('downstream')
 
-
-    def load_templates(self):
-        """
-            Dummy method to prevent breakages if this is called on node types that don't support it
-        """
-        pass
-
-    def validate_node(self):
-        """
-            Dummy method to prevent breakages if this is called on node types that don't need to be validated
-        """
-        pass
-
-    def get_display_info(self, node_templates_root=None):
-        """
-            Dummy method to prevent breakages if this is called on node types that don't support it
-        """
-        return '', ''
-
-
     def validate_has_upstream_trigger(self, custom_error_message=None):
         if not custom_error_message:
             error_message = 'Node is orphaned (lacks an upstream trigger node).'
@@ -175,6 +157,32 @@ class WorkflowNode(BaseNode):
         downstream_node_parent_types = [i.node_parent_type for i in downstream_nodes]
         if 'outreach' not in downstream_node_parent_types:
             raise ValueError(error_message)
+
+    def safe_set_property(self, property_name, value):
+        """
+        """
+        if self.has_property(property_name):
+            self.set_property(property_name, value)
+        else:
+            self.create_property(property_name, value)
+
+
+    # Dummy methods to prevent breakages if methods are called on node types that don't support them
+
+    def get_display_info(self, node_templates_root=None):
+        return '', ''
+
+    def load_templates(self):
+        pass
+
+    def set_template_id_from_name(self):
+        pass
+
+    def set_template_name_from_id(self):
+        pass
+
+    def validate_node(self):
+        pass
 
 
 class NodeTextEdit(NodeBaseWidget):

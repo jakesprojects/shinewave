@@ -25,6 +25,7 @@ class GraphHandler(NodeGraph):
         if (datetime.now() - self.init_time).seconds > self.display_delay_seconds:
             for sub_node in self.all_nodes():
                 if sub_node.view.isSelected():
+                    sub_node.set_template_id_from_name()
                     self.display_node_info(sub_node)
 
     def handle_property_change(self, node):
@@ -32,6 +33,7 @@ class GraphHandler(NodeGraph):
             if node.view.isSelected():
                 properties = node.properties()
                 node_type = properties.get('type_')
+                node.set_template_id_from_name()
                 self.display_node_info(node)
 
     def display_node_info(self, node):
@@ -122,9 +124,13 @@ class GraphHandler(NodeGraph):
             node_custom_properties = details['custom']
 
             node = self.create_node(node_type=node_type, name=node_name)
-            print()
+
+            node.allow_forced_template_id_changes = False
             for prop_name, prop_value in node_custom_properties.items():
-                node.set_property(prop_name, prop_value)
+                node.safe_set_property(prop_name, prop_value)
+
+            node.set_template_name_from_id()
+            node.allow_forced_template_id_changes = True
 
             prior_nodes[object_id] = node
 

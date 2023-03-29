@@ -29,6 +29,27 @@ class SMSOutreach(OutreachNode):
             'sms_templates', 'SMS Templates', items=[''] + list(self.template_data.keys())
         )
 
+
+    def set_template_id_from_name(self):
+        if not self.allow_forced_template_id_changes:
+            return None
+
+        template_name = self.get_property('sms_templates')
+        template_details = self.template_data.get(template_name, {})
+        if template_details:
+            template_id = template_details['id']
+            self.safe_set_property('template_id', template_id)
+
+    def set_template_name_from_id(self):
+        template_id = self.get_property('template_id')
+        print('~~~Setting name for id:', template_id)
+        if template_id:
+            for template_name, template_details in self.template_data.items():
+                if template_details['id'] == template_id:
+                    print('~~~Setting to:', template_name)
+                    self.set_property('sms_templates', template_name)
+                    return None
+
     def get_display_info(self, node_templates_root='./data/templates'):
         """
             Broadcasts the info to be displayed in the display_window. Output should be a tuple composed of:
