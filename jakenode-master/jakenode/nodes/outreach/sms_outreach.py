@@ -42,11 +42,9 @@ class SMSOutreach(OutreachNode):
 
     def set_template_name_from_id(self):
         template_id = self.get_property('template_id')
-        print('~~~Setting name for id:', template_id)
         if template_id:
             for template_name, template_details in self.template_data.items():
                 if template_details['id'] == template_id:
-                    print('~~~Setting to:', template_name)
                     self.set_property('sms_templates', template_name)
                     return None
 
