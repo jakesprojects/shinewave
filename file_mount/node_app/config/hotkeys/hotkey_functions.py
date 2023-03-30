@@ -272,7 +272,7 @@ def add_node_api_outreach(graph):
 
 
 def add_node_email_outreach(graph):
-    pass
+    graph.create_node('nodes.outreach.EmailOutreach')
 
 
 def add_node_ivr_outreach(graph):
@@ -284,7 +284,7 @@ def add_node_sms_outreach(graph):
 
 
 def add_node_workflow_change_outreach(graph):
-    pass
+    graph.create_node('nodes.outreach.WorkflowChange')
 
 
 # TRIGGER NODE CREATION FUNCTIONS

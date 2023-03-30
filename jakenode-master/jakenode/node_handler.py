@@ -1,12 +1,12 @@
-import sqlite3
-
+from jakenode.nodes.outreach.email_outreach import EmailOutreach
+from jakenode.nodes.outreach.sms_outreach import SMSOutreach
+from jakenode.nodes.outreach.workflow_change import WorkflowChange
 from jakenode.nodes.trigger.api_trigger import APITrigger
 from jakenode.nodes.trigger.at_time_trigger import AtTimeTrigger
 from jakenode.nodes.trigger.time_elapsed_trigger import TimeElapsedTrigger
-from jakenode.nodes.outreach.sms_outreach import SMSOutreach
 
 def fetch_all_node_types():
-	return [APITrigger, AtTimeTrigger, TimeElapsedTrigger, SMSOutreach]
+	return [APITrigger, AtTimeTrigger, TimeElapsedTrigger, EmailOutreach, SMSOutreach, WorkflowChange]
 
 
 def fetch_node_display_info(node):
