@@ -46,7 +46,9 @@ def run_node_app(
     graph_widget.resize(900, 600)
     graph_widget.show()
 
-    graph.set_account_properties(account_id=account_id, workflow_category_id=workflow_category_id)
+    graph.set_account_properties(
+        account_id=account_id, workflow_category_id=workflow_category_id, workflow_id=workflow_id
+    )
 
     # fit nodes to the viewer.
     graph.clear_selection()

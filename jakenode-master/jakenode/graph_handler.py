@@ -6,7 +6,9 @@ from NodeGraphQt import NodeGraph
 
 class GraphHandler(NodeGraph):
 
-    def __init__(self, queue=None, socketio=None, parent=None, account_id=None, workflow_category_id=None):
+    def __init__(
+        self, queue=None, socketio=None, parent=None, account_id=None, workflow_category_id=None, workflow_id=None
+    ):
         self.queue = queue
         self.socketio = socketio
         self.init_time = datetime.now()
@@ -16,7 +18,9 @@ class GraphHandler(NodeGraph):
         # wire signal.
         self.node_selection_changed.connect(self.handle_node_selected)
         self.property_changed.connect(self.handle_property_change)
-        self.set_account_properties(account_id=account_id, workflow_category_id=workflow_category_id)
+        self.set_account_properties(
+            account_id=account_id, workflow_category_id=workflow_category_id, workflow_id=workflow_id
+        )
 
         node_types = node_handler.fetch_all_node_types()
         self.register_nodes(node_types)
@@ -48,9 +52,10 @@ class GraphHandler(NodeGraph):
         else:
             print(title, description)
 
-    def set_account_properties(self, account_id, workflow_category_id):
+    def set_account_properties(self, account_id, workflow_category_id, workflow_id):
         self.account_id = account_id
         self.workflow_category_id = workflow_category_id
+        self.workflow_id = workflow_id
 
     def create_node(
         self,
@@ -77,6 +82,7 @@ class GraphHandler(NodeGraph):
 
         node.set_account_id(account_id=self.account_id)
         node.set_workflow_category_id(workflow_category_id=self.workflow_category_id)
+        node.set_workflow_id(workflow_id=self.workflow_id)
         node.load_templates()
 
         return node

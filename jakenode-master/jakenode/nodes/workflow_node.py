@@ -37,6 +37,7 @@ class WorkflowNode(BaseNode):
 
         self.set_account_id()
         self.set_workflow_category_id()
+        self.set_workflow_id()
 
         node_type = self.get_property('type_')
 
@@ -47,6 +48,9 @@ class WorkflowNode(BaseNode):
 
     def set_workflow_category_id(self, workflow_category_id=None):
         self.workflow_category_id = workflow_category_id
+
+    def set_workflow_id(self, workflow_id=None):
+        self.workflow_id = workflow_id
 
     def get_node_name(self, html_safe=False):
         node_name = self.get_property('name')
