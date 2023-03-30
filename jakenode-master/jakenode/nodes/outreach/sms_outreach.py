@@ -26,7 +26,7 @@ class SMSOutreach(OutreachNode):
             self.template_data[template_name] = individual_template_dict
 
         self.add_combo_menu(
-            'sms_templates', 'SMS Templates', items=[''] + list(self.template_data.keys())
+            'sms_templates', 'SMS Templates', items=['' * 15] + list(self.template_data.keys())
         )
 
 
@@ -82,7 +82,7 @@ class SMSOutreach(OutreachNode):
             raise ValueError(
                 'Template data is not set. Ensure that at least one SMS template exists for this workflow category.'
             )
-        elif self.get_property('sms_templates') == '':
+        elif self.get_property('sms_templates').strip() == '':
             raise ValueError('An SMS template has not been selected for this node.')
 
 
