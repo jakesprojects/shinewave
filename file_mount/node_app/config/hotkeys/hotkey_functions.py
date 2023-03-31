@@ -321,4 +321,4 @@ def add_node_workflow_change_trigger(graph):
     pass
 
 def save_to_database(graph):
-    graph.save_session_to_database()
+    graph.save_graph_to_database()

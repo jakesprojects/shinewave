@@ -163,7 +163,7 @@ class GraphHandler(NodeGraph):
         return json.dumps(blank_json)
 
 
-    def save_session_to_database(self):
+    def save_graph_to_database(self):
         max_id = run_query(
             f"""
                 SELECT
