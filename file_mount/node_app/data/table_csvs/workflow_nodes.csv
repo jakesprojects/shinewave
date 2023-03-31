@@ -1,0 +1,2 @@
+id,workflow_id,workflow_version,object_id,node_type,inputs,outputs,custom_data,active
+INTEGER,INTEGER,INTEGER,TEXT,TEXT,TEXT,TEXT,TEXT,TEXT
