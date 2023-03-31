@@ -30,6 +30,13 @@
         "file":"./config/hotkeys/hotkey_functions.py",
         "function_name":"save_session_as",
         "shortcut":"Ctrl+Shift+S"
+      },
+      {
+        "type":"command",
+        "label":"Save to Database",
+        "file":"./config/hotkeys/hotkey_functions.py",
+        "function_name":"save_to_database",
+        "shortcut":""
       }
     ]
   },

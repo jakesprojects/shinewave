@@ -319,3 +319,6 @@ def add_node_time_elapsed_trigger(graph):
 
 def add_node_workflow_change_trigger(graph):
     pass
+
+def save_to_database(graph):
+    graph.save_session_to_database()

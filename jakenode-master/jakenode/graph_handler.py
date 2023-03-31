@@ -1,7 +1,9 @@
 from datetime import datetime
+from itertools import chain
 import json
 
 from jakenode import node_handler
+from jakenode.database_connector import run_query
 from NodeGraphQt import NodeGraph
 
 class GraphHandler(NodeGraph):
@@ -159,3 +161,86 @@ class GraphHandler(NodeGraph):
         }
 
         return json.dumps(blank_json)
+
+
+    def save_session_to_database(self):
+        max_id = run_query(
+            f"""
+                SELECT
+                    COALESCE(MAX(id), 0) as max_id
+                FROM workflow_nodes
+            """,
+            return_data_format=dict
+        )
+        current_id = max_id['max_id'][0]
+
+        max_version = run_query(
+            f"""
+                SELECT
+                    COALESCE(MAX(workflow_version), 0) as max_version
+                FROM workflow_nodes
+                WHERE workflow_id = ?
+            """,
+            sql_parameters=[self.workflow_id],
+            return_data_format=dict
+        )
+        workflow_version = max_version['max_version'][0] + 1
+
+        node_property_aliases = {'object_id': 'id', 'node_type': 'type_', 'custom_data': 'custom'}
+        node_methods = {'inputs': 'connected_input_nodes', 'outputs': 'connected_output_nodes'}
+        fixed_columns = {'workflow_id': self.workflow_id, 'workflow_version': workflow_version, 'active': 'TRUE'}
+        data_columns = list(chain(node_property_aliases, node_methods, fixed_columns))
+        data_columns += ['id']
+        data_rows = []
+
+        for node in self.all_nodes():
+            current_row = []
+            current_id += 1
+            node_properties = node.properties()
+            for column_name in data_columns:
+                if column_name in node_property_aliases:
+                    alias = node_property_aliases[column_name]
+                    property_value = node_properties.get(alias)
+                elif column_name in node_methods:
+                    connected_node_method = getattr(node, node_methods[column_name])
+                    connected_nodes = connected_node_method()
+                    connected_nodes = chain(*connected_nodes.values())
+                    property_value = [i.get_property('id') for i in connected_nodes]
+                elif column_name in fixed_columns:
+                    property_value = fixed_columns[column_name]
+                elif column_name == 'id':
+                    property_value = current_id
+                else:
+                    property_value = None
+
+                if type(property_value) in (dict, list):
+                    property_value = json.dumps(property_value)
+
+                current_row.append(property_value)
+            data_rows.append(current_row)
+
+        if not data_rows:
+            return None
+
+        insert_parameters = []
+        data_placeholder = ['?'] * len(data_columns)
+        data_placeholder = ', '.join(data_placeholder)
+        data_placeholder = f'\n({data_placeholder}),'
+        insert_statement = 'INSERT INTO workflow_nodes ('
+        insert_statement += ', '.join(data_columns)
+        insert_statement += ') VALUES'
+        for row in data_rows:
+            insert_statement += data_placeholder
+            insert_parameters += row
+        insert_statement = insert_statement[:-1]
+
+        run_query(
+            """
+                UPDATE workflow_nodes
+                SET active = 'FALSE'
+                WHERE workflow_id = ?
+            """,
+            sql_parameters=[self.workflow_id],
+            commit=True
+        )
+        run_query(insert_statement, sql_parameters=insert_parameters, commit=True)
