@@ -317,3 +317,33 @@ class GraphHandler(NodeGraph):
             for input_object_id in input_object_list:
                 upstream_node = prior_nodes[input_object_id]
                 node.set_input(0, upstream_node.output(0))
+
+    def get_entry_points(self):
+        entry_points = []
+        for node in self.all_nodes():
+            if not node.connected_input_nodes():
+                entry_points.append(node)
+        return entry_points
+
+    def get_paths(self):
+        def _get_paths(explored_paths, unexplored_paths):
+            if unexplored_paths:
+                current_path = unexplored_paths.pop(0)
+                current_node = current_path[-1]
+                output_nodes = current_node.connected_output_nodes().values()
+                children = list(chain(*output_nodes))
+                if children:
+                    for child in children:
+                        unexplored_paths.append(current_path + [child])
+                    current_path = []
+                else:
+                    explored_paths.append(current_path)
+                    current_path = []
+            if unexplored_paths:
+                return _get_paths(explored_paths, unexplored_paths)
+            else:
+                return explored_paths
+
+        entry_points = self.get_entry_points()
+        
+        return _get_paths([], [entry_points])
