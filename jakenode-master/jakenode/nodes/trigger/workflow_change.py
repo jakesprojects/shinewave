@@ -26,11 +26,6 @@ class InboundWorkflowChange(TriggerNode):
 
         node_name = self.get_node_name(html_safe=True)
 
-        # try:
-        #     self.validate_has_template_selected()
-        # except ValueError as exception:
-        #     return node_name, f'<p style="background-color:red;">{exception}</p>'
-
         selected_template = self.get_property('workflow_templates')
 
         display_text = f"""

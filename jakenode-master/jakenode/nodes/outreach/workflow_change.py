@@ -23,18 +23,6 @@ class OutboundWorkflowChange(OutreachNode):
         if self.workflow_category_id is None:
             raise AttributeError('workflow_category_id has not been set.')
 
-        # lookup_where_clause = f"""
-        #     WHERE
-        #         account_id = ?
-        #         AND id != ?
-        #         AND active = 'TRUE'
-        # """
-
-        # if template_id is not None:
-        #     lookup_where_clause += f' AND id = {template_id}'
-        # else:
-        #     lookup_where_clause += f'-- AND id != {template_id}'
-
         template_data = run_query(
             f"""
                 SELECT
