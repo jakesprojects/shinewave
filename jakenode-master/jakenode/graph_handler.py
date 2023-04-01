@@ -94,12 +94,28 @@ class GraphHandler(NodeGraph):
         graph_empty = True
         compiled_error_msg = ['The following validation errors occurred:']
 
+        unique_nodes = ['nodes.trigger.InboundWorkflowChange']
+        unique_node_registry = {}
+
         for node in self.all_nodes():
             graph_empty = False
+
+            node_type = node.get_property('type_')
+            if node_type in unique_nodes:
+                unique_node_registry.setdefault(node_type, [])
+                unique_node_registry[node_type].append(node.name())
+
             try:
                 node.validate_node()
             except ValueError as e:
                 validation_errors[node.name()] = str(e)
+
+        for node_type, node_name_list in unique_node_registry.items():
+            node_count = len(node_name_list)
+            if node_count > 1:
+                for node_name in node_name_list:
+                    validation_errors[node_name] = 'Only one node of this type is allowed, but '
+                    validation_errors[node_name] += f'{node_count} were found in workflow.'
 
         if graph_empty:
             compiled_error_msg.append('The workspace is empty.')
@@ -277,7 +293,10 @@ class GraphHandler(NodeGraph):
 
             inputs = json.loads(inputs)
             outputs = json.loads(outputs)
-            node_custom_properties = json.loads(node_custom_properties)
+            if node_custom_properties:
+                node_custom_properties = json.loads(node_custom_properties)
+            else:
+                node_custom_properties = {}
 
             node = self.create_node(node_type=node_type, name=node_name)
 

@@ -284,7 +284,7 @@ def add_node_sms_outreach(graph):
 
 
 def add_node_workflow_change_outreach(graph):
-    graph.create_node('nodes.outreach.WorkflowChange')
+    graph.create_node('nodes.outreach.OutboundWorkflowChange')
 
 
 # TRIGGER NODE CREATION FUNCTIONS
@@ -318,7 +318,17 @@ def add_node_time_elapsed_trigger(graph):
 
 
 def add_node_workflow_change_trigger(graph):
-    pass
+    graph.create_node('nodes.trigger.InboundWorkflowChange')
 
 def save_to_database(graph):
-    graph.save_graph_to_database()
+    try:
+        graph.validate_nodes()
+        graph.save_graph_to_database()
+        viewer = graph.viewer()
+        viewer.message_dialog('Save Successful!', title='Workflow Saved')
+    except ValueError as e:
+        msg = "Changes could not be saved.\n\n"
+        msg += str(e)
+        msg += '\n\nCorrect these errors and try again.'
+        viewer = graph.viewer()
+        viewer.message_dialog(msg, title='Save Failed')

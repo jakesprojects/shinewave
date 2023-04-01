@@ -1,7 +1,7 @@
 from jakenode.database_connector import run_query
 from jakenode.nodes.outreach.outreach_node import OutreachNode
 
-class WorkflowChange(OutreachNode):
+class OutboundWorkflowChange(OutreachNode):
     """
     """
 
@@ -9,10 +9,10 @@ class WorkflowChange(OutreachNode):
     __identifier__ = 'nodes.outreach'
 
     # initial default node name.
-    NODE_NAME = 'Workflow Change'
+    NODE_NAME = 'Outbound Workflow Change'
 
     def __init__(self):
-        super(WorkflowChange, self).__init__(has_output=True)
+        super(OutboundWorkflowChange, self).__init__(has_output=False)
 
         self.template_data = {}
         self.set_property('color', (255, 203, 203))
@@ -23,18 +23,17 @@ class WorkflowChange(OutreachNode):
         if self.workflow_category_id is None:
             raise AttributeError('workflow_category_id has not been set.')
 
-        lookup_where_clause = f"""
-            WHERE
-                account_id = {self.account_id}
-                -- NOT IMPLEMENTED: prevent self-reference via workflow_id
-                -- AND id != {self.workflow_category_id}
-                AND active = 'TRUE'
-        """
+        # lookup_where_clause = f"""
+        #     WHERE
+        #         account_id = ?
+        #         AND id != ?
+        #         AND active = 'TRUE'
+        # """
 
-        if template_id is not None:
-            lookup_where_clause += f' AND id = {template_id}'
-        else:
-            lookup_where_clause += f'-- AND id != {template_id}'
+        # if template_id is not None:
+        #     lookup_where_clause += f' AND id = {template_id}'
+        # else:
+        #     lookup_where_clause += f'-- AND id != {template_id}'
 
         template_data = run_query(
             f"""
@@ -42,8 +41,12 @@ class WorkflowChange(OutreachNode):
                     NULL AS workflow_category,
                     *
                 FROM workflows
-                {lookup_where_clause}
+                WHERE
+                    account_id = ?
+                    AND id != ?
+                    AND active = 'TRUE'
             """,
+            sql_parameters=[self.account_id, self.workflow_id],
             return_data_format=dict
         )
 
@@ -98,7 +101,7 @@ class WorkflowChange(OutreachNode):
         selected_template = self.get_property('workflow_templates')
 
         display_text = f"""
-            <h3>Workflow Change</h3>
+            <h3>Outbound Workflow Change</h3>
             <p>At this point, a recipient will be sent to the following workflow: {selected_template}</p>
         """
 
