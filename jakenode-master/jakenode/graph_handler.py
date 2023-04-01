@@ -38,7 +38,6 @@ class GraphHandler(NodeGraph):
     def handle_property_change(self, node):
         if (datetime.now() - self.init_time).seconds > self.display_delay_seconds:
             if node.view.isSelected():
-                properties = node.properties()
                 node.set_template_id_from_name()
                 self.display_node_info(node)
 

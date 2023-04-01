@@ -11,6 +11,7 @@ APP_DATA_PATH = f'{APP_HANDLER_PATH}/data'
 DATABASE = f'{APP_DATA_PATH}/test_db.db'
 TEMPLATES_PATH = f'{APP_DATA_PATH}/templates'
 
+
 def fetch_template(
     node_parent_type, node_detail_type, workflow_category, template_id, templates_folder_path=TEMPLATES_PATH
 ):
@@ -22,6 +23,7 @@ def fetch_template(
     with open(template_filepath, 'r') as template_file:
         template_file_contents = template_file.read()
     return template_file_contents
+
 
 def edit_template(
     contents, node_parent_type, node_detail_type, workflow_category, template_id, templates_folder_path=TEMPLATES_PATH
@@ -35,6 +37,7 @@ def edit_template(
     with open(template_filepath, 'w+') as template_file:
         template_file.write(contents)
 
+
 def run_query(
     sql, return_data_format=list, commit=False, database_connection_type='sqlite', database=DATABASE, sql_parameters=[]
 ):
@@ -43,7 +46,7 @@ def run_query(
             cur = conn.cursor()
             cur.execute(sql, sql_parameters)
 
-            if commit == True:
+            if commit:
                 conn.commit()
                 return None
 
@@ -61,6 +64,7 @@ def run_query(
                     results_dict[column_name].append(row[n])
             return results_dict
 
+
 def build_dummy_data(database_connection_type='sqlite', app_data_path=APP_DATA_PATH, database=DATABASE):
 
     table_csv_path = f'{app_data_path}/table_csvs'
@@ -73,17 +77,17 @@ def build_dummy_data(database_connection_type='sqlite', app_data_path=APP_DATA_P
                 data_files.append(filename)
             elif filename.endswith('.csv'):
                 schema_files.append(filename)
-                
+
     for schema_filename in schema_files:
         table_name = schema_filename.rsplit('.csv', 1)[0]
         data_filename = f'{table_name}_data.csv'
         df = pd.read_csv(f'{table_csv_path}/{schema_filename}')
         df = df.unstack().unstack()
         df.columns = ['col_type']
-        
+
         create_statement_rows = []
         insert_statement_rows = []
-        
+
         drop_statement = f'DROP TABLE IF EXISTS {table_name};'
         for i in df.index:
             create_statement_rows.append(f"    {i} {df.loc[i,'col_type']}")
