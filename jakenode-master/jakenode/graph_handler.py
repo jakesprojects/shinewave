@@ -164,6 +164,9 @@ class GraphHandler(NodeGraph):
 
 
     def save_graph_to_database(self):
+        if self.workflow_id is None:
+            raise AttributeError('workflow_id has not been set.')
+
         max_id = run_query(
             f"""
                 SELECT
@@ -186,7 +189,7 @@ class GraphHandler(NodeGraph):
         )
         workflow_version = max_version['max_version'][0] + 1
 
-        node_property_aliases = {'object_id': 'id', 'node_type': 'type_', 'custom_data': 'custom'}
+        node_property_aliases = {'object_id': 'id', 'node_type': 'type_', 'custom_data': 'custom', 'name': 'name'}
         node_methods = {'inputs': 'connected_input_nodes', 'outputs': 'connected_output_nodes'}
         fixed_columns = {'workflow_id': self.workflow_id, 'workflow_version': workflow_version, 'active': 'TRUE'}
         data_columns = list(chain(node_property_aliases, node_methods, fixed_columns))
@@ -244,3 +247,52 @@ class GraphHandler(NodeGraph):
             commit=True
         )
         run_query(insert_statement, sql_parameters=insert_parameters, commit=True)
+
+    def load_graph_from_database(self):
+        if self.workflow_id is None:
+            raise AttributeError('workflow_id has not been set.')
+
+        node_data = run_query(
+            f"""
+                SELECT
+                    object_id,
+                    node_type,
+                    name,
+                    inputs,
+                    outputs,
+                    custom_data
+                FROM workflow_nodes
+                WHERE
+                    workflow_id = ?
+                    AND active = 'TRUE'
+            """,
+            sql_parameters=[self.workflow_id],
+            return_data_format=list
+        )
+
+        prior_nodes = {}
+        all_inputs = {}
+
+        for object_id, node_type, node_name, inputs, outputs, node_custom_properties in node_data:
+
+            inputs = json.loads(inputs)
+            outputs = json.loads(outputs)
+            node_custom_properties = json.loads(node_custom_properties)
+
+            node = self.create_node(node_type=node_type, name=node_name)
+
+            node.allow_forced_template_id_changes = False
+            for prop_name, prop_value in node_custom_properties.items():
+                node.safe_set_property(prop_name, prop_value)
+
+            node.set_template_name_from_id()
+            node.allow_forced_template_id_changes = True
+
+            prior_nodes[object_id] = node
+            all_inputs[object_id] = inputs
+
+        for object_id, input_object_list in all_inputs.items():
+            node = prior_nodes[object_id]
+            for input_object_id in input_object_list:
+                upstream_node = prior_nodes[input_object_id]
+                node.set_input(0, upstream_node.output(0))

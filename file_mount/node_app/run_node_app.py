@@ -89,26 +89,31 @@ def run_node_app(
     # Maximize Windows (There's probably a much better way to do this)
     [i.setWindowState(QtCore.Qt.WindowMaximized) for i in app.allWindows()]
 
-    workflow_file_path = f'{workflow_data_folder}/{workflow_id}.json'
+    graph.load_graph_from_database()
+    nodes = graph.all_nodes()
+    graph.auto_layout_nodes(nodes=nodes, down_stream=False)
+    graph.fit_to_selection()
 
-    if os.path.isfile(workflow_file_path):
-        with open(workflow_file_path, 'r+') as file:
-            print(f'~~~~LOADING FILE: {workflow_file_path}')
-            definition_json = file.read()
-            definition_dict = json.loads(definition_json)
+    # workflow_file_path = f'{workflow_data_folder}/{workflow_id}.json'
 
-            file.seek(0)
-            file.write(graph.get_blank_json())
-            file.truncate()
-            graph.load_session(workflow_file_path)
+    # if os.path.isfile(workflow_file_path):
+    #     with open(workflow_file_path, 'r+') as file:
+    #         print(f'~~~~LOADING FILE: {workflow_file_path}')
+    #         definition_json = file.read()
+    #         definition_dict = json.loads(definition_json)
 
-            if definition_dict.get('nodes', {}):
-                graph.load_graph_from_dict(definition_dict)
+    #         file.seek(0)
+    #         file.write(graph.get_blank_json())
+    #         file.truncate()
+    #         graph.load_session(workflow_file_path)
 
-            graph.auto_layout_nodes()
-            graph.save_session(workflow_file_path)
-    else:
-        graph.save_session(workflow_file_path)
-        graph.load_session(workflow_file_path)
+    #         if definition_dict.get('nodes', {}):
+    #             graph.load_graph_from_dict(definition_dict)
+
+    #         graph.auto_layout_nodes()
+    #         graph.save_session(workflow_file_path)
+    # else:
+    #     graph.save_session(workflow_file_path)
+    #     graph.load_session(workflow_file_path)
 
     app.exec_()
