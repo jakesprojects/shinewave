@@ -27,12 +27,11 @@ class APITrigger(TriggerNode):
         #     name='api_summary', label='Trigger Summary', text=api_presets[0].summary
         # )
 
-
     def generate_api_presets(self):
         self.api_presets = [APIPreset(), APIPreset()]
 
     def fetch_api_preset_summary(self, preset_name):
-        for api_preset in api_presets:
+        for api_preset in self.api_presets:
             if api_preset.name == preset_name:
                 return api_preset.summary
 

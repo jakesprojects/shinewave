@@ -6,6 +6,7 @@ from jakenode import node_handler
 from jakenode.database_connector import run_query
 from NodeGraphQt import NodeGraph
 
+
 class GraphHandler(NodeGraph):
 
     def __init__(
@@ -38,7 +39,6 @@ class GraphHandler(NodeGraph):
         if (datetime.now() - self.init_time).seconds > self.display_delay_seconds:
             if node.view.isSelected():
                 properties = node.properties()
-                node_type = properties.get('type_')
                 node.set_template_id_from_name()
                 self.display_node_info(node)
 
@@ -178,13 +178,12 @@ class GraphHandler(NodeGraph):
 
         return json.dumps(blank_json)
 
-
     def save_graph_to_database(self):
         if self.workflow_id is None:
             raise AttributeError('workflow_id has not been set.')
 
         max_id = run_query(
-            f"""
+            """
                 SELECT
                     COALESCE(MAX(id), 0) as max_id
                 FROM workflow_nodes
@@ -194,7 +193,7 @@ class GraphHandler(NodeGraph):
         current_id = max_id['max_id'][0]
 
         max_version = run_query(
-            f"""
+            """
                 SELECT
                     COALESCE(MAX(workflow_version), 0) as max_version
                 FROM workflow_nodes
@@ -269,7 +268,7 @@ class GraphHandler(NodeGraph):
             raise AttributeError('workflow_id has not been set.')
 
         node_data = run_query(
-            f"""
+            """
                 SELECT
                     object_id,
                     node_type,

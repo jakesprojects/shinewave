@@ -38,7 +38,7 @@ class TimeElapsedTrigger(TriggerNode):
             time_number = self.get_time_number()
         except ValueError as exception:
             return node_name, f'<p style="background-color:red;">{exception}</p>'
-        
+
         time_units = self.get_property('time_units')
 
         if time_number == 1:

@@ -12,6 +12,7 @@ TO DO:
     * validate that dates are in future
 """
 
+
 class AtTimeTrigger(TriggerNode):
     """
     """
@@ -35,7 +36,6 @@ class AtTimeTrigger(TriggerNode):
 
         self.set_property('color', (215, 254, 203))
         self.set_property('timezone', 'Pacific')
-
 
     def get_timezones(self):
         return OrderedDict(
@@ -103,7 +103,7 @@ class AtTimeTrigger(TriggerNode):
 
         if execution_date_text == '':
             raise ValueError('"Execution Date/Time" is blank.')
-        
+
         error_msg = ''
 
         python_format_list = list(format_dict.copy().keys())

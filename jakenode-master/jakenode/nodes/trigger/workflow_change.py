@@ -1,5 +1,5 @@
-from jakenode.database_connector import run_query
 from jakenode.nodes.trigger.trigger_node import TriggerNode
+
 
 class InboundWorkflowChange(TriggerNode):
     """
@@ -26,15 +26,12 @@ class InboundWorkflowChange(TriggerNode):
 
         node_name = self.get_node_name(html_safe=True)
 
-        selected_template = self.get_property('workflow_templates')
-
-        display_text = f"""
+        display_text = """
             <h3>Inbound Workflow Change</h3>
             <p>This is an entry point for recipients sent from another workflow</p>
         """
 
         return node_name, display_text
-
 
     def validate_node(self):
         """

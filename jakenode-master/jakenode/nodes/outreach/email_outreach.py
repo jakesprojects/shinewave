@@ -1,5 +1,6 @@
 from jakenode.nodes.outreach.outreach_node import OutreachNode
 
+
 class EmailOutreach(OutreachNode):
     """
     """
@@ -28,7 +29,6 @@ class EmailOutreach(OutreachNode):
         self.add_combo_menu(
             'email_templates', 'Email Templates', items=[' ' * 15] + list(self.template_data.keys())
         )
-
 
     def set_template_id_from_name(self):
         if not self.allow_forced_template_id_changes:
@@ -84,7 +84,6 @@ class EmailOutreach(OutreachNode):
             )
         elif self.get_property('email_templates').strip() == '':
             raise ValueError('An email template has not been selected for this node.')
-
 
     def validate_node(self):
         """

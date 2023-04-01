@@ -1,6 +1,7 @@
 from jakenode.database_connector import run_query
 from jakenode.nodes.outreach.outreach_node import OutreachNode
 
+
 class OutboundWorkflowChange(OutreachNode):
     """
     """
@@ -24,7 +25,7 @@ class OutboundWorkflowChange(OutreachNode):
             raise AttributeError('workflow_category_id has not been set.')
 
         template_data = run_query(
-            f"""
+            """
                 SELECT
                     NULL AS workflow_category,
                     *
@@ -52,7 +53,6 @@ class OutboundWorkflowChange(OutreachNode):
         self.add_combo_menu(
             'workflow_templates', 'Workflows', items=[' ' * 15] + list(self.template_data.keys())
         )
-
 
     def set_template_id_from_name(self):
         if not self.allow_forced_template_id_changes:
@@ -105,7 +105,6 @@ class OutboundWorkflowChange(OutreachNode):
             )
         elif self.get_property('workflow_templates').strip() == '':
             raise ValueError('A target workflow has not been selected for this node.')
-
 
     def validate_node(self):
         """

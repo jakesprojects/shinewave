@@ -2,11 +2,12 @@ import html
 from itertools import chain
 
 from NodeGraphQt import BaseNode
-from NodeGraphQt.constants import ViewerEnum, NodePropWidgetEnum
-from NodeGraphQt.widgets.node_widgets import NodeBaseWidget, NodeLineEdit
+from NodeGraphQt.constants import ViewerEnum
+from NodeGraphQt.widgets.node_widgets import NodeBaseWidget
 from Qt import QtCore, QtWidgets
 
 from jakenode.database_connector import fetch_template, run_query
+
 
 class WorkflowNode(BaseNode):
     """
@@ -106,7 +107,7 @@ class WorkflowNode(BaseNode):
         """
             Universal method for getting all upstream or downstream nodes.
         """
-        
+
         if direction == 'upstream':
             connection_method = 'connected_input_nodes'
         elif direction == 'downstream':
@@ -169,7 +170,6 @@ class WorkflowNode(BaseNode):
             self.set_property(property_name, value)
         else:
             self.create_property(property_name, value)
-
 
     # Dummy methods to prevent breakages if methods are called on node types that don't support them
 
