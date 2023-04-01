@@ -5,6 +5,7 @@ import json
 from jakenode import node_handler
 from jakenode.database_connector import run_query
 from NodeGraphQt import NodeGraph
+from NodeGraphQt.constants import ViewerEnum
 
 
 class GraphHandler(NodeGraph):
@@ -27,6 +28,9 @@ class GraphHandler(NodeGraph):
 
         node_types = node_handler.fetch_all_node_types()
         self.register_nodes(node_types)
+        # self.set_grid_mode(ViewerEnum.GRID_DISPLAY_NONE.value)
+        self.set_grid_color(105, 105, 105)
+        self.set_background_color(112, 112, 112)
 
     def handle_node_selected(self, node):
         if (datetime.now() - self.init_time).seconds > self.display_delay_seconds:
