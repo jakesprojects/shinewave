@@ -36,13 +36,11 @@ class GraphHandler(NodeGraph):
         if (datetime.now() - self.init_time).seconds > self.display_delay_seconds:
             for sub_node in self.all_nodes():
                 if sub_node.view.isSelected():
-                    sub_node.set_template_id_from_name()
                     self.display_node_info(sub_node)
 
     def handle_property_change(self, node):
         if (datetime.now() - self.init_time).seconds > self.display_delay_seconds:
             if node.view.isSelected():
-                node.set_template_id_from_name()
                 self.display_node_info(node)
 
     def display_node_info(self, node):
@@ -215,6 +213,7 @@ class GraphHandler(NodeGraph):
         data_rows = []
 
         for node in self.all_nodes():
+            node.set_template_id_from_name()
             current_row = []
             current_id += 1
             node_properties = node.properties()
@@ -247,9 +246,8 @@ class GraphHandler(NodeGraph):
         data_placeholder = ['?'] * len(data_columns)
         data_placeholder = ', '.join(data_placeholder)
         data_placeholder = f'\n({data_placeholder}),'
-        insert_statement = 'INSERT INTO workflow_nodes ('
-        insert_statement += ', '.join(data_columns)
-        insert_statement += ') VALUES'
+        data_columns_text = ', '.join(data_columns)
+        insert_statement = f'INSERT INTO workflow_nodes ({data_columns_text}) VALUES'
         for row in data_rows:
             insert_statement += data_placeholder
             insert_parameters += row
