@@ -180,6 +180,20 @@ class GraphHandler(NodeGraph):
         return json.dumps(blank_json)
 
     def save_graph_to_database(self):
+        """
+            Allows for saving directly to a SQL database, rather than the built-in behavior of saving to a JSON. Assumes
+            database has a table named 'workflow_nodes' that conforms to the following schema:
+                id: INTEGER
+                workflow_id: INTEGER
+                workflow_version: INTEGER
+                object_id: TEXT
+                name: TEXT
+                node_type: TEXT
+                inputs: TEXT
+                outputs: TEXT
+                custom_data: TEXT
+                active: TEXT
+        """
         if self.workflow_id is None:
             raise AttributeError('workflow_id has not been set.')
 
