@@ -27,7 +27,6 @@ class InboundWorkflowChange(TriggerNode):
         node_name = self.get_node_name(html_safe=True)
 
         display_text = """
-            <h3>Inbound Workflow Change</h3>
             <p>This is an entry point for recipients sent from another workflow</p>
         """
 
