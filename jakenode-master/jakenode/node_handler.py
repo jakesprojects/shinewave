@@ -3,6 +3,7 @@ from jakenode.nodes.outreach.sms_outreach import SMSOutreach
 from jakenode.nodes.outreach.workflow_change import OutboundWorkflowChange
 from jakenode.nodes.trigger.api_trigger import APITrigger
 from jakenode.nodes.trigger.at_time_trigger import AtTimeTrigger
+from jakenode.nodes.trigger.response_received_trigger import ExactResponseReceivedTrigger
 from jakenode.nodes.trigger.time_elapsed_trigger import TimeElapsedTrigger
 from jakenode.nodes.trigger.workflow_change import InboundWorkflowChange
 
@@ -11,6 +12,7 @@ def fetch_all_node_types():
     return [
         APITrigger,
         AtTimeTrigger,
+        ExactResponseReceivedTrigger,
         TimeElapsedTrigger,
         EmailOutreach,
         SMSOutreach,
