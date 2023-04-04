@@ -298,7 +298,7 @@ def add_node_at_time_trigger(graph):
 
 
 def add_node_exact_response_received_trigger(graph):
-    pass
+    graph.create_node('nodes.trigger.ExactResponseReceivedTrigger')
 
 
 def add_node_file_upload_trigger(graph):
