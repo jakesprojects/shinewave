@@ -3,6 +3,7 @@ from itertools import chain
 import json
 
 from jakenode import node_handler
+from jakenode.context_menu import build_context_menu
 from jakenode.database_connector import run_query
 from NodeGraphQt import NodeGraph
 from NodeGraphQt.constants import ViewerEnum
@@ -31,6 +32,7 @@ class GraphHandler(NodeGraph):
         self.set_grid_mode(ViewerEnum.GRID_DISPLAY_NONE.value)
         self.set_grid_color(105, 105, 105)
         self.set_background_color(112, 112, 112)
+        build_context_menu(self)
 
     def update_workflow_activity(self):
         if self.account_id and self.workflow_id:
