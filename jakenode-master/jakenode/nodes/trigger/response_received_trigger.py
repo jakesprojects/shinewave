@@ -24,6 +24,11 @@ class ResponseReceivedTrigger(TriggerNode):
     def __init__(self):
         super(ResponseReceivedTrigger, self).__init__(has_input=True)
 
+    def validate_has_upstream_sms(self):
+        upstream_node_types = [i.get_property('type_') for i in self.get_upstream_nodes()]
+        if not 'nodes.outreach.SMSOutreach' in upstream_node_types:
+            raise ValueError('SMS response triggers require an upstream SMS outrach, but none was found.')
+
 
 class ExactResponseReceivedTrigger(ResponseReceivedTrigger):
     """
@@ -71,13 +76,17 @@ class ExactResponseReceivedTrigger(ResponseReceivedTrigger):
         return node_name, display_text
 
     def validate_has_text_entered(self):
-        exact_response = self.get_property('exact_response')
-        if not exact_response.strip():
+        exact_response = self.get_property('exact_response').strip()
+        if not exact_response:
             raise ValueError('No response to match has been entered. Please type a response in the box.')
+        elif len(exact_response) > 160:
+            error_message = f'The entered response is limited to {max_len} characters, but you have entered '
+            error_message += '{len(exact_response)} characters. Please enter a shorter response in the box.'
+            raise ValueError(error_message)
 
     def validate_node(self):
-        """
-        """
+        self.validate_has_text_entered()
+        self.validate_has_upstream_sms()
 
 
 class FuzzyResponseReceivedTrigger(ResponseReceivedTrigger):
