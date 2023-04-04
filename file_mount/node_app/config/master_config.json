@@ -1,44 +1,10 @@
 [
   {
-    "type":"menu",
-    "label":"&File",
-    "items":[
-      {
-        "type":"command",
-        "label":"Open...",
-        "file":"./config/hotkeys/hotkey_functions.py",
-        "function_name":"open_session",
-        "shortcut":"QtGui.QKeySequence.Open"
-      },
-      {
-        "type":"command",
-        "label":"Import...",
-        "file":"./config/hotkeys/hotkey_functions.py",
-        "function_name":"import_session",
-        "shortcut":""
-      },
-      {
-        "type":"command",
-        "label":"Save...",
-        "file":"./config/hotkeys/hotkey_functions.py",
-        "function_name":"save_session",
-        "shortcut":"QtGui.QKeySequence.Save"
-      },
-      {
-        "type":"command",
-        "label":"Save As...",
-        "file":"./config/hotkeys/hotkey_functions.py",
-        "function_name":"save_session_as",
-        "shortcut":"Ctrl+Shift+S"
-      },
-      {
-        "type":"command",
-        "label":"Save to Database",
-        "file":"./config/hotkeys/hotkey_functions.py",
-        "function_name":"save_to_database",
-        "shortcut":""
-      }
-    ]
+    "type":"command",
+    "label":"Save...",
+    "file":"./config/hotkeys/hotkey_functions.py",
+    "function_name":"save_to_database",
+    "shortcut":"Ctrl+S"
   },
   {
     "type":"menu",
