@@ -76,10 +76,11 @@ class ExactResponseReceivedTrigger(ResponseReceivedTrigger):
         return node_name, display_text
 
     def validate_has_text_entered(self):
+        max_len = 160
         exact_response = self.get_property('exact_response').strip()
         if not exact_response:
             raise ValueError('No response to match has been entered. Please type a response in the box.')
-        elif len(exact_response) > 160:
+        elif len(exact_response) > max_len:
             error_message = f'The entered response is limited to {max_len} characters, but you have entered '
             error_message += '{len(exact_response)} characters. Please enter a shorter response in the box.'
             raise ValueError(error_message)
