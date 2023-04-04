@@ -87,6 +87,27 @@
 								</ul>
 							</div>
 						</li>
+						<li class="nav-item {% if 'api-' in segment %} active {% endif %}">
+							<a data-toggle="collapse" href="#api">
+								<i class="flaticon-cloud"></i>
+								<p>API Settings</p>
+								<span class="caret"></span>
+							</a>
+							<div class="collapse {% if 'api-' in segment %} show {% endif %}" id="api">
+								<ul class="nav nav-collapse">
+									<li class="{% if 'api-triggers' in segment %} active {% endif %}">
+										<a href="/api-triggers">
+											<span class="sub-item">API Triggers</span>
+										</a>
+									</li>
+									<li class="{% if 'api-outbound-templates' in segment %} active {% endif %}">
+										<a href="/api-outbound-templates">
+											<span class="sub-item">Outbound API Templates</span>
+										</a>
+									</li>
+								</ul>
+							</div>
+						</li>
 						<li class="nav-item {% if 'om-' in segment %} active {% endif %}">
 							<a data-toggle="collapse" href="#outreach">
 								<i class="icon-people"></i>
@@ -113,6 +134,54 @@
 								<i class="fa fa-ellipsis-h"></i>
 							</span>
 							<h4 class="text-section">Analytics</h4>
+						</li>
+						<li class="nav-item {% if 'workflow-journeys' in segment %} active {% endif %}">
+							<a href="/workflow-journeys">
+								<i class="fas fa-code-branch"></i>
+								<p>Workflow Journeys</p>
+							</a>
+						</li>
+						<li class="nav-item {% if 'reports-' in segment %} active {% endif %}">
+							<a data-toggle="collapse" href="#reports">
+								<i class="fas fa-table"></i>
+								<p>Tabular Reports</p>
+								<span class="caret"></span>
+							</a>
+							<div class="collapse {% if 'reports-' in segment %} show {% endif %}" id="reports">
+								<ul class="nav nav-collapse">
+									<li class="{% if 'reports-workflow-volume' in segment %} active {% endif %}">
+										<a href="/reports-workflow-volume">
+											<span class="sub-item">Message Volume by Workflow</span>
+										</a>
+									</li>
+									<li class="{% if 'reports-message-type' in segment %} active {% endif %}">
+										<a href="/reports-message-type">
+											<span class="sub-item">Message Volume by Type</span>
+										</a>
+									</li>
+								</ul>
+							</div>
+						</li>
+						<li class="nav-item {% if 'graphs-' in segment %} active {% endif %}">
+							<a data-toggle="collapse" href="#graphs">
+								<i class="fas fa-chart-bar"></i>
+								<p>Graphs</p>
+								<span class="caret"></span>
+							</a>
+							<div class="collapse {% if 'graphs-' in segment %} show {% endif %}" id="graphs">
+								<ul class="nav nav-collapse">
+									<li class="{% if 'graphs-outbound-messages' in segment %} active {% endif %}">
+										<a href="/graphs-outbound-messages">
+											<span class="sub-item">Outbound Message Volume</span>
+										</a>
+									</li>
+									<li class="{% if 'graphs-inbound-messages' in segment %} active {% endif %}">
+										<a href="/graphs-inbound-messages">
+											<span class="sub-item">Inbound Message Volume</span>
+										</a>
+									</li>
+								</ul>
+							</div>
 						</li>
 						<li class="nav-section">
 							<span class="sidebar-mini-icon">
