@@ -36,9 +36,6 @@ def run_node_app(
     # create graph controller.
     graph = GraphHandler(queue=queue, socketio=socketio)
 
-    # set up context menu for the node graph.
-    graph.set_context_menu_from_file('./config/master_config.json')
-
     # registered nodes.
 
     # show the node graph widget.
