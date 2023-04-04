@@ -32,13 +32,29 @@ class GraphHandler(NodeGraph):
         self.set_grid_color(105, 105, 105)
         self.set_background_color(112, 112, 112)
 
+    def update_workflow_activity(self):
+        if self.account_id and self.workflow_id:
+            run_query(
+                """
+                    UPDATE workflow_routes SET last_activity = datetime()
+                    WHERE
+                        account_id = ?
+                        AND workflow_id = ?
+                        AND active = 'TRUE'
+                """,
+                sql_parameters=[self.account_id, self.workflow_id],
+                commit=True
+            )
+
     def handle_node_selected(self, node):
+        self.update_workflow_activity()
         if (datetime.now() - self.init_time).seconds > self.display_delay_seconds:
             for sub_node in self.all_nodes():
                 if sub_node.view.isSelected():
                     self.display_node_info(sub_node)
 
     def handle_property_change(self, node):
+        self.update_workflow_activity()
         if (datetime.now() - self.init_time).seconds > self.display_delay_seconds:
             if node.view.isSelected():
                 self.display_node_info(node)
@@ -70,6 +86,7 @@ class GraphHandler(NodeGraph):
         pos=None,
         push_undo=True,
     ):
+        self.update_workflow_activity()
         if not text_color:
             text_color = node_handler.fetch_node_text_color(node_type)
 
