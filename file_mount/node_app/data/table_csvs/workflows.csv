@@ -1,2 +1,2 @@
-id,account_id,name,workflow_category_id,active
-INTEGER,INTEGER,TEXT,INTEGER,TEXT
+id,account_id,name,workflow_category_id,enabled,active
+INTEGER,INTEGER,TEXT,INTEGER,TEXT,TEXT

@@ -543,10 +543,11 @@ def workflow_builder_reload():
 def workflow_builder_app():
     workflow_id = request.args.get('workflow_id')
     account_id = ACCOUNT_ID
-    workflow_id = database_connector.run_query(
+    workflow_data = database_connector.run_query(
         f"""
             SELECT
-                id
+                id,
+                enabled
             FROM workflows
             WHERE
                 account_id=?
@@ -554,12 +555,18 @@ def workflow_builder_app():
                 AND id=?
         """,
         sql_parameters=[account_id, workflow_id],
-        return_data_format=list
+        return_data_format=dict
     )
-    if not workflow_id:
+    if not workflow_data:
         return render_template('home/page-404.html'), 404
 
-    workflow_id = workflow_id[0][0]
+    workflow_id = workflow_data['id'][0]
+    enabled = workflow_data['enabled'][0]
+
+    if enabled is None or str(enabled).lower() != 'true':
+        enabled_toggle = ''
+    else:
+        enabled_toggle = 'checked'
 
     launcher_api_response = requests.post(
         LAUNCHER_APP_ADDRESS, json={'account_id': str(ACCOUNT_ID), 'workflow_id': str(workflow_id)}
@@ -591,7 +598,8 @@ def workflow_builder_app():
             xpra_port=xpra_port,
             info_panel_port=info_panel_port,
             workflow_id=workflow_id,
-            segment=get_segment(request)
+            segment=get_segment(request),
+            enabled_toggle=enabled_toggle
         )
 
 
@@ -791,3 +799,27 @@ def get_segment(request):
 
     except:
         return None
+
+@blueprint.route('/interactive.html')
+@login_required
+def interactive():
+    return render_template('home/interactive.html')
+
+@blueprint.route('/process_active_toggle', methods=["POST"])
+@login_required
+def process_active_toggle():
+    toggle_data = request.get_json()
+    workflow_id = toggle_data.get('workflow_id')
+    enabled = str(toggle_data.get('enabled')).upper()
+    database_connector.run_query(
+        """
+            UPDATE workflows SET enabled = ?
+            WHERE
+                account_id = ?
+                AND id = ?
+                AND active = 'TRUE'
+        """,
+        sql_parameters=[enabled, ACCOUNT_ID, workflow_id],
+        commit=True
+    )
+    return json.dumps({'ok': True})
