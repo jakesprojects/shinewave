@@ -1,0 +1,154 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Workflow Builder {% endblock %} 
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{{url_for('static', filename='/jstree/dist/themes/default/style.min.css')}}" />
+<link href="/static/assets/css/toggle-switchy.css" rel="stylesheet" />
+<style type="text/css">
+	*{padding:0;margin:0;}
+
+	body{
+		font-family:Verdana, Geneva, sans-serif;
+		font-size:18px;
+		background-color:#CCC;
+	}
+
+.controlbox {
+    text-align:center;
+    background: rgba(255, 255, 255, 0.5);
+    position: absolute;
+	bottom:47%;
+	right:1%;
+    border-radius: 20px;
+    padding:10px
+}
+.subcontrolbox {
+    text-align:center;
+    background: rgba(0, 211, 255, 0.25);
+    border-radius: 20px;
+    padding:10px
+}
+
+</style>
+{% endblock stylesheets %}
+
+{% block content %}
+<body>
+	<div class="content">
+		<div class="page-inner">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="card">
+						<div class="card-header">
+							<h4 class="card-title">Workflows</h4>
+						</div>
+						<div class="card-body">
+							<div class="table-responsive">
+								{{ workflows_table | safe }}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- <script>
+	function toggleSwitch() {
+		var checked = document.getElementById("example_colors_4").checked
+		var xhr = new XMLHttpRequest();
+		xhr.open("POST", '/process_active_toggle', true);
+		xhr.setRequestHeader('Content-Type', 'application/json');
+		xhr.send(JSON.stringify({
+		    'enabled': !checked,
+		    'workflow_id': {{ workflow_id | safe }}
+		}));
+		return false;
+	}
+	</script>
+	<link href="/static/assets/css/toggle-switchy.css" rel="stylesheet" />
+	<div class="controlbox">
+		<div name="demo" id="test" method="get" class="subcontrolbox">
+			<input type="text" id="operation" value="toggle" name="operation" style="display:none" required>
+			<span class="label" style="color:black;font-size:15px;">Enable Workflow<br></span>
+			<label class="toggle-switchy" for="example_colors_4" data-size="sm" data-style="rounded" data-color="green" data-text="false">
+					<input {{ enabled_toggle | safe }} type="checkbox" id="example_colors_4">
+					<span class="toggle" onclick="toggleSwitch()">
+						<span class="switch"></span>
+					</span>
+			</label>
+		</div>
+		<br>
+		<a class="btn btn-danger" style="margin-left:auto;margin-bottom:10%;opacity:.9;" href="/wb-reload?workflow_id={{ workflow_id }}">
+				Force Reload<br>App
+		</a>
+	</div>
+	<iframe id="builder-app" src="http://{{ app_server_address }}:{{ xpra_port }}" title="workflow-builder-app" style="width:100%;height:70%;"></iframe>
+	<iframe src="http://{{ app_server_address }}:{{ info_panel_port }}" title="info-panel" style="width:100%;height:25%;opacity"></iframe> -->
+</body>
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+<script >
+	$(document).ready(function() {
+		$('#basic-datatables').DataTable({
+		});
+
+		$('#multi-filter-select').DataTable( {
+			"pageLength": 5,
+			initComplete: function () {
+				this.api().columns().every( function () {
+					var column = this;
+					var select = $('<select class="form-control"><option value=""></option></select>')
+					.appendTo( $(column.footer()).empty() )
+					.on( 'change', function () {
+						var val = $.fn.dataTable.util.escapeRegex(
+							$(this).val()
+							);
+
+						column
+						.search( val ? '^'+val+'$' : '', true, false )
+						.draw();
+					} );
+
+					column.data().unique().sort().each( function ( d, j ) {
+						select.append( '<option value="'+d+'">'+d+'</option>' )
+					} );
+				} );
+			}
+		});
+
+		// Add Row
+		$('#add-row').DataTable({
+			"pageLength": 5,
+		});
+
+		var action = '<td> <div class="form-button-action"> <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-primary btn-lg" data-original-title="Edit Task"> <i class="fa fa-edit"></i> </button> <button type="button" data-toggle="tooltip" title="" class="btn btn-link btn-danger" data-original-title="Remove"> <i class="fa fa-times"></i> </button> </div> </td>';
+
+		$('#addRowButton').click(function() {
+			$('#add-row').dataTable().fnAddData([
+				$("#addName").val(),
+				$("#addPosition").val(),
+				$("#addOffice").val(),
+				action
+				]);
+			$('#addRowModal').modal('hide');
+
+		});
+	});
+	function toggleSwitch(workflow_id, toggle_switch_id) {
+		var checked = document.getElementById(toggle_switch_id).checked
+		var xhr = new XMLHttpRequest();
+		xhr.open("POST", '/process_active_toggle', true);
+		xhr.setRequestHeader('Content-Type', 'application/json');
+		xhr.send(JSON.stringify({
+		    'enabled': !checked,
+		    'workflow_id': workflow_id
+		}));
+		return false;
+	};
+</script>
+
+{% endblock javascripts %}

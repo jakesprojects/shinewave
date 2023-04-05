@@ -3,6 +3,7 @@
 Copyright (c) 2019 - present AppSeed.us
 """
 
+import html
 import json
 import sqlite3
 from time import sleep
@@ -14,6 +15,7 @@ from flask import render_template, request, redirect, url_for
 from flask_wtf import FlaskForm
 from flask_login import login_required
 from jinja2 import TemplateNotFound
+import pandas as pd
 import requests
 
 from jakenode import database_connector
@@ -823,3 +825,62 @@ def process_active_toggle():
         commit=True
     )
     return json.dumps({'ok': True})
+
+@blueprint.route('/toggle-workflows')
+@blueprint.route('/toggle-workflows.html')
+@login_required
+def toggle_workflows():
+    def _wrap_toggle(workflow_id, enabled):
+        if str(enabled).lower() == 'true':
+            checked = 'checked'
+        else:
+            checked = ''
+
+        toggle_switch_id = f'toggle-switch-{workflow_id}'
+
+        toggle_switch_html = f"""
+            <label
+                class="toggle-switchy" for="{toggle_switch_id}" data-size="sm" data-style="rounded" data-color="green"
+                data-text="false">
+                    <input {checked} type="checkbox" id="{toggle_switch_id}">
+                    <span class="toggle" onclick="toggleSwitch({workflow_id}, '{toggle_switch_id}')">
+                        <span class="switch"></span>
+                    </span>
+            </label>
+        """
+
+        return toggle_switch_html.replace('\n', ' ')
+
+    workflow_data = database_connector.run_query(
+        """
+            SELECT
+                w.id AS "Workflow ID",
+                wc.name AS "Workflow Category",
+                w.name AS "Workflow Name",
+                w.enabled AS "Enabled"
+            FROM workflows w
+            INNER JOIN workflow_categories wc ON w.workflow_category_id = wc.id
+            WHERE
+                w.account_id = ?
+                AND w.active = 'TRUE'
+        """,
+        sql_parameters=[ACCOUNT_ID],
+        return_data_format=dict
+    )
+    table_df = pd.DataFrame(workflow_data)
+
+    for column in ['Workflow Category', 'Workflow Name']:
+        table_df[column] = table_df[column].map(html.escape)
+
+    table_df['Enabled'] = table_df.apply(lambda row: _wrap_toggle(row['Workflow ID'], row['Enabled']), axis=1)
+
+    workflows_table = table_df.to_html(
+        table_id='basic-datatables',
+        border=0,
+        classes=['display', 'table', 'table-striped', 'table-hover'],
+        escape=False,
+        index=False,
+        justify='inherit'
+    )
+    print('~~~', workflows_table)
+    return render_template('home/toggle-workflows.html', workflows_table=workflows_table)
