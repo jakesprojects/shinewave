@@ -35,14 +35,14 @@
 {% block content %}
 <body>
 	<script>
-	function toggleSwitch() {
+	function toggleSwitch(workflow_id) {
 		var checked = document.getElementById("example_colors_4").checked
 		var xhr = new XMLHttpRequest();
 		xhr.open("POST", '/process_active_toggle', true);
 		xhr.setRequestHeader('Content-Type', 'application/json');
 		xhr.send(JSON.stringify({
 		    'enabled': !checked,
-		    'workflow_id': {{ workflow_id | safe }}
+		    'workflow_id': workflow_id
 		}));
 		return false;
 	}
@@ -54,7 +54,7 @@
 			<span class="label" style="color:black;font-size:15px;">Enable Workflow<br></span>
 			<label class="toggle-switchy" for="example_colors_4" data-size="sm" data-style="rounded" data-color="green" data-text="false">
 					<input {{ enabled_toggle | safe }} type="checkbox" id="example_colors_4">
-					<span class="toggle" onclick="toggleSwitch()">
+					<span class="toggle" onclick="toggleSwitch({{ workflow_id }})">
 						<span class="switch"></span>
 					</span>
 			</label>
