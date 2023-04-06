@@ -5,14 +5,11 @@ Copyright (c) 2019 - present AppSeed.us
 
 import html
 import json
-import sqlite3
 from time import sleep
-import urllib
 import subprocess
 
 from apps.home import blueprint
 from flask import render_template, request, redirect, url_for
-from flask_wtf import FlaskForm
 from flask_login import login_required
 from jinja2 import TemplateNotFound
 import pandas as pd
@@ -24,6 +21,7 @@ ACCOUNT_ID = 1
 APP_HANDLER_PATH = '/srv/node_app/handlers'
 DATABASE = f'{APP_HANDLER_PATH}/data/test_db.db'
 LAUNCHER_APP_ADDRESS = 'http://localhost:49151/app_launcher'
+
 
 def get_validation_failure_codes(node_type):
     return {
@@ -69,9 +67,9 @@ def tree_dict_to_json(tree_dict, tree_type, include_folder_operations, include_r
         json_list.append({'text': parent_node, 'children': children_list})
 
     full_json = {
-        'core' : {
-            'multiple' : False,
-            'data' : json_list
+        'core': {
+            'multiple': False,
+            'data': json_list
         }
     }
 
@@ -143,6 +141,7 @@ def get_template_id_by_name(account_id, template_name, folder_name, template_typ
 def index():
     return render_template('home/index.html', segment='index')
 
+
 @blueprint.route('/wb-workflow-builder.html')
 @blueprint.route('/wb-workflow-builder', methods=["GET"])
 @login_required
@@ -175,7 +174,7 @@ def workflow_builder():
     )
 
     # Not sure how this is used
-    tree_format_text = """<!-- 
+    tree_format_text = """<!--
         <li data-jstree='{ "opened" : true }'>Root node
             <ul>
                 <li data-jstree='{ "selected" : true }'>Child node 1</li>
@@ -197,7 +196,6 @@ def workflow_builder():
         validation_error_card=get_validation_error_card(validation_failure_text),
         segment=get_segment(request)
     )
-
 
 
 @blueprint.route('/template_submit', methods=["GET", "POST"])
@@ -261,6 +259,7 @@ def template_submit():
             print('!!!', request.form)
 
     return redirect(url_for(f'home_blueprint.edit_{template_type_name.lower()}_templates'))
+
 
 @blueprint.route('/builder_submit', methods=["GET", "POST"])
 @login_required
@@ -546,7 +545,7 @@ def workflow_builder_app():
     workflow_id = request.args.get('workflow_id')
     account_id = ACCOUNT_ID
     workflow_data = database_connector.run_query(
-        f"""
+        """
             SELECT
                 id,
                 enabled
@@ -639,14 +638,15 @@ def route_api_endpoint(template):
             try:
                 custom_data = json.loads(custom_data)
                 all_endpoints.append(custom_data['api_endpoint'])
-            except:
-                pass
+            except Exception as e:
+                print(e)
 
         if segment not in all_endpoints:
             return "Endpoint not found", 404
 
         return json.dumps({'ok': True})
-    except:
+    except Exception as e:
+        print(e)
         return "Bad Request", 400
 
 
@@ -656,22 +656,18 @@ def route_template(template):
 
     try:
 
-        if template.endswith('.html'):
-            template_name = template.rsplit('.html', 1)[0]
-        else:
-            template_name = template
+        if not template.endswith('.html'):
             template += '.html'
 
-        # import sys
-        # print(f'~SEGMENT~\n{segment}', file=sys.stderr)
+        segment = get_segment(request)
 
-        # Serve the file (if exists) from app/templates/home/FILE.html
         return render_template("home/" + template, segment=segment)
 
     except TemplateNotFound:
         return render_template('home/page-404.html'), 404
 
-    except:
+    except Exception as e:
+        print(e)
         return render_template('home/page-500.html'), 500
 
 
@@ -686,6 +682,7 @@ def edit_sms_templates():
         disable_inbound_templates=False
     )
 
+
 @blueprint.route('/et-edit-email-templates.html', methods=['GET'])
 @blueprint.route('/et-edit-email-templates', methods=['GET'])
 @login_required
@@ -697,13 +694,15 @@ def edit_email_templates():
         disable_inbound_templates=True
     )
 
+
 def render_template_editor(
     template_type_name, outbound_template_type, inbound_template_type, disable_inbound_templates
 ):
     account_id = ACCOUNT_ID
+
     def _generate_formatted_tree(account_id, template_type):
         template_data = database_connector.run_query(
-            f"""
+            """
                 SELECT
                     wc.name AS workflow_category,
                     t.name,
@@ -770,7 +769,7 @@ def edit_templates_app():
     template_id = request.args.get('template_id')
     template_type_name = request.args.get('template_type_name')
     template_data = database_connector.run_query(
-        f"""
+        """
             SELECT
                 wc.name AS workflow_category,
                 t.name AS template_name,
@@ -831,8 +830,10 @@ def get_segment(request):
 
         return segment
 
-    except:
+    except Exception as e:
+        print(e)
         return None
+
 
 @blueprint.route('/process_active_toggle', methods=["POST"])
 @login_required
@@ -852,6 +853,7 @@ def process_active_toggle():
         commit=True
     )
     return json.dumps({'ok': True})
+
 
 @blueprint.route('/toggle-workflows')
 @blueprint.route('/toggle-workflows.html')
@@ -912,6 +914,7 @@ def toggle_workflows():
 
     return render_template('home/toggle-workflows.html', workflows_table=workflows_table, segment=get_segment(request))
 
+
 @blueprint.route('/api-triggers')
 @blueprint.route('/api-triggers.html')
 @login_required
@@ -919,7 +922,7 @@ def api_triggers():
 
     def _construct_api_endpoint_info(custom_data):
         custom_data = json.loads(custom_data)
-        return custom_data.get('api_endpoint')
+        return request.url_root + custom_data.get('api_endpoint')
 
     workflow_data = database_connector.run_query(
         """
@@ -956,6 +959,7 @@ def api_triggers():
     )
 
     return render_template('home/api-triggers.html', triggers_table=triggers_table, segment=get_segment(request))
+
 
 @blueprint.route('/api-outbound-templates')
 @blueprint.route('/api-outbound-templates.html')
