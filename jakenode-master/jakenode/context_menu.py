@@ -157,7 +157,7 @@ class graph_modifier():
         Prompts a file save dialog to serialize a session if required.
         """
         try:
-            graph.validate_nodes()
+            graph.validate_graph()
             current = graph.current_session()
             if current:
                 graph.save_session(current)
@@ -412,7 +412,7 @@ class graph_modifier():
 
     def save_to_database(self, graph):
         try:
-            graph.validate_nodes()
+            graph.validate_graph()
             graph.save_graph_to_database()
             viewer = graph.viewer()
             viewer.message_dialog('Save Successful!', title='Workflow Saved')
