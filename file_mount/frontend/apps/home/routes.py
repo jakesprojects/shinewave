@@ -802,11 +802,6 @@ def get_segment(request):
     except:
         return None
 
-@blueprint.route('/interactive.html')
-@login_required
-def interactive():
-    return render_template('home/interactive.html')
-
 @blueprint.route('/process_active_toggle', methods=["POST"])
 @login_required
 def process_active_toggle():
@@ -882,5 +877,50 @@ def toggle_workflows():
         index=False,
         justify='inherit'
     )
-    print('~~~', workflows_table)
-    return render_template('home/toggle-workflows.html', workflows_table=workflows_table)
+
+    return render_template('home/toggle-workflows.html', workflows_table=workflows_table, segment=get_segment(request))
+
+@blueprint.route('/api-triggers')
+@blueprint.route('/api-triggers.html')
+@login_required
+def api_triggers():
+
+    def _construct_api_endpoint_info(custom_data):
+        custom_data = json.loads(custom_data)
+        return custom_data.get('api_endpoint')
+
+    workflow_data = database_connector.run_query(
+        """
+            SELECT
+                wn.workflow_id AS "Workflow ID",
+                wn.name AS "Workflow Category",
+                w.name AS "Workflow Name",
+                wn.name AS "Endpoint Name",
+                wn.custom_data AS "API Endpoint"
+            FROM workflow_nodes wn
+            INNER JOIN workflows w ON
+                wn.workflow_id = w.id
+                AND wn.active = w.active
+            INNER JOIN workflow_categories wc ON w.workflow_category_id = wc.id
+            WHERE
+                w.account_id = ?
+                AND wn.node_type = 'nodes.trigger.APITrigger'
+                AND wn.active = 'TRUE'
+            ORDER BY wn.name, w.name, wn.name
+        """,
+        sql_parameters=[ACCOUNT_ID],
+        return_data_format=dict
+    )
+    table_df = pd.DataFrame(workflow_data)
+
+    table_df['API Endpoint'] = table_df['API Endpoint'].map(_construct_api_endpoint_info)
+
+    triggers_table = table_df.to_html(
+        table_id='basic-datatables',
+        border=0,
+        classes=['display', 'table', 'table-striped', 'table-hover'],
+        index=False,
+        justify='inherit'
+    )
+
+    return render_template('home/api-triggers.html', triggers_table=triggers_table, segment=get_segment(request))
