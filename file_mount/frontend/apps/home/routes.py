@@ -605,7 +605,52 @@ def workflow_builder_app():
         )
 
 
-@blueprint.route('/<template>')
+@blueprint.route('/<template>', methods=['POST'])
+def route_api_endpoint(template):
+    try:
+        segment = get_segment(request)
+        data = request.get_json()
+        print(segment, data)
+        endpoints_data = database_connector.run_query(
+            """
+                SELECT
+                    wn.workflow_id,
+                    wn.id AS node_id,
+                    wn.custom_data
+                FROM workflow_nodes wn
+                INNER JOIN workflows w ON
+                    wn.workflow_id = w.id
+                    AND wn.active = w.active
+                WHERE
+                    w.account_id = ?
+                    AND wn.node_type = 'nodes.trigger.APITrigger'
+                    AND wn.active = 'TRUE'
+            """,
+            sql_parameters=[ACCOUNT_ID],
+            return_data_format=dict
+        )
+
+        all_endpoints = []
+
+        if not endpoints_data:
+            return "Endpoint not found", 404
+
+        for custom_data in endpoints_data.get('custom_data'):
+            try:
+                custom_data = json.loads(custom_data)
+                all_endpoints.append(custom_data['api_endpoint'])
+            except:
+                pass
+
+        if segment not in all_endpoints:
+            return "Endpoint not found", 404
+
+        return json.dumps({'ok': True})
+    except:
+        return "Bad Request", 400
+
+
+@blueprint.route('/<template>', methods=['GET'])
 @login_required
 def route_template(template):
 
@@ -617,30 +662,17 @@ def route_template(template):
             template_name = template
             template += '.html'
 
-        # special_formatting = handle_special_template(template_name)
-        special_formatting = {}
-
-        # Detect the current page
-        segment = get_segment(request)
-
-        import sys
-        print(f'~SEGMENT~\n{segment}', file=sys.stderr)
+        # import sys
+        # print(f'~SEGMENT~\n{segment}', file=sys.stderr)
 
         # Serve the file (if exists) from app/templates/home/FILE.html
-        return render_template("home/" + template, segment=segment, **special_formatting)
+        return render_template("home/" + template, segment=segment)
 
     except TemplateNotFound:
         return render_template('home/page-404.html'), 404
 
     except:
         return render_template('home/page-500.html'), 500
-
-
-# @blueprint.route('/et-edit-templates.html', methods=['GET'])
-# @blueprint.route('/et-edit-templates', methods=['GET'])
-# @login_required
-# def edit_templates():
-#     return render_template_editor()
 
 
 @blueprint.route('/et-edit-sms-templates.html', methods=['GET'])
@@ -893,7 +925,7 @@ def api_triggers():
         """
             SELECT
                 wn.workflow_id AS "Workflow ID",
-                wn.name AS "Workflow Category",
+                wc.name AS "Workflow Category",
                 w.name AS "Workflow Name",
                 wn.name AS "Endpoint Name",
                 wn.custom_data AS "API Endpoint"
@@ -906,7 +938,7 @@ def api_triggers():
                 w.account_id = ?
                 AND wn.node_type = 'nodes.trigger.APITrigger'
                 AND wn.active = 'TRUE'
-            ORDER BY wn.name, w.name, wn.name
+            ORDER BY wc.name, w.name, wn.name
         """,
         sql_parameters=[ACCOUNT_ID],
         return_data_format=dict
@@ -924,3 +956,9 @@ def api_triggers():
     )
 
     return render_template('home/api-triggers.html', triggers_table=triggers_table, segment=get_segment(request))
+
+@blueprint.route('/api-outbound-templates')
+@blueprint.route('/api-outbound-templates.html')
+@login_required
+def api_outbound_templates():
+    return render_template('home/api-outbound-templates.html', triggers_table='x', segment=get_segment(request))
