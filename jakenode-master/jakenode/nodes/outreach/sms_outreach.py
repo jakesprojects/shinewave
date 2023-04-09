@@ -27,7 +27,7 @@ class SMSOutreach(OutreachNode):
             self.template_data[template_name] = individual_template_dict
 
         self.add_combo_menu(
-            'sms_templates', 'SMS Templates', items=['' * 15] + list(self.template_data.keys())
+            'sms_templates', 'SMS Templates', items=[self.get_blank_menu_item()] + list(self.template_data.keys())
         )
 
     def set_template_id_from_name(self):
