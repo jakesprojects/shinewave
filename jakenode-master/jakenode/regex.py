@@ -10,7 +10,7 @@ class regex_templates():
         }
 
     def get_all_templates(self):
-        return list(self.templates_dict)
+        return sorted(list(self.templates_dict))
 
     def get_examples(self, template_name):
         return self.templates_dict[template_name]['examples']
