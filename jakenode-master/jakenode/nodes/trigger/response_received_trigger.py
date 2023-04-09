@@ -1,12 +1,13 @@
 import html
 
 from jakenode.nodes.trigger.trigger_node import TriggerNode
+from jakenode.regex import regex_templates
 
 
 """
 TO DO:
     * Add checkboxes to simple response, allowing for case-insensitivity and stripping special characters
-    * Build templatized and fuzzy responses
+    * Build templatized responses
 """
 
 
@@ -27,7 +28,7 @@ class ResponseReceivedTrigger(TriggerNode):
     def validate_has_upstream_sms(self):
         upstream_node_types = [i.get_property('type_') for i in self.get_upstream_nodes()]
         if not 'nodes.outreach.SMSOutreach' in upstream_node_types:
-            raise ValueError('SMS response triggers require an upstream SMS outrach, but none was found.')
+            raise ValueError('SMS response triggers require an upstream SMS outreach, but none was found.')
 
 
 class ExactResponseReceivedTrigger(ResponseReceivedTrigger):
@@ -88,6 +89,7 @@ class ExactResponseReceivedTrigger(ResponseReceivedTrigger):
     def validate_node(self):
         self.validate_has_text_entered()
         self.validate_has_upstream_sms()
+        self.validate_has_downstream_outreach()
 
 
 class FuzzyResponseReceivedTrigger(ResponseReceivedTrigger):
@@ -103,11 +105,16 @@ class FuzzyResponseReceivedTrigger(ResponseReceivedTrigger):
     NODE_NAME = 'Fuzzy Response Received'
 
     def __init__(self):
-        super(FuzzyResponseReceivedTrigger, self).__init__(has_input=True)
+        super(FuzzyResponseReceivedTrigger, self).__init__()
 
-        self.add_combo_menu('response_template', 'Response Template', items=[''])
+        self.regex_templates = regex_templates()
+        self.regex_template_names = self.regex_templates.get_all_templates()
 
-        # self.set_property('color', (215, 254, 203))
+        self.add_combo_menu(
+            'response_template', 'Response Template', items=[self.get_blank_menu_item()] + self.regex_template_names
+        )
+
+        self.set_property('color', (245, 194, 152))
 
     def get_display_info(self, node_templates_root=None):
         """
@@ -117,14 +124,37 @@ class FuzzyResponseReceivedTrigger(ResponseReceivedTrigger):
         """
 
         node_name = self.get_node_name(html_safe=True)
-
-        display_text = ''
+        warning = self.get_html_validation_text(self.validate_has_template_selected)
+        if warning:
+            display_text = warning
+        else:
+            response_template_name = self.get_property('response_template').strip()
+            leading_example_text = '<br>&nbsp;&nbsp;&nbsp;'
+            examples = self.regex_templates.get_examples(response_template_name)
+            examples = f'\n                    {leading_example_text}'.join(examples)
+            display_text = f"""
+                <p>
+                    The next node will be triggered if an SMS response is received that looks like 
+                    "{response_template_name}". Some examples include:
+                    {leading_example_text}{examples}
+                </p>
+            """
 
         return node_name, display_text
 
+    def validate_has_template_selected(self):
+        """
+            Validates that a template is selected.
+        """
+        response_template = self.get_property('response_template').strip()
+        if not response_template:
+            raise ValueError('A response type has not been selected for this node.')
+
+
     def validate_node(self):
-        """
-        """
+        self.validate_has_template_selected()
+        self.validate_has_upstream_sms()
+        self.validate_has_downstream_outreach()
 
 
 class TemplatizedResponseReceivedTrigger(ResponseReceivedTrigger):
@@ -140,11 +170,11 @@ class TemplatizedResponseReceivedTrigger(ResponseReceivedTrigger):
     NODE_NAME = 'Templatized Response Received'
 
     def __init__(self):
-        super(FuzzyResponseReceivedTrigger, self).__init__(has_input=True)
+        super(FuzzyResponseReceivedTrigger, self).__init__()
 
         self.add_combo_menu('response_template', 'Response Template', items=[''])
 
-        # self.set_property('color', (215, 254, 203))
+        self.set_property('color', (227, 152, 245))
 
     def get_display_info(self, node_templates_root=None):
         """
@@ -162,3 +192,5 @@ class TemplatizedResponseReceivedTrigger(ResponseReceivedTrigger):
     def validate_node(self):
         """
         """
+        self.validate_has_upstream_sms()
+        self.validate_has_downstream_outreach()
