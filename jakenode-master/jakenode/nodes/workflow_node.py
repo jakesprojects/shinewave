@@ -182,7 +182,7 @@ class WorkflowNode(BaseNode):
 
     def get_blank_menu_item(self):
         node_name = self.get_node_name(html_safe=True)
-        return ' ' * (len(node_name) + 5)
+        return ' ' * (len(node_name) + 10)
 
     # Dummy methods to prevent breakages if methods are called on node types that don't support them
 
