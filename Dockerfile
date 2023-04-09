@@ -38,6 +38,5 @@ RUN pip3 install /srv/NodeGraphQt
 RUN pip3 install /srv/jakenode
 
 WORKDIR "/srv"
-RUN adduser --disabled-password --gecos "" myuser
-USER myuser
+
 CMD ["jupyter", "notebook", "--port=8888", "--no-browser", "--ip=0.0.0.0", "--allow-root"]
