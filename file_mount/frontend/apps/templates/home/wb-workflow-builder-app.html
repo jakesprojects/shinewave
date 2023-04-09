@@ -4,33 +4,33 @@
 
 {% block stylesheets %}
 <link rel="stylesheet" href="{{url_for('static', filename='/jstree/dist/themes/default/style.min.css')}}" />
+<link href="/static/assets/css/toggle-switchy.css" rel="stylesheet" />
 <style type="text/css">
     *{padding:0;margin:0;}
 
-    body{
-        font-family:Verdana, Geneva, sans-serif;
-        font-size:18px;
-        background-color:#CCC;
+        body{
+            font-family:Verdana, Geneva, sans-serif;
+            font-size:18px;
+            background-color:#CCC;
+        }
+
+    .subcontrolbox {
+        text-align:center;
+        background: rgba(153, 211, 247, .8);
+        border-radius: 20px;
+        padding:10px
     }
 
-.subcontrolbox {
-    text-align:center;
-    background: rgba(153, 211, 247, .8);
-    border-radius: 20px;
-    padding:10px
-}
-
-.headerControlBox {
-    text-align:center;
-    background: rgba(255, 255, 255, 0.5);
-    position: absolute;
-    top: 100%;
-    /*bottom:47%;*/
-    right:0%;
-    border-radius: 20px;
-    padding:10px
-}
-
+    .headerControlBox {
+        text-align:center;
+        background: rgba(255, 255, 255, 0.5);
+        position: absolute;
+        top: 100%;
+        /*bottom:47%;*/
+        right:0%;
+        border-radius: 20px;
+        padding:10px
+    }
 </style>
 {% endblock stylesheets %}
 
@@ -70,7 +70,6 @@
         }
         addControls();
     </script>
-    <link href="/static/assets/css/toggle-switchy.css" rel="stylesheet" />
     <iframe id="builder-app" src="http://{{ app_server_address }}:{{ xpra_port }}" title="workflow-builder-app" style="width:100%;height:70%;"></iframe>
     <iframe src="http://{{ app_server_address }}:{{ info_panel_port }}" title="info-panel" style="width:100%;height:25%;opacity"></iframe>
 </body>
