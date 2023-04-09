@@ -51,7 +51,7 @@ class OutboundWorkflowChange(OutreachNode):
             self.template_data[template_name] = individual_template_dict
 
         self.add_combo_menu(
-            'workflow_templates', 'Workflows', items=[' ' * 15] + list(self.template_data.keys())
+            'workflow_templates', 'Workflows', items=[self.get_blank_menu_item()] + list(self.template_data.keys())
         )
 
     def set_template_id_from_name(self):
