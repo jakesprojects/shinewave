@@ -48,31 +48,29 @@
         }));
         return false;
     }
+    function addControls() {
+        console.log('test');
+        document.getElementById("header-additional-controls").innerHTML +=
+        '<div class="headerControlBox">\
+            <div name="demo" id="test" method="get" class="subcontrolbox">\
+                <input type="text" id="operation" value="toggle" name="operation" style="display:none" required>\
+                <span class="label" style="color:black;font-size:15px;">Enable Workflow<br></span>\
+                <label class="toggle-switchy" for="example_colors_4" data-size="sm" data-style="rounded" data-color="green" data-text="false">\
+                        <input {{ enabled_toggle | safe }} type="checkbox" id="example_colors_4">\
+                        <span class="toggle" onclick="toggleSwitch({{ workflow_id }})">\
+                            <span class="switch"></span>\
+                        </span>\
+                </label>\
+            </div>\
+            <br>\
+            <a class="btn btn-danger" style="margin-left:auto;margin-bottom:10%;opacity:.9;" href="/wb-reload?workflow_id={{ workflow_id }}">\
+                    Force Reload<br>App\
+            </a>\
+        </div>';
+    }
+    addControls();
     </script>
     <link href="/static/assets/css/toggle-switchy.css" rel="stylesheet" />
-    <script>
-        function addControls() {
-            console.log('test');
-            document.getElementById("header-additional-controls").innerHTML +=
-            '<div class="headerControlBox">\
-                <div name="demo" id="test" method="get" class="subcontrolbox">\
-                    <input type="text" id="operation" value="toggle" name="operation" style="display:none" required>\
-                    <span class="label" style="color:black;font-size:15px;">Enable Workflow<br></span>\
-                    <label class="toggle-switchy" for="example_colors_4" data-size="sm" data-style="rounded" data-color="green" data-text="false">\
-                            <input {{ enabled_toggle | safe }} type="checkbox" id="example_colors_4">\
-                            <span class="toggle" onclick="toggleSwitch({{ workflow_id }})">\
-                                <span class="switch"></span>\
-                            </span>\
-                    </label>\
-                </div>\
-                <br>\
-                <a class="btn btn-danger" style="margin-left:auto;margin-bottom:10%;opacity:.9;" href="/wb-reload?workflow_id={{ workflow_id }}">\
-                        Force Reload<br>App\
-                </a>\
-            </div>';
-        }
-        addControls();
-    </script>
     <iframe id="builder-app" src="http://{{ app_server_address }}:{{ xpra_port }}" title="workflow-builder-app" style="width:100%;height:70%;"></iframe>
     <iframe src="http://{{ app_server_address }}:{{ info_panel_port }}" title="info-panel" style="width:100%;height:25%;opacity"></iframe>
 </body>
