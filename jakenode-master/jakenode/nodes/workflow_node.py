@@ -171,6 +171,19 @@ class WorkflowNode(BaseNode):
         else:
             self.create_property(property_name, value)
 
+    def get_html_warning(self, text):
+        return f'<p style="background-color:red;">{text}</p>'
+
+    def get_html_validation_text(self, validation_method):
+        try:
+            validation_method()
+        except ValueError as exception:
+            return self.get_html_warning(exception)
+
+    def get_blank_menu_item(self):
+        node_name = self.get_node_name(html_safe=True)
+        return ' ' * (len(node_name) + 5)
+
     # Dummy methods to prevent breakages if methods are called on node types that don't support them
 
     def get_display_info(self, node_templates_root=None):
