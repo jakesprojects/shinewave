@@ -39,7 +39,7 @@ def get_context_menu_commands():
                 '&Outreach': OrderedDict({
                     'API': ('add_node_api_outreach', ''),
                     'Email': ('add_node_email_outreach', ''),
-                    'IVR': ('add_node_ivr_outreach', ''),
+                    # 'IVR': ('add_node_ivr_outreach', ''),
                     'SMS': ('add_node_sms_outreach', ''),
                     'Workflow Change': ('add_node_workflow_change_outreach', '')
                 }),
@@ -396,7 +396,7 @@ class graph_modifier():
 
 
     def add_node_fuzzy_response_received_trigger(self, graph):
-        pass
+        graph.create_node('nodes.trigger.FuzzyResponseReceivedTrigger')
 
 
     def add_node_templatized_response_received_trigger(self, graph):
