@@ -5,7 +5,9 @@ Copyright (c) 2019 - present AppSeed.us
 
 from datetime import datetime
 import html
+from io import StringIO
 import json
+import re
 from time import sleep
 import subprocess
 
@@ -977,13 +979,86 @@ def recipient_file_upload_ui():
     return render_template('home/rm-file-upload.html', segment=get_segment(request), upload_id=random_key)
 
 
-@blueprint.route('/file-upload', methods=['POST', 'GET'])
+@blueprint.route('/recipient-file-upload', methods=['POST', 'GET'])
 @login_required
-def file_upload():
+def recipient_file_upload():
     file = request.files.get('file')
     upload_id = request.args.get('upload_id')
 
     file_storage_connector.send_raw_upload(account_id=ACCOUNT_ID, upload_id=upload_id, upload_file=file)
 
     return json.dumps({'ok': True})
-    # return render_template('home/api-outbound-templates.html', triggers_table='x', segment=get_segment(request))
+
+@blueprint.route('/rm-file-upload-validation')
+@blueprint.route('/rm-file-upload-validation.html')
+@login_required
+def recipient_file_upload_validation():
+    try:
+        upload_id = request.args.get('upload_id')
+        upload_file_contents = file_storage_connector.read_raw_upload(account_id=ACCOUNT_ID, upload_id=upload_id)
+        upload_file = StringIO(upload_file_contents)
+        upload_df = pd.read_csv(upload_file)
+
+        column_aliases = {
+            'first_name': '',
+            'last_name': '',
+            'phone_number': '',
+            'email': '',
+            'key_date': '',
+            'key_time': '',
+            'time_zone': ''
+        }
+
+        upload_column_list = list(upload_df.columns)
+        for column in column_aliases:
+            if column in upload_column_list:
+                column_aliases[column] = column
+
+        transformed_columns = {}
+
+        def _dedupe_underscores(text):
+            while '__' in text:
+                text = text.replace('__', '_')
+            return text
+
+        for alias in upload_column_list:
+            transformed_column_versions = [
+                re.sub('[^0-9a-zA-Z]', '_', alias),
+                re.sub('[^0-9a-zA-Z ]', '', alias).replace(' ', '_')
+            ]
+            transformed_column_versions = [_dedupe_underscores(i) for i in transformed_column_versions]
+            transformed_columns[alias] = transformed_column_versions
+
+        for column in column_aliases:
+            for alias, transformed_names in transformed_columns.items():
+                if (not column_aliases[column]) and (column in transformed_names):
+                    column_aliases[column] = alias
+
+        column_validation_notes = {}
+        rename_dict = {}
+        for column, alias in column_aliases.items():
+            if not alias:
+                column_validation_notes[column] = ('Column not found in upload', 'info')
+                upload_df[column] = None
+            elif column != alias:
+                rename_dict[alias] = column
+                column_validation_notes[column] = (f'Column auto-renamed from {alias}', 'info')
+
+        upload_df.fillna('', inplace=True)
+        # mandatory_columns = first_name,last_name,phone_number,email,key_date,key_time,time_zone,custom_data,active
+
+        upload_table = upload_df.to_html(
+            table_id='basic-datatables',
+            border=0,
+            classes=['display', 'table', 'table-striped', 'table-hover'],
+            index=False,
+            justify='inherit'
+        )
+
+        return render_template(
+            'home/rm-file-upload-validation.html', segment=get_segment(request), recipients_table=upload_table
+        )
+    except Exception as e:
+        return render_template(
+            'home/rm-file-upload-validation.html', segment=get_segment(request), recipients_table=e
+        )
