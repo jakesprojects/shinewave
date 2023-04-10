@@ -98,10 +98,22 @@ class APITrigger(TriggerNode):
 
         api_endpoint = self.get_property('api_endpoint')
 
+        subdomain = run_query(
+            """
+                SELECT
+                    subdomain
+                FROM account
+                WHERE id = ?
+            """,
+            sql_parameters=[self.account_id],
+            return_data_format=list
+        )
+        subdomain = subdomain[0][0]
+
         display_text = f"""
             <p>
                 This node will trigger when the following api_endpoint is hit:
-                <br>&nbsp;&nbsp;{{'api_endpoint': '{api_endpoint}'}}
+                <br>&nbsp;&nbsp;&nbsp;&nbsp;https://{subdomain}.shinewave.io/{api_endpoint}
             </p>
             <p style="background-color:red;"><b>Caution!</b> Deleting this node will delete the API endpoint.</p>
         """
