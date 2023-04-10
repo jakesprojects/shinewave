@@ -1,4 +1,4 @@
-FROM python:3.7
+FROM python:3.8
 
 RUN mkdir -p /run/user/1000/xpra
 RUN mkdir /run/xpra
@@ -22,9 +22,7 @@ RUN pip3 install -r requirements.txt
 
 RUN apt-get -y install x11-apps
 ENV DISPLAY :80
-# ENV DISPLAY localhost:0
 
-RUN apt install -y chromium
 RUN wget -q https://xpra.org/gpg.asc -O- | apt-key add -
 RUN apt update
 RUN apt -y install xpra
