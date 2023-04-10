@@ -10,13 +10,13 @@ from time import sleep
 import subprocess
 
 from apps.home import blueprint
-from flask import render_template, request, redirect, url_for
+from flask import current_app, render_template, request, redirect, url_for
 from flask_login import login_required
 from jinja2 import TemplateNotFound
 import pandas as pd
 import requests
 
-from jakenode import database_connector
+from jakenode import database_connector, file_storage_connector
 
 ACCOUNT_ID = 1
 APP_HANDLER_PATH = '/srv/node_app/handlers'
@@ -241,14 +241,14 @@ def template_submit():
         workflow_category = template_data.get('workflow_category', [None])[0]
         if template_type and workflow_category:
             node_master_type, node_parent_type, node_detail_type = template_type.split('.')
-            database_connector.edit_template(
+            file_storage_connector.edit_template(
                 contents=template_contents,
                 node_parent_type=node_parent_type,
                 node_detail_type=node_detail_type,
                 workflow_category=workflow_category,
                 template_id=template_id
             )
-            print(f"""@@@database_connector.edit_template(
+            print(f"""@@@file_storage_connector.edit_template(
                 contents={template_contents},
                 node_parent_type={node_parent_type},
                 node_detail_type={node_detail_type},
@@ -798,7 +798,7 @@ def edit_templates_app():
         template_type = template_type[0]
         node_master_type, node_parent_type, node_detail_type = template_type.split('.')
         try:
-            template_contents = database_connector.fetch_template(
+            template_contents = file_storage_connector.fetch_template(
                 node_parent_type=node_parent_type,
                 node_detail_type=node_detail_type,
                 workflow_category=folder_name,
@@ -969,11 +969,18 @@ def api_outbound_templates():
     return render_template('home/api-outbound-templates.html', triggers_table='x', segment=get_segment(request))
 
 
+@blueprint.route('/rm-file-upload')
+@blueprint.route('/rm-file-upload.html')
+@login_required
+def recipient_file_upload_ui():
+    random_key = database_connector.get_random_key([datetime.now()])
+    return render_template('home/rm-file-upload.html', segment=get_segment(request), upload_id=random_key)
+
+
 @blueprint.route('/file-upload', methods=['POST'])
 @login_required
 def file_upload():
     file = request.files.get('file')
-    random_key = database_connector.get_random_key([datetime.now()])
     print(file, random_key)
     return json.dumps({'ok': True})
     # return render_template('home/api-outbound-templates.html', triggers_table='x', segment=get_segment(request))

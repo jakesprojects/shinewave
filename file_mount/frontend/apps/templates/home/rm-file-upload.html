@@ -20,7 +20,37 @@
                         <div class="card-body" style='background:rgb(255, 255, 255, .9);'>
                         	{{ dropzone.load_js() }}
                         	{{ dropzone.create(action='/file-upload') }}
-                        	{{ dropzone.config(redirect_url='/rm-file-upload-validation', custom_options='acceptedFiles: ".csv", maxFilesize: 500') }}
+                        	<script type="text/javascript">
+						        Dropzone.options.myDropzone = {
+						          init: function() {
+						              
+						            this.on("queuecomplete", function(file) {
+						            // Called when all files in the queue finish uploading.
+						            window.location = "/rm-file-upload-validation?upload_id={{ upload_id }}";
+						            });  // redirect after queue complete
+						                // upload queue when button click
+						                // custom init code
+						          },
+						            // click upload options
+						          uploadMultiple: false,
+						          parallelUploads: 2,
+						          paramName: "file", // The name that will be used to transfer the file
+						          maxFilesize: 3, // MB
+						          acceptedFiles: "image/*, audio/*, video/*, text/*, application/*",
+						          maxFiles: null,
+						          dictDefaultMessage: `Drop files here or click to upload.`, // message display on drop area
+						          dictFallbackMessage: "Your browser does not support drag'n'drop file uploads.",
+						          dictInvalidFileType: "You can't upload files of this type.",
+						          dictFileTooBig: "File is too big {{filesize}}. Max filesize: {{maxFilesize}}MiB.",
+						          dictResponseError: "Server error: {{statusCode}}",
+						          dictMaxFilesExceeded: "You can't upload any more files.",
+						          dictCancelUpload: "Cancel upload",
+						          dictRemoveFile: "Remove file",
+						          dictCancelUploadConfirmation: "You really want to delete this file?",
+						          dictUploadCanceled: "Upload canceled",
+						          acceptedFiles: ".csv", maxFilesize: 500,  // custom options code
+						        };
+                        	</script>
                         </div>
                     </div>
                 </div>

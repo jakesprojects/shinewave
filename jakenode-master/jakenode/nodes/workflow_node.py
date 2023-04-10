@@ -6,7 +6,8 @@ from NodeGraphQt.constants import ViewerEnum
 from NodeGraphQt.widgets.node_widgets import NodeBaseWidget
 from Qt import QtCore, QtWidgets
 
-from jakenode.database_connector import fetch_template, run_query
+from jakenode.database_connector import run_query
+from jakenode.file_storage_connector import fetch_template
 
 
 class WorkflowNode(BaseNode):
