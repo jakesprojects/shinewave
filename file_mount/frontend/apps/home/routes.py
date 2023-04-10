@@ -3,6 +3,7 @@
 Copyright (c) 2019 - present AppSeed.us
 """
 
+from datetime import datetime
 import html
 import json
 from time import sleep
@@ -972,6 +973,7 @@ def api_outbound_templates():
 @login_required
 def file_upload():
     file = request.files.get('file')
-    print(file)
+    random_key = database_connector.get_random_key([datetime.now()])
+    print(file, random_key)
     return json.dumps({'ok': True})
     # return render_template('home/api-outbound-templates.html', triggers_table='x', segment=get_segment(request))
