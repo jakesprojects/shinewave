@@ -1,0 +1,53 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Workflow Builder {% endblock %} 
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{{url_for('static', filename='/jstree/dist/themes/default/style.min.css')}}" />
+<link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
+{% endblock stylesheets %}
+
+{% block content %}
+<body>
+    <div class="content">
+        <div class="page-inner">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">Recipient File Upload</h4>
+                        </div>
+                        <div class="card-body" style='background:rgb(255, 255, 255, .9);'>
+                            <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+                            <form action="/target" class="dropzone" id="my-great-dropzone">
+                            	<div class="dz-message needsclick">
+                            	Drop files here or click to upload.
+                            	</div>
+                            </form>
+							<script>
+								Dropzone.options.myGreatDropzone = { // camelized version of the `id`
+									url: '/file-upload',
+									paramName: "file", // The name that will be used to transfer the file
+									maxFilesize: 500, // MB
+									acceptedFiles: '.csv'
+									// accept: function(file, done) {
+									// if (file.name == "justinbieber.jpg") {
+									// 	done("Naha, you don't.");
+									// }
+									// else { done(); }
+								// }
+								};
+							</script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+{% endblock javascripts %}

@@ -966,3 +966,11 @@ def api_triggers():
 @login_required
 def api_outbound_templates():
     return render_template('home/api-outbound-templates.html', triggers_table='x', segment=get_segment(request))
+
+
+@blueprint.route('/file-upload', methods=['POST'])
+@login_required
+def file_upload():
+    file = request.files.get('file')
+    return json.dumps({'ok': True})
+    # return render_template('home/api-outbound-templates.html', triggers_table='x', segment=get_segment(request))
