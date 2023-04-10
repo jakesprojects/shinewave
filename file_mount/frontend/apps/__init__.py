@@ -5,6 +5,7 @@ Copyright (c) 2019 - present AppSeed.us
 
 from flask import Flask
 from flask_ckeditor import CKEditor
+from flask_dropzone import Dropzone
 from flask_login import LoginManager
 from flask_sqlalchemy import SQLAlchemy
 from importlib import import_module
@@ -12,6 +13,7 @@ from importlib import import_module
 
 db = SQLAlchemy()
 login_manager = LoginManager()
+dropzone = Dropzone()
 
 
 def register_extensions(app):
@@ -43,4 +45,5 @@ def create_app(config):
     register_blueprints(app)
     configure_database(app)
     ckeditor = CKEditor(app)
+    dropzone.init_app(app)
     return app

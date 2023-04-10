@@ -972,5 +972,6 @@ def api_outbound_templates():
 @login_required
 def file_upload():
     file = request.files.get('file')
+    print(file)
     return json.dumps({'ok': True})
     # return render_template('home/api-outbound-templates.html', triggers_table='x', segment=get_segment(request))
