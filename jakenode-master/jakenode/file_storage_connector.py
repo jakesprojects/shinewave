@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import pandas as pd
+
 APP_HANDLER_PATH = '/srv/node_app'
 APP_DATA_PATH = f'{APP_HANDLER_PATH}/data'
 TEMPLATES_PATH = f'{APP_DATA_PATH}/templates'
@@ -10,6 +12,12 @@ def send_raw_upload(account_id, upload_id, upload_file, local_parent_folder=f'{A
         local_folder = f'{local_parent_folder}/{account_id}'
         Path(local_folder).mkdir(parents=True, exist_ok=True)
         upload_file.save(f'{local_folder}/{upload_id}')
+
+
+def read_raw_upload(account_id, upload_id, local_parent_folder=f'{APP_DATA_PATH}/raw_uploads'):
+    if local_parent_folder:
+        with open(f'{local_parent_folder}/{account_id}/{upload_id}', 'r') as file:
+            return file.read()
 
 
 def edit_template(
