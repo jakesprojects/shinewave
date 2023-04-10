@@ -1,2 +1,2 @@
-id,name,contact_phone_number,contact_email,active
-INTEGER,TEXT,INTEGER,TEXT,TEXT
+id,name,contact_phone_number,contact_email,subdomain,active
+INTEGER,TEXT,INTEGER,TEXT,TEXT,TEXT
