@@ -19,7 +19,14 @@
                         </div>
                         <div class="card-body" style='background:rgb(255, 255, 255, .9);'>
                         	{{ dropzone.load_js() }}
-                        	{{ dropzone.create(action='/file-upload') }}
+                        	<form
+                        		action="/recipient-file-upload?upload_id={{ upload_id }}"
+                        		method="post"
+                        		class="dropzone"
+                        		id="myDropzone"
+                        		enctype="multipart/form-data"
+                    		>
+                        	</form>
                         	<script type="text/javascript">
 						        Dropzone.options.myDropzone = {
 						          init: function() {
@@ -33,10 +40,8 @@
 							          },
 							            // click upload options
 						          uploadMultiple: false,
-						          parallelUploads: 2,
+						          parallelUploads: 1,
 						          paramName: "file", // The name that will be used to transfer the file
-						          maxFilesize: 3, // MB
-						          acceptedFiles: "image/*, audio/*, video/*, text/*, application/*",
 						          maxFiles: null,
 						          dictDefaultMessage: `Drop files here or click to upload.`, // message display on drop area
 						          dictFallbackMessage: "Your browser does not support drag'n'drop file uploads.",

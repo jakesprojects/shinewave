@@ -6,7 +6,7 @@ TEMPLATES_PATH = f'{APP_DATA_PATH}/templates'
 
 
 def send_raw_upload(account_id, upload_id, upload_file, local_parent_folder=f'{APP_DATA_PATH}/raw_uploads'):
-    if local_folder:
+    if local_parent_folder:
         local_folder = f'{local_parent_folder}/{account_id}'
         Path(local_folder).mkdir(parents=True, exist_ok=True)
         upload_file.save(f'{local_folder}/{upload_id}')

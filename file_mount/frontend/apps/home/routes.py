@@ -977,10 +977,13 @@ def recipient_file_upload_ui():
     return render_template('home/rm-file-upload.html', segment=get_segment(request), upload_id=random_key)
 
 
-@blueprint.route('/file-upload', methods=['POST'])
+@blueprint.route('/file-upload', methods=['POST', 'GET'])
 @login_required
 def file_upload():
     file = request.files.get('file')
-    print(file, random_key)
+    upload_id = request.args.get('upload_id')
+
+    file_storage_connector.send_raw_upload(account_id=ACCOUNT_ID, upload_id=upload_id, upload_file=file)
+
     return json.dumps({'ok': True})
     # return render_template('home/api-outbound-templates.html', triggers_table='x', segment=get_segment(request))
