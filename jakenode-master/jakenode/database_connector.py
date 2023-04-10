@@ -1,3 +1,6 @@
+from random import randint
+from datetime import datetime
+import hashlib
 import csv
 import os
 from pathlib import Path
@@ -10,6 +13,25 @@ APP_HANDLER_PATH = '/srv/node_app'
 APP_DATA_PATH = f'{APP_HANDLER_PATH}/data'
 DATABASE = f'{APP_DATA_PATH}/test_db.db'
 TEMPLATES_PATH = f'{APP_DATA_PATH}/templates'
+
+
+def get_random_key(value_list, random_value_digits=7):
+    random_value_endcap = '9' * random_value_digits
+    random_value_endcap = int(random_value_endcap)
+
+    random_value = randint(1, random_value_endcap)
+    random_value_formatter = f'{{:0{random_value_digits}d}}'
+    random_value = random_value_formatter.format(random_value)
+    
+    value_list = [str(i) for i in value_list]
+    value_list.append(random_value)
+    random_str = '-'.join(value_list)
+    random_str = random_str.encode()
+    print(random_str)
+
+    sha_key = hashlib.new('sha256')
+    sha_key.update(random_str)
+    return sha_key.hexdigest()
 
 
 def fetch_template(

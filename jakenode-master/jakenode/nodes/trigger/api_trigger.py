@@ -1,8 +1,6 @@
-import hashlib
 import json
-import random
 
-from jakenode.database_connector import run_query
+from jakenode.database_connector import get_random_key, run_query
 from jakenode.nodes.trigger.trigger_node import TriggerNode
 
 
@@ -68,21 +66,18 @@ class APITrigger(TriggerNode):
     def generate_api_endpoint(self):
         existing_api_data = self.fetch_api_data()
 
-        random_key = random.randint(0, 9999)
         key_values = [
             self.account_id,
             self.workflow_id,
             existing_api_data['workflow_version'],
-            self.get_property('id'),
-            f'{random_key:04}'
+            self.get_property('id')
         ]
-        key_values = [str(i) for i in key_values]
-        uncompressed_key = '-'.join(key_values)
-        compressed_key = hashlib.md5(uncompressed_key.encode()).hexdigest()
-        if compressed_key in existing_api_data['existing_api_endpoints']:
+
+        api_key = get_random_key(key_values)
+        if api_key in existing_api_data['existing_api_endpoints']:
             return generate_api_endpoint()
         else:
-            return compressed_key
+            return api_key
 
     def load_templates(self):
         self.safe_set_property('api_endpoint', self.generate_api_endpoint())
