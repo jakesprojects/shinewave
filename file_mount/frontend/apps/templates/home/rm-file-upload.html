@@ -25,13 +25,13 @@
 						          init: function() {
 						              
 						            this.on("queuecomplete", function(file) {
-						            // Called when all files in the queue finish uploading.
-						            window.location = "/rm-file-upload-validation?upload_id={{ upload_id }}";
-						            });  // redirect after queue complete
-						                // upload queue when button click
-						                // custom init code
-						          },
-						            // click upload options
+							            // Called when all files in the queue finish uploading.
+							            window.location = "/rm-file-upload-validation?upload_id={{ upload_id }}";
+							            });  // redirect after queue complete
+							                // upload queue when button click
+							                // custom init code
+							          },
+							            // click upload options
 						          uploadMultiple: false,
 						          parallelUploads: 2,
 						          paramName: "file", // The name that will be used to transfer the file
