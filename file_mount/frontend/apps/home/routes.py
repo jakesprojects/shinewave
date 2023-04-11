@@ -994,25 +994,20 @@ def recipient_file_upload():
 @blueprint.route('/rm-file-upload-validation.html')
 @login_required
 def recipient_file_upload_validation():
-    """
-        TO DO:
-            * Add validation for phone numbers, email addresses, dates, times, and timezones
-            * Add check for new column names
-    """
-    try:
-        upload_id = request.args.get('upload_id')
-        upload_file_contents = file_storage_connector.read_raw_upload(account_id=ACCOUNT_ID, upload_id=upload_id)
-        file_validator = FileValidator(upload_file_contents)
-        file_validator.validate_file()
+    # try:
+    upload_id = request.args.get('upload_id')
+    upload_file_contents = file_storage_connector.read_raw_upload(account_id=ACCOUNT_ID, upload_id=upload_id)
+    file_validator = FileValidator(upload_file_contents)
+    file_validator.validate_file()
 
-        return render_template(
-            'home/rm-file-upload-validation.html',
-            segment=get_segment(request),
-            recipients_table=file_validator.upload_table,
-            column_lookup_function=file_validator.column_lookup_function,
-            header=file_validator.header
-        )
-    except Exception as e:
-        return render_template(
-            'home/rm-file-upload-validation.html', segment=get_segment(request), recipients_table=e
-        )
+    return render_template(
+        'home/rm-file-upload-validation.html',
+        segment=get_segment(request),
+        recipients_table=file_validator.upload_table,
+        column_lookup_function=file_validator.column_lookup_function,
+        header=file_validator.header
+    )
+    # except Exception as e:
+    #     return render_template(
+    #         'home/rm-file-upload-validation.html', segment=get_segment(request), recipients_table=e
+    #     )
