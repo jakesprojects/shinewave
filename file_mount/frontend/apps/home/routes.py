@@ -993,21 +993,21 @@ def recipient_file_upload():
 @blueprint.route('/rm-file-upload-validation.html')
 @login_required
 def recipient_file_upload_validation():
+    """
+        TO DO:
+            * Add validation for phone numbers, email addresses, dates, times, and timezones
+            * Add check for new column names
+    """
     try:
         upload_id = request.args.get('upload_id')
         upload_file_contents = file_storage_connector.read_raw_upload(account_id=ACCOUNT_ID, upload_id=upload_id)
         upload_file = StringIO(upload_file_contents)
         upload_df = pd.read_csv(upload_file)
+        base_columns = [
+            'provider_id', 'first_name', 'last_name', 'phone_number', 'email', 'key_date', 'key_time', 'time_zone'
+        ]
 
-        column_aliases = {
-            'first_name': '',
-            'last_name': '',
-            'phone_number': '',
-            'email': '',
-            'key_date': '',
-            'key_time': '',
-            'time_zone': ''
-        }
+        column_aliases = {i: '' for i in base_columns}
 
         upload_column_list = list(upload_df.columns)
         for column in column_aliases:
@@ -1045,7 +1045,7 @@ def recipient_file_upload_validation():
                 elif column in ['phone_number', 'email']:
                     message_level = 'warning'
                 else:
-                    message_level = 'info'
+                    message_level = 'missing'
 
                 column_validation_notes[column] = (f'Column {column} not found in upload', message_level)
                 upload_df[column] = None
@@ -1059,7 +1059,7 @@ def recipient_file_upload_validation():
         upload_df = upload_df.rename(columns=rename_dict)
         upload_df.fillna('', inplace=True)
         color_dict = {}
-        column_lookup_json = {'failure': 'red', 'warning': 'yellow', 'info': 'green'}
+        column_lookup_json = {'failure': 'red', 'warning': 'yellow', 'info': 'green', 'missing': 'grey'}
         for column in upload_df.columns:
             upload_df[column] = upload_df[column].astype(str)
             upload_df[column] = upload_df[column].map(html.escape)
@@ -1067,8 +1067,11 @@ def recipient_file_upload_validation():
             column_lookup_json[column] = {
                 'msg': message, 'lvl': message_level, 'color': column_lookup_json.get(message_level, '')
             }
+            if column not in base_columns:
+                base_columns.append(column)
 
-        display_df = upload_df.copy()
+        upload_df = upload_df[base_columns]
+
         column_lookup_function = f"""
             function getColumnInfo(column, info_type) {{
                 const columnLookupJSON = {column_lookup_json};
@@ -1077,16 +1080,7 @@ def recipient_file_upload_validation():
             }};
         """
 
-        # for column in display_df.columns:
-        #     if column in column_validation_notes:
-        #         message, message_level = column_validation_notes[column]
-                # column_name_with_message = f"""
-                # {message}
-                # """
-                # display_df = display_df.rename(columns={column: column_name_with_message})
-        # mandatory_columns = first_name,last_name,phone_number,email,key_date,key_time,time_zone,custom_data,active
-
-        upload_table = display_df.to_html(
+        upload_table = upload_df.to_html(
             table_id='basic-datatables',
             border=0,
             classes=['display', 'table', 'table-striped', 'table-hover'],
