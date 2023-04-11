@@ -1023,6 +1023,7 @@ def recipient_file_upload_validation():
 
         for alias in upload_column_list:
             transformed_column_versions = [
+                re.sub('[^0-9a-zA-Z]', '', alias),
                 re.sub('[^0-9a-zA-Z]', '_', alias),
                 re.sub('[^0-9a-zA-Z ]', '', alias).replace(' ', '_')
             ]
@@ -1036,27 +1037,69 @@ def recipient_file_upload_validation():
 
         column_validation_notes = {}
         rename_dict = {}
+        validation_failed_reasons = []
         for column, alias in column_aliases.items():
             if not alias:
-                column_validation_notes[column] = ('Column not found in upload', 'info')
+                if column in ['first_name', 'last_name']:
+                    message_level = 'failure'
+                elif column in ['phone_number', 'email']:
+                    message_level = 'warning'
+                else:
+                    message_level = 'info'
+
+                column_validation_notes[column] = (f'Column {column} not found in upload', message_level)
                 upload_df[column] = None
+
             elif column != alias:
                 rename_dict[alias] = column
-                column_validation_notes[column] = (f'Column auto-renamed from {alias}', 'info')
+                column_validation_notes[column] = (f'Column auto-renamed from "{alias}"', 'info')
+            else:
+                rename_dict[column] = column
 
+        upload_df = upload_df.rename(columns=rename_dict)
         upload_df.fillna('', inplace=True)
+        color_dict = {}
+        column_lookup_json = {'failure': 'red', 'warning': 'yellow', 'info': 'green'}
+        for column in upload_df.columns:
+            upload_df[column] = upload_df[column].astype(str)
+            upload_df[column] = upload_df[column].map(html.escape)
+            message, message_level =  column_validation_notes.get(column, ('', ''))
+            column_lookup_json[column] = {
+                'msg': message, 'lvl': message_level, 'color': column_lookup_json.get(message_level, '')
+            }
+
+        display_df = upload_df.copy()
+        column_lookup_function = f"""
+            function getColumnInfo(column, info_type) {{
+                const columnLookupJSON = {column_lookup_json};
+                var columnInfo = columnLookupJSON[column];
+                return columnInfo[info_type];
+            }};
+        """
+
+        # for column in display_df.columns:
+        #     if column in column_validation_notes:
+        #         message, message_level = column_validation_notes[column]
+                # column_name_with_message = f"""
+                # {message}
+                # """
+                # display_df = display_df.rename(columns={column: column_name_with_message})
         # mandatory_columns = first_name,last_name,phone_number,email,key_date,key_time,time_zone,custom_data,active
 
-        upload_table = upload_df.to_html(
+        upload_table = display_df.to_html(
             table_id='basic-datatables',
             border=0,
             classes=['display', 'table', 'table-striped', 'table-hover'],
             index=False,
+            escape=False,
             justify='inherit'
         )
 
         return render_template(
-            'home/rm-file-upload-validation.html', segment=get_segment(request), recipients_table=upload_table
+            'home/rm-file-upload-validation.html',
+            segment=get_segment(request),
+            recipients_table=upload_table,
+            column_lookup_function=column_lookup_function
         )
     except Exception as e:
         return render_template(
