@@ -29,13 +29,21 @@ class FileValidator():
         duped_char = character * 2
         while duped_char in text:
             text = text.replace(duped_char, character)
+
         return text
 
     def validate_us_phone_number(self, phone_number):
         phone_number = str(phone_number).strip()
-        regex_pattern = r'\(?\+?1?\)?[-\. ]?([0-9]{3}[-\. ]?){2}[0-9]{4}'
+        regex_pattern = r'\(?\+?1?\)?[-\. ]?\(?[0-9]{3}\)?[-\. ]?[0-9]{3}[-\. ]?[0-9]{4}'
         if re.sub(regex_pattern, '' , phone_number, 1):
             raise ValueError('Not a valid US phone number')
+
+        phone_number = re.sub('[^0-9]', '', phone_number)
+        if phone_number.startswith('1'):
+            phone_number = phone_number[1:]
+
+        return f'+1 ({phone_number[0:3]}) {phone_number[3:6]}-{phone_number[6:10]}'
+
 
     def validate_email_address(self, email_address):
         email_address = str(email_address).strip()
@@ -43,15 +51,29 @@ class FileValidator():
         if re.sub(regex_pattern, '' , email_address, 1):
             raise ValueError('Not a valid email address')
 
-    def validate_is_not_blank(self, name):
-        if not name.strip():
+        return email_address
+
+    def validate_is_not_blank(self, value):
+        value = str(value).strip()
+        if not value.strip():
             raise ValueError('Field is blank.')
+
+        return value
 
     def validate_columns(self):
         upload_file = StringIO(self.file_contents)
         upload_df = pd.read_csv(upload_file)
         base_columns = [
-            'provider_id', 'first_name', 'last_name', 'phone_number', 'email', 'key_date', 'key_time', 'time_zone'
+            'provider_id',
+            'first_name',
+            'last_name',
+            'phone_number',
+            'email',
+            'key_date',
+            'key_time',
+            'time_zone',
+            'workflow_id',
+            'workflow_name'
         ]
 
         column_aliases = {i: '' for i in base_columns}
@@ -123,10 +145,9 @@ class FileValidator():
 
     def tag_invalid_row_value(self, value, validation_method):
         try:
-            validation_method(value)
             return (
                 True,
-                value
+                validation_method(value)
             )
         except ValueError as e:
             return (

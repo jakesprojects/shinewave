@@ -4,9 +4,9 @@ import json
 
 from jakenode import node_handler
 from jakenode.context_menu import build_context_menu
-from jakenode.database_connector import run_query
 from NodeGraphQt import NodeGraph
 from NodeGraphQt.constants import ViewerEnum
+from shinewave_webapp.database_connector import run_query
 
 
 class GraphHandler(NodeGraph):

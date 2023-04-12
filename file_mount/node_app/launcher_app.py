@@ -6,8 +6,7 @@ import subprocess
 
 from flask import Flask, request
 
-from jakenode.database_connector import run_query
-# from run_two_window_app import run_two_window_app
+from shinewave_webapp.database_connector import run_query
 
 
 ACCOUNT_ID = 1

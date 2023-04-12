@@ -18,7 +18,7 @@ from jinja2 import TemplateNotFound
 import pandas as pd
 import requests
 
-from jakenode import database_connector, file_storage_connector
+from shinewave_webapp import database_connector, file_storage_connector
 from shinewave_webapp.file_validator import FileValidator
 
 ACCOUNT_ID = 1

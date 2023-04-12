@@ -1,6 +1,5 @@
 import json
 
-from jakenode.database_connector import get_random_key, run_query
 from jakenode.nodes.trigger.trigger_node import TriggerNode
 
 
@@ -19,7 +18,7 @@ class APITrigger(TriggerNode):
         super(APITrigger, self).__init__(has_input=False)
 
     def fetch_api_data(self):
-        api_data = run_query(
+        api_data = self.run_query(
             """
                 WITH filtered_workflow_nodes AS (
                     SELECT
@@ -73,7 +72,7 @@ class APITrigger(TriggerNode):
             self.get_property('id')
         ]
 
-        api_key = get_random_key(key_values)
+        api_key = self.get_random_key(key_values)
         if api_key in existing_api_data['existing_api_endpoints']:
             return generate_api_endpoint()
         else:
@@ -93,7 +92,7 @@ class APITrigger(TriggerNode):
 
         api_endpoint = self.get_property('api_endpoint')
 
-        subdomain = run_query(
+        subdomain = self.run_query(
             """
                 SELECT
                     subdomain

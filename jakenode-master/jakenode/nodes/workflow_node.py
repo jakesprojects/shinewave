@@ -6,8 +6,8 @@ from NodeGraphQt.constants import ViewerEnum
 from NodeGraphQt.widgets.node_widgets import NodeBaseWidget
 from Qt import QtCore, QtWidgets
 
-from jakenode.database_connector import run_query
-from jakenode.file_storage_connector import fetch_template
+from shinewave_webapp import database_connector
+from shinewave_webapp.file_storage_connector import fetch_template
 
 
 class WorkflowNode(BaseNode):
@@ -45,6 +45,27 @@ class WorkflowNode(BaseNode):
 
         self.node_master_type, self.node_parent_type, self.node_detail_type = node_type.split('.')
 
+    def run_query(
+        self,
+        sql,
+        return_data_format=list,
+        commit=False,
+        database_connection_type='sqlite',
+        database=database_connector.DATABASE,
+        sql_parameters=[]
+    ):
+        return database_connector.run_query(
+            sql=sql,
+            return_data_format=return_data_format,
+            commit=commit,
+            database_connection_type=database_connection_type,
+            database=database,
+            sql_parameters=sql_parameters
+        )
+
+    def get_random_key(self, value_list, random_value_digits=7):
+        return database_connector.get_random_key(value_list=value_list, random_value_digits=random_value_digits)
+
     def set_account_id(self, account_id=None):
         self.account_id = account_id
 
@@ -78,7 +99,7 @@ class WorkflowNode(BaseNode):
         if template_id is not None:
             lookup_where_clause += f' AND t.id={template_id}'
 
-        template_data = run_query(
+        template_data = self.run_query(
             f"""
                 SELECT
                     wc.name AS workflow_category,

@@ -1,4 +1,3 @@
-from jakenode.database_connector import run_query
 from jakenode.nodes.outreach.outreach_node import OutreachNode
 
 
@@ -24,7 +23,7 @@ class OutboundWorkflowChange(OutreachNode):
         if self.workflow_category_id is None:
             raise AttributeError('workflow_category_id has not been set.')
 
-        template_data = run_query(
+        template_data = self.run_query(
             """
                 SELECT
                     NULL AS workflow_category,
