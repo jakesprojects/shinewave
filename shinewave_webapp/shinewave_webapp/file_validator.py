@@ -2,12 +2,12 @@ import html
 from io import StringIO
 import re
 
-
 import pandas as pd
+
 
 """
     TO DO:
-        * Add dates, times, and timezones
+        * Add workflow_name, workflow_id, dates, times, and timezones
         * Delete invalid fields, or whole rows if names are missing
         * Add check for new column names
 """
