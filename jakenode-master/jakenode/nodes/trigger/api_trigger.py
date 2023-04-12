@@ -55,9 +55,9 @@ class APITrigger(TriggerNode):
             workflow_version = 1
             existing_api_endpoints = []
         else:
-            workflow_versions = api_data.get('workflow_version') + [1]
+            workflow_versions = [int(i) for i in api_data.get('workflow_version') if i is not None] + [1]
             workflow_version = max(workflow_versions)
-            custom_data = [json.loads(i) for i in api_data['custom_data']]
+            custom_data = [json.loads(i) for i in api_data['custom_data'] if isinstance(i, str)]
             existing_api_endpoints = [i['api_endpoint'] for i in custom_data if i.get('api_endpoint')]
 
         return {'workflow_version': workflow_version, 'existing_api_endpoints': existing_api_endpoints}
