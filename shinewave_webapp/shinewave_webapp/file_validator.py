@@ -143,23 +143,38 @@ class FileValidator():
         self.upload_table = upload_df
         self.column_lookup_json = column_lookup_json
 
+    def format_tooltiped_value(self, value, tooltip, style_field='color:red;'):
+        if style_field:
+            style_tag = f'style="{style_field}"'
+        else:
+            style_tag = ''
+        return f'<div {style_tag}>{value}<div class="icon-information" title="{tooltip}"></div></div>'
+
     def tag_invalid_row_value(self, value, validation_method):
         try:
-            return (
-                True,
-                validation_method(value)
-            )
+            # Is Valid
+            return (True, validation_method(value))
         except ValueError as e:
-            return (
-                False,
-                f'<div style="color:red;">{value}<div class="icon-information" title="{e}"></div></div>'
-            )
+            # Is Not Valid
+            return (False, self.format_tooltiped_value(value, e))
+
+    def tag_invalid_row(self, row):
+        if not (row['first_name'][0] and row['last_name'][0]):
+            is_valid = False
+            validation_failure_reason = 'First name and last name are required.'
+        elif not (row['phone_number'][0] or row['email'][0]):
+            is_valid = False
+            validation_failure_reason = 'A phone number or an email address is required.'
+        else:
+            return True
+
+        return self.format_tooltiped_value(is_valid, validation_failure_reason)
 
     def validate_rows(self):
         display_table = self.upload_table.copy()
         original_columns = list(display_table.columns)
 
-        display_table['Row Validated'] = True
+        display_table['All Fields Valid'] = True
 
         validation_methods_dict = {
             'phone_number': self.validate_us_phone_number,
@@ -172,21 +187,33 @@ class FileValidator():
             display_table[column_name] = display_table[column_name].map(
                 lambda value: self.tag_invalid_row_value(value, validation_method)
             )
-            display_table['Row Validated'] = display_table.apply(
-                lambda row: all([row['Row Validated'], row[column_name][0]]), axis=1
+            display_table['All Fields Valid'] = display_table.apply(
+                lambda row: all([row['All Fields Valid'], row[column_name][0]]), axis=1
             )
-            display_table[column_name] = display_table[column_name].map(lambda value: value[1])
+
+        display_table['Row is Valid'] = display_table.apply(lambda row: self.tag_invalid_row(row), axis=1)
 
 
-        if all(display_table['Row Validated']):
+        if all(display_table['All Fields Valid']):
             self.row_validation_succeeded = True
-            del display_table['Row Validated']
+            del display_table['All Fields Valid']
+            del display_table['Row is Valid']
         else:
             self.row_validation_succeeded = False
-            display_table = display_table[['Row Validated'] + original_columns]
-            self.column_lookup_json['Row Validated'] = {
-                'msg': 'Some rows failed validation', 'lvl': 'info', 'color': 'grey'
+            display_table = display_table[['Row is Valid', 'All Fields Valid'] + original_columns]
+
+            invalid_values_message = 'Some fields failed validation.'
+            invalid_values_message += ' These will not be uploaded, but the rest of the row will be kept.'
+
+            self.column_lookup_json['All Fields Valid'] = {
+                'msg': invalid_values_message, 'lvl': 'info', 'color': 'grey'
             }
+            self.column_lookup_json['Row is Valid'] = {
+                'msg': 'Some rows failed validation. These rows will be discarded.', 'lvl': 'info', 'color': 'grey'
+            }
+
+        for column_name in validation_methods_dict:
+            display_table[column_name] = display_table[column_name].map(lambda value: value[1])
 
         self.display_table = display_table
         
