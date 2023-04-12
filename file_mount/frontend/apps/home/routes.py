@@ -1003,7 +1003,7 @@ def recipient_file_upload_validation():
     return render_template(
         'home/rm-file-upload-validation.html',
         segment=get_segment(request),
-        recipients_table=file_validator.upload_table,
+        recipients_table=file_validator.display_table,
         column_lookup_function=file_validator.column_lookup_function,
         header=file_validator.header
     )

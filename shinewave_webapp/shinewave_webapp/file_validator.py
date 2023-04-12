@@ -7,7 +7,8 @@ import pandas as pd
 
 """
     TO DO:
-        * Add validation for phone numbers, email addresses, dates, times, and timezones
+        * Add dates, times, and timezones
+        * Delete invalid fields, or whole rows if names are missing
         * Add check for new column names
 """
 
@@ -22,6 +23,7 @@ class FileValidator():
         self.column_validation_succeeded = False
         self.row_validation_succeeded = False
         self.column_lookup_json = None
+        self.display_table = None
 
     def dedupe_character(self, text, character):
         duped_char = character * 2
@@ -33,13 +35,17 @@ class FileValidator():
         phone_number = str(phone_number).strip()
         regex_pattern = r'\(?\+?1?\)?[-\. ]?([0-9]{3}[-\. ]?){2}[0-9]{4}'
         if re.sub(regex_pattern, '' , phone_number, 1):
-            raise ValueError(f'Not a valid US phone number')
+            raise ValueError('Not a valid US phone number')
 
     def validate_email_address(self, email_address):
         email_address = str(email_address).strip()
         regex_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
         if re.sub(regex_pattern, '' , email_address, 1):
-            raise ValueError(f'Not a valid email address')
+            raise ValueError('Not a valid email address')
+
+    def validate_is_not_blank(self, name):
+        if not name.strip():
+            raise ValueError('Field is blank.')
 
     def validate_columns(self):
         upload_file = StringIO(self.file_contents)
@@ -123,42 +129,51 @@ class FileValidator():
                 value
             )
         except ValueError as e:
-            self.row_validation_succeeded = False
             return (
                 False,
-                f'<div style="background-color:red;">{value}<div class="icon-information" title="{e}"></div></div>'
+                f'<div style="color:red;">{value}<div class="icon-information" title="{e}"></div></div>'
             )
 
     def validate_rows(self):
-        original_columns = list(self.upload_table.columns)
-        self.upload_table['Row Validated'] = True
+        display_table = self.upload_table.copy()
+        original_columns = list(display_table.columns)
 
-        validation_methods_dict = {'phone_number': self.validate_us_phone_number, 'email': self.validate_email_address}
+        display_table['Row Validated'] = True
+
+        validation_methods_dict = {
+            'phone_number': self.validate_us_phone_number,
+            'email': self.validate_email_address,
+            'first_name': self.validate_is_not_blank,
+            'last_name': self.validate_is_not_blank
+        }
 
         for column_name, validation_method in validation_methods_dict.items():
-            self.upload_table[column_name] = self.upload_table[column_name].map(
+            display_table[column_name] = display_table[column_name].map(
                 lambda value: self.tag_invalid_row_value(value, validation_method)
             )
-            self.upload_table['Row Validated'] = self.upload_table.apply(
+            display_table['Row Validated'] = display_table.apply(
                 lambda row: all([row['Row Validated'], row[column_name][0]]), axis=1
             )
-            self.upload_table[column_name] = self.upload_table[column_name].map(lambda value: value[1])
+            display_table[column_name] = display_table[column_name].map(lambda value: value[1])
 
-        if all(self.upload_table['Row Validated']):
+
+        if all(display_table['Row Validated']):
             self.row_validation_succeeded = True
-            del self.upload_table['Row Validated']
+            del display_table['Row Validated']
         else:
             self.row_validation_succeeded = False
-            self.upload_table = self.upload_table[['Row Validated'] + original_columns]
+            display_table = display_table[['Row Validated'] + original_columns]
             self.column_lookup_json['Row Validated'] = {
                 'msg': 'Some rows failed validation', 'lvl': 'info', 'color': 'grey'
             }
+
+        self.display_table = display_table
         
 
     def validate_file(self):
         self.validate_columns()
         self.validate_rows()
-        self.upload_table = self.upload_table.to_html(
+        self.display_table = self.display_table.to_html(
             table_id='basic-datatables',
             border=0,
             classes=['display', 'table', 'table-striped', 'table-hover'],
@@ -176,22 +191,23 @@ class FileValidator():
         """
         
         pre_button_spacing = '&nbsp;' * 5
+        back_button_opening_tag = '<a href="/rm-file-upload" class="btn btn-danger">'
         if not self.column_validation_succeeded:
             self.header = f"""
                 <br>
                 File validation failed. Please fix the red columns and re-upload.{pre_button_spacing}
-                <button class="btn btn-danger">Go Back</button>
+                {back_button_opening_tag}Go Back</a>
             """
         elif not self.row_validation_succeeded:
             self.header = f"""
                 <br>
                 Some rows failed validation. You may submit the file and exclude them, or go back and re-upload.{pre_button_spacing}
                 <button class="btn btn-success">Looks Good!<br>Submit</button>
-                <button class="btn btn-danger">I Want to Make Changes.<br>Go Back</button>
+                {back_button_opening_tag}I Want to Make Changes.<br>Go Back</a>
             """
         else:
             self.header = f"""
                 Recipient Upload{pre_button_spacing}
                 <button class="btn btn-success">Looks Good!<br>Submit</button>
-                <button class="btn btn-danger">I Want to Make Changes.<br>Go Back</button>
+                {back_button_opening_tag}I Want to Make Changes.<br>Go Back</a>
             """
