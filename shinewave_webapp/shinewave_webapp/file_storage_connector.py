@@ -7,16 +7,22 @@ APP_DATA_PATH = f'{APP_HANDLER_PATH}/data'
 TEMPLATES_PATH = f'{APP_DATA_PATH}/templates'
 
 
-def send_raw_upload(account_id, upload_id, upload_file, local_parent_folder=f'{APP_DATA_PATH}/raw_uploads'):
+def send_file_upload(account_id, upload_id, upload_file, upload_type, local_parent_folder=f'{APP_DATA_PATH}/file_uploads'):
     if local_parent_folder:
-        local_folder = f'{local_parent_folder}/{account_id}'
+        local_folder = f'{local_parent_folder}/{account_id}/{upload_type}'
         Path(local_folder).mkdir(parents=True, exist_ok=True)
-        upload_file.save(f'{local_folder}/{upload_id}')
+
+        file_path = f'{local_folder}/{upload_id}'
+        if isinstance(upload_file, str):
+            with open(file_path, 'w+') as file:
+                file.write(upload_file)
+        else:
+            upload_file.save(file_path)
 
 
-def read_raw_upload(account_id, upload_id, local_parent_folder=f'{APP_DATA_PATH}/raw_uploads'):
+def read_raw_upload(account_id, upload_id, local_parent_folder=f'{APP_DATA_PATH}/file_uploads'):
     if local_parent_folder:
-        with open(f'{local_parent_folder}/{account_id}/{upload_id}', 'r') as file:
+        with open(f'{local_parent_folder}/{account_id}/raw/{upload_id}', 'r') as file:
             return file.read()
 
 

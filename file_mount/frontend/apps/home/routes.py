@@ -986,19 +986,25 @@ def recipient_file_upload():
     file = request.files.get('file')
     upload_id = request.args.get('upload_id')
 
-    file_storage_connector.send_raw_upload(account_id=ACCOUNT_ID, upload_id=upload_id, upload_file=file)
+    file_storage_connector.send_file_upload(
+        account_id=ACCOUNT_ID, upload_id=upload_id, upload_file=file, upload_type='raw'
+    )
 
     return json.dumps({'ok': True})
+
 
 @blueprint.route('/rm-file-upload-validation')
 @blueprint.route('/rm-file-upload-validation.html')
 @login_required
 def recipient_file_upload_validation():
-    # try:
     upload_id = request.args.get('upload_id')
     upload_file_contents = file_storage_connector.read_raw_upload(account_id=ACCOUNT_ID, upload_id=upload_id)
-    file_validator = FileValidator(upload_file_contents)
+    file_validator = FileValidator(upload_file_contents, upload_id)
     file_validator.validate_file()
+    in_process_file = file_validator.upload_table.to_csv()
+    file_storage_connector.send_file_upload(
+        account_id=ACCOUNT_ID, upload_id=upload_id, upload_file=in_process_file, upload_type='in_process'
+    )
 
     return render_template(
         'home/rm-file-upload-validation.html',
@@ -1007,7 +1013,21 @@ def recipient_file_upload_validation():
         column_lookup_function=file_validator.column_lookup_function,
         header=file_validator.header
     )
-    # except Exception as e:
-    #     return render_template(
-    #         'home/rm-file-upload-validation.html', segment=get_segment(request), recipients_table=e
-    #     )
+
+
+@blueprint.route('/rm-file-upload-overwrite-settings')
+@blueprint.route('/rm-file-upload-overwrite-settings.html')
+@login_required
+def recipient_file_upload_overwrite_settings():
+    upload_id = request.args.get('upload_id')
+    upload_file_contents = file_storage_connector.read_raw_upload(account_id=ACCOUNT_ID, upload_id=upload_id)
+    file_validator = FileValidator(upload_file_contents, upload_id)
+    file_validator.validate_file()
+
+    return render_template(
+        'home/rm-file-upload-overwrite-settings.html',
+        segment=get_segment(request),
+        recipients_table=file_validator.display_table,
+        column_lookup_function=file_validator.column_lookup_function,
+        header=file_validator.header
+    )

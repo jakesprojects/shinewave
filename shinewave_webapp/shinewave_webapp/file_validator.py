@@ -10,13 +10,16 @@ import pandas as pd
         * Add workflow_name, workflow_id, dates, times, and timezones
         * Delete invalid fields, or whole rows if names are missing
         * Add check for new column names
+        * Render file invalid if all rows are invalid
+        * Implement count of valid vs. invalid rows
 """
 
 
 class FileValidator():
 
-    def __init__(self, file_contents):
+    def __init__(self, file_contents, upload_id):
         self.file_contents = file_contents
+        self.upload_id = upload_id
         self.upload_table = None
         self.column_lookup_function = None
         self.header = None
@@ -24,13 +27,6 @@ class FileValidator():
         self.row_validation_succeeded = False
         self.column_lookup_json = None
         self.display_table = None
-
-    def dedupe_character(self, text, character):
-        duped_char = character * 2
-        while duped_char in text:
-            text = text.replace(duped_char, character)
-
-        return text
 
     def validate_us_phone_number(self, phone_number):
         phone_number = str(phone_number).strip()
@@ -61,10 +57,32 @@ class FileValidator():
         return value
 
     def validate_columns(self):
+        """
+            This section needs heavy cleanup. Note to self: figure out how to reduce nesting here, and reduce the number
+            of similar iterables.
+        """
+
+        def _dedupe_character(text, character):
+            duped_char = character * 2
+            while duped_char in text:
+                text = text.replace(duped_char, character)
+
+            return text
+
+        def _generate_alias_transformations(alias):
+            alias = alias.strip()
+            alias_transformations = [
+                re.sub('[^0-9a-zA-Z]', '', alias),
+                re.sub('[^0-9a-zA-Z]', '_', alias),
+                re.sub('[^0-9a-zA-Z ]', '', alias).replace(' ', '_')
+            ]
+
+            return [_dedupe_character(i, '_').lower() for i in alias_transformations]
+
         upload_file = StringIO(self.file_contents)
         upload_df = pd.read_csv(upload_file)
         base_columns = [
-            'provider_id',
+            'id',
             'first_name',
             'last_name',
             'phone_number',
@@ -86,18 +104,19 @@ class FileValidator():
         transformed_columns = {}
 
         for alias in upload_column_list:
-            transformed_column_versions = [
-                re.sub('[^0-9a-zA-Z]', '', alias),
-                re.sub('[^0-9a-zA-Z]', '_', alias),
-                re.sub('[^0-9a-zA-Z ]', '', alias).replace(' ', '_')
-            ]
-            transformed_column_versions = [self.dedupe_character(i, '_') for i in transformed_column_versions]
-            transformed_columns[alias] = transformed_column_versions
+            transformed_columns[alias] = _generate_alias_transformations(alias)
 
         for column in column_aliases:
             for alias, transformed_names in transformed_columns.items():
                 if (not column_aliases[column]) and (column in transformed_names):
                     column_aliases[column] = alias
+
+        # This nesting is disgusting, FIX LATER
+        if not column_aliases['id']:
+            for alias, transformed_names in transformed_columns.items():
+                for alternative_name in ['member_id', 'provider_id', 'user_id', 'uuid', 'person_id']:
+                    if alternative_name in transformed_names:
+                        column_aliases['id'] = alias
 
         column_validation_notes = {}
         rename_dict = {}
@@ -171,10 +190,7 @@ class FileValidator():
         return self.format_tooltiped_value(is_valid, validation_failure_reason)
 
     def validate_rows(self):
-        display_table = self.upload_table.copy()
-        original_columns = list(display_table.columns)
-
-        display_table['All Fields Valid'] = True
+        original_columns = list(self.upload_table.columns)
 
         validation_methods_dict = {
             'phone_number': self.validate_us_phone_number,
@@ -183,7 +199,15 @@ class FileValidator():
             'last_name': self.validate_is_not_blank
         }
 
+        display_table = self.upload_table.copy()
+
+        display_table['All Fields Valid'] = True
         for column_name, validation_method in validation_methods_dict.items():
+
+            self.upload_table[column_name] = self.upload_table[column_name].map(
+                lambda value: self.tag_invalid_row_value(value, validation_method)
+            )
+
             display_table[column_name] = display_table[column_name].map(
                 lambda value: self.tag_invalid_row_value(value, validation_method)
             )
@@ -192,6 +216,8 @@ class FileValidator():
             )
 
         display_table['Row is Valid'] = display_table.apply(lambda row: self.tag_invalid_row(row), axis=1)
+        self.upload_table = self.upload_table[display_table['Row is Valid'] == True]
+
 
 
         if all(display_table['All Fields Valid']):
@@ -213,6 +239,9 @@ class FileValidator():
             }
 
         for column_name in validation_methods_dict:
+            self.upload_table[column_name] = self.upload_table[column_name].map(
+                lambda value: value[1] if value[0] else None
+            )
             display_table[column_name] = display_table[column_name].map(lambda value: value[1])
 
         self.display_table = display_table
@@ -240,6 +269,11 @@ class FileValidator():
         
         pre_button_spacing = '&nbsp;' * 5
         back_button_opening_tag = '<a href="/rm-file-upload" class="btn btn-danger">'
+        forward_button = f"""
+            <a href="/rm-file-upload-overwrite-settings?upload_id={self.upload_id}" class="btn btn-success">
+                Looks Good!<br>Continue...
+            </a>
+        """
         if not self.column_validation_succeeded:
             self.header = f"""
                 <br>
@@ -249,13 +283,14 @@ class FileValidator():
         elif not self.row_validation_succeeded:
             self.header = f"""
                 <br>
-                Some rows failed validation. You may submit the file and exclude them, or go back and re-upload.{pre_button_spacing}
-                <button class="btn btn-success">Looks Good!<br>Submit</button>
+                Some rows failed validation. You may submit the file and exclude them, or go back and re-upload.
+                {pre_button_spacing}
+                {forward_button}
                 {back_button_opening_tag}I Want to Make Changes.<br>Go Back</a>
             """
         else:
             self.header = f"""
                 Recipient Upload{pre_button_spacing}
-                <button class="btn btn-success">Looks Good!<br>Submit</button>
+                {forward_button}
                 {back_button_opening_tag}I Want to Make Changes.<br>Go Back</a>
             """

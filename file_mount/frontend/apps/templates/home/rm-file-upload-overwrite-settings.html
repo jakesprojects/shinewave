@@ -1,0 +1,86 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Workflow Builder {% endblock %} 
+
+{% block stylesheets %}
+
+{% endblock stylesheets %}
+
+{% block content %}
+<body>
+	<div class="content">
+		<div class="page-inner">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="card">
+						<div class="card-header">
+							<h4 class="card-title">
+								Overwrite Settings
+							</h4>
+						</div>
+						<div class="card-body">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+<script >
+	$(document).ready(function() {
+		$('#basic-datatables').DataTable({
+		});
+
+		$('#multi-filter-select').DataTable( {
+			"pageLength": 5,
+			initComplete: function () {
+				this.api().columns().every( function () {
+					var column = this;
+					var select = $('<select class="form-control"><option value=""></option></select>')
+					.appendTo( $(column.footer()).empty() )
+					.on( 'change', function () {
+						var val = $.fn.dataTable.util.escapeRegex(
+							$(this).val()
+							);
+
+						column
+						.search( val ? '^'+val+'$' : '', true, false )
+						.draw();
+					} );
+
+					column.data().unique().sort().each( function ( d, j ) {
+						select.append( '<option value="'+d+'">'+d+'</option>' )
+					} );
+				} );
+			}
+		});
+	});
+
+	var titles = document.getElementsByTagName("th");
+
+	{{ column_lookup_function | safe}}
+
+	for ( var i = 0, len = titles.length; i < len; i++ ) {
+		let column = titles[i].innerHTML;
+		let div = document.createElement("div");
+		let tooltip_message = getColumnInfo(column, "msg");
+		if (tooltip_message != '') {
+			let color = getColumnInfo(column, "color")
+			div.setAttribute("class", "icon-information");
+			div.setAttribute("title", tooltip_message);
+			titles[i].appendChild(div);
+			titles[i].style.background = color;
+			console.log(titles[i].getAttribute("class"));
+			console.log(tooltip_message);
+		} else {
+			titles[i].style.background = 'green'
+		};
+	}
+</script>
+
+{% endblock javascripts %}
