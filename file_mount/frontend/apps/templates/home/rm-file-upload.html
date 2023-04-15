@@ -33,7 +33,7 @@
 						              
 						            this.on("queuecomplete", function(file) {
 							            // Called when all files in the queue finish uploading.
-							            window.location = "/rm-file-upload-validation?upload_id={{ upload_id }}";
+							            window.location = "/rm-file-upload-validation?upload_id={{ upload_id | safe}}";
 							            });  // redirect after queue complete
 							                // upload queue when button click
 							                // custom init code
