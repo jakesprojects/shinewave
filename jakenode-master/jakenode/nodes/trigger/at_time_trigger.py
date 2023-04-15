@@ -5,6 +5,7 @@ import html
 import pytz
 
 from jakenode.nodes.trigger.trigger_node import TriggerNode
+from shinewave_webapp import time_parser
 
 
 """
@@ -38,19 +39,7 @@ class AtTimeTrigger(TriggerNode):
         self.set_property('timezone', 'Pacific')
 
     def get_timezones(self):
-        return OrderedDict(
-            {
-                'Hawaii': 'US/Hawaii',
-                'Alaska': 'US/Alaska',
-                'Pacific': 'US/Pacific',
-                'Mountain': 'US/Mountain',
-                'Central': 'US/Central',
-                'Eastern': 'US/Eastern',
-                'UTC': 'UTC',
-                'Local to Recipient Area Code': None,
-                'Defined by Recipient Data': None
-            }
-        )
+        return time_parser.get_timezones(include_synthetic_timezones=True)
 
     def get_display_info(self, node_templates_root=None):
         """
@@ -84,16 +73,8 @@ class AtTimeTrigger(TriggerNode):
 
     def get_execution_date(self):
 
-        datetime_format_dict = OrderedDict(
-            {'%Y/%m/%d %H:%M': 'YYYY/MM/DD HOUR:MINUTE', '%Y-%m-%d %H:%M': 'YYYY-MM-DD HOUR:MINUTE'}
-        )
-
-        date_format_dict = OrderedDict(
-            {'%Y/%m/%d': 'YYYY/MM/DD', '%Y-%m-%d': 'YYYY-MM-DD'}
-        )
-
-        format_dict = datetime_format_dict.copy()
-        format_dict.update(date_format_dict)
+        date_format_dict = time_parser.get_format_dict('date')
+        format_dict = time_parser.get_format_dict('all')
 
         execution_date_text = self.get_property('execution_date').strip().lower()
         execution_date_text = html.escape(execution_date_text)
