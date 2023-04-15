@@ -1037,3 +1037,17 @@ def recipient_file_upload_overwrite_settings():
         column_lookup_function=file_validator.column_lookup_function,
         header=file_validator.header
     )
+
+
+@blueprint.route('/documentation')
+@blueprint.route('/documentation.html')
+@login_required
+def documentation():
+    section = request.args.get('section')
+    subsection = request.args.get('subsection')
+
+    return render_template(
+        'home/documentation.html',
+        segment=get_segment(request),
+        header=section
+    )

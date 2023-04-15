@@ -1,0 +1,34 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Workflow Builder {% endblock %} 
+
+{% block stylesheets %}
+<link rel="stylesheet" href="{{url_for('static', filename='/jstree/dist/themes/default/style.min.css')}}" />
+{{ dropzone.load_css() }}
+{% endblock stylesheets %}
+
+{% block content %}
+<body>
+    <div class="content">
+        <div class="page-inner">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4 class="card-title">{{ header }}</h4>
+                        </div>
+                        <div class="card-body">
+                        	TEXT HERE
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+{% endblock javascripts %}
