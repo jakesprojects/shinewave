@@ -925,8 +925,14 @@ def toggle_workflows():
 def api_triggers():
 
     def _construct_api_endpoint_info(custom_data):
-        custom_data = json.loads(custom_data)
-        return request.url_root + custom_data.get('api_endpoint')
+        try:
+            custom_data = json.loads(custom_data)
+            return request.url_root + custom_data.get('api_endpoint')
+        except TypeError as e:
+            if current_app.config['DEBUG']:
+                return str(e)
+            else:
+                return ''
 
     workflow_data = database_connector.run_query(
         """
