@@ -1,34 +1,72 @@
-{% extends "layouts/base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    
+    <title>
+        Jinja Atlantis Lite - Static Sidebar | AppSeed
+    </title>
 
-{% block title %} Workflow Builder {% endblock %} 
+    <meta content='width=device-width, initial-scale=1.0, shrink-to-fit=no' name='viewport' />
+    <link rel="icon" href="/static/assets/img/icon.ico" type="image/x-icon"/>
 
-{% block stylesheets %}
-<link rel="stylesheet" href="{{url_for('static', filename='/jstree/dist/themes/default/style.min.css')}}" />
-{{ dropzone.load_css() }}
-{% endblock stylesheets %}
+    <!-- Fonts and icons -->
+    <script src="/static/assets/js/plugin/webfont/webfont.min.js"></script>
+    <script>
+        WebFont.load({
+            google: {"families":["Lato:300,400,700,900"]},
+            custom: {"families":["Flaticon", "Font Awesome 5 Solid", "Font Awesome 5 Regular", "Font Awesome 5 Brands", "simple-line-icons"], urls: ['/static/assets/css/fonts.min.css']},
+            active: function() {
+                sessionStorage.fonts = true;
+            }
+        });
+    </script>
 
-{% block content %}
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="/static/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/assets/css/atlantis.min.css">
+
+    <!-- CSS Just for demo purpose, don't include it in your project -->
+    <link rel="stylesheet" href="/static/assets/css/demo.css">
+    
+</head>
 <body>
-    <div class="content">
-        <div class="page-inner">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h4 class="card-title">{{ header }}</h4>
-                        </div>
-                        <div class="card-body">
-                        	TEXT HERE
+    <div class="wrapper static-sidebar">
+
+        {% include 'includes/navigation.html' %}
+
+        <div class="classic-grid">
+
+            {% include 'includes/documentation-sidebar.html' %}
+
+            <div class="main-panel">
+
+                <div class="content">
+                    <div class="page-inner">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h4 class="card-title">{{ header }}</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        {{ content }}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
+        
+        <!-- Custom template | don't include it in your project! -->
+        {% include 'includes/configuration-plugin.html' %}
+
     </div>
+
+    {% include 'includes/scripts.html' %}
+
 </body>
-{% endblock content %}
-
-<!-- Specific Page JS goes HERE  -->
-{% block javascripts %}
-
-{% endblock javascripts %}
+</html>
