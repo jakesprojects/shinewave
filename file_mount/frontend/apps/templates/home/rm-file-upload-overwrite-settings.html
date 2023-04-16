@@ -17,20 +17,54 @@
 {% block content %}
 <body>
 	<script>
+		function constructTextDescription(id_checked, phone_checked, email_checked) {
+			var match_wording, overwrite_desc, overwrite_fields;
+			overwrite_fields = [];
+
+			if (id_checked) {
+				overwrite_fields.push("ID");
+			}
+			if (phone_checked) {
+				overwrite_fields.push("Phone Number");
+			}
+			if (email_checked) {
+				overwrite_fields.push("Email");
+			}
+
+			overwrite_desc = overwrite_fields.join(" and ");
+
+			if (overwrite_fields.length === 0) {
+				return 'Data will not be overwritten. If duplicate recipients exist in file, they will exist in the database.'
+			}
+			else if (overwrite_fields.length === 1) {
+				match_wording = "matches";
+			} else {
+				match_wording = "match";
+			}
+
+			return `Rows will be overwritten if ${overwrite_desc} ${match_wording} an existing row.`;
+		};
         function toggleSwitch(switch_id) {
-            var id_checked = document.getElementById("toggle-id").checked
-            var phone_checked = document.getElementById("toggle-phone").checked
-            var email_checked = document.getElementById("toggle-email").checked
-            // var xhr = new XMLHttpRequest();
-            // xhr.open("POST", '/process_overwrite_toggle', true);
-            // xhr.setRequestHeader('Content-Type', 'application/json');
-            // xhr.send(JSON.stringify({
-            //     'id_checked': id_checked,
-            //     'phone_checked': phone_checked,
-            //     'email_checked': email_checked
-            // }));
+            var id_checked = document.getElementById("toggle-id").checked;
+            var phone_checked = document.getElementById("toggle-phone").checked;
+            var email_checked = document.getElementById("toggle-email").checked;
+
+            // Active switch needs to be inverted, because switching occurs after function fires
+            if (switch_id === "toggle-id") {
+            	id_checked = !id_checked
+            };
+            if (switch_id === "toggle-phone") {
+            	phone_checked = !phone_checked
+            };
+            if (switch_id === "toggle-email") {
+            	email_checked = !email_checked
+            };
+            console.log(id_checked)
+			console.log(phone_checked)
+			console.log(email_checked)
+            document.getElementById("overwrite-summary").innerHTML = constructTextDescription(id_checked, phone_checked, email_checked);
             return false;
-        }
+        };
     </script>
 	<div class="content">
 		<div class="page-inner">
