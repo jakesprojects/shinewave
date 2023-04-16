@@ -32,6 +32,11 @@ def get_random_key(value_list, random_value_digits=7):
     return sha_key.hexdigest()
 
 
+def get_conn(database_connection_type='sqlite', database=DATABASE):
+    if database_connection_type == 'sqlite':
+        return sqlite3.connect(database)
+
+
 def run_query(
     sql, return_data_format=list, commit=False, database_connection_type='sqlite', database=DATABASE, sql_parameters=[]
 ):
