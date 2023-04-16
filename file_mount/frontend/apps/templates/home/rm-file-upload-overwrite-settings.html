@@ -3,11 +3,35 @@
 {% block title %} Recipient File Upload {% endblock %} 
 
 {% block stylesheets %}
-
+<link href="/static/assets/css/toggle-switchy.css" rel="stylesheet" />
+<style type="text/css">
+	.subcontrolbox {
+        text-align:center;
+        background: rgba(153, 211, 247, .1);
+        border-radius: 20px;
+        padding:10px
+    }
+</style>
 {% endblock stylesheets %}
 
 {% block content %}
 <body>
+	<script>
+        function toggleSwitch(switch_id) {
+            var id_checked = document.getElementById("toggle-id").checked
+            var phone_checked = document.getElementById("toggle-phone").checked
+            var email_checked = document.getElementById("toggle-email").checked
+            // var xhr = new XMLHttpRequest();
+            // xhr.open("POST", '/process_overwrite_toggle', true);
+            // xhr.setRequestHeader('Content-Type', 'application/json');
+            // xhr.send(JSON.stringify({
+            //     'id_checked': id_checked,
+            //     'phone_checked': phone_checked,
+            //     'email_checked': email_checked
+            // }));
+            return false;
+        }
+    </script>
 	<div class="content">
 		<div class="page-inner">
 			<div class="row">
@@ -19,6 +43,60 @@
 							</h4>
 						</div>
 						<div class="card-body">
+							<div class="row row-demo-grid">
+								<div class="col">
+									<div class="subcontrolbox">
+										<label
+							                class="toggle-switchy" for="toggle-id" data-size="sm" data-style="rounded" data-color="green"
+							                data-text="false">
+							                    <input type="checkbox" id="toggle-id">
+							                    <span class="toggle" onclick="toggleSwitch('toggle-id')">
+							                        <span class="switch"></span>
+							                    </span>
+							            </label>
+							            <h3>ID</h3>
+							        </div>
+								</div>
+								<div class="col">
+									<div class="subcontrolbox">
+										<label
+							                class="toggle-switchy" for="toggle-phone" data-size="sm" data-style="rounded" data-color="green"
+							                data-text="false">
+							                    <input type="checkbox" id="toggle-phone">
+							                    <span class="toggle" onclick="toggleSwitch('toggle-phone')">
+							                        <span class="switch"></span>
+							                    </span>
+							            </label>
+							            <h3>Phone Number</h3>
+							        </div>
+								</div>
+								<div class="col">
+									<div class="subcontrolbox">
+										<label
+							                class="toggle-switchy" for="toggle-email" data-size="sm" data-style="rounded" data-color="green"
+							                data-text="false">
+							                    <input type="checkbox" id="toggle-email">
+							                    <span class="toggle" onclick="toggleSwitch('toggle-email')">
+							                        <span class="switch"></span>
+							                    </span>
+							            </label>
+							            <h3>Email Address</h3>
+							        </div>
+								</div>
+							</div>
+							<div>
+								<br>
+								<br>
+								<p class="lead" id="overwrite-summary">
+									Data will not be overwritten. If duplicate recipients exist in file, they will exist in the database.
+								</p>
+								<br>
+								<br>
+								<a href="#" class="btn btn-success">
+					                Looks Good!<br>Upload File
+					            </a>
+					            <a href="#" class="btn btn-danger">I Want to Make Changes.<br>Go Back</a>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -30,57 +108,5 @@
 
 <!-- Specific Page JS goes HERE  -->
 {% block javascripts %}
-
-<script >
-	$(document).ready(function() {
-		$('#basic-datatables').DataTable({
-		});
-
-		$('#multi-filter-select').DataTable( {
-			"pageLength": 5,
-			initComplete: function () {
-				this.api().columns().every( function () {
-					var column = this;
-					var select = $('<select class="form-control"><option value=""></option></select>')
-					.appendTo( $(column.footer()).empty() )
-					.on( 'change', function () {
-						var val = $.fn.dataTable.util.escapeRegex(
-							$(this).val()
-							);
-
-						column
-						.search( val ? '^'+val+'$' : '', true, false )
-						.draw();
-					} );
-
-					column.data().unique().sort().each( function ( d, j ) {
-						select.append( '<option value="'+d+'">'+d+'</option>' )
-					} );
-				} );
-			}
-		});
-	});
-
-	var titles = document.getElementsByTagName("th");
-
-	{{ column_lookup_function | safe}}
-
-	for ( var i = 0, len = titles.length; i < len; i++ ) {
-		let column = titles[i].innerHTML;
-		let div = document.createElement("div");
-		let tooltip_message = getColumnInfo(column, "msg");
-		if (tooltip_message != '') {
-			let color = getColumnInfo(column, "color")
-			div.setAttribute("class", "icon-information");
-			div.setAttribute("title", tooltip_message);
-			titles[i].appendChild(div);
-			titles[i].style.background = color;
-			console.log(titles[i].getAttribute("class"));
-			console.log(tooltip_message);
-		} else {
-			titles[i].style.background = 'green'
-		};
-	}
-</script>
 
 {% endblock javascripts %}
