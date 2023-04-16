@@ -1022,7 +1022,8 @@ def recipient_file_upload_validation():
         segment=get_segment(request),
         recipients_table=file_validator.display_table,
         column_lookup_function=file_validator.column_lookup_function,
-        header=file_validator.header
+        header=file_validator.header,
+        footer=file_validator.footer
     )
 
 

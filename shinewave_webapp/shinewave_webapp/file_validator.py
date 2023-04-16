@@ -27,6 +27,7 @@ class FileValidator():
         self.upload_table = None
         self.column_lookup_function = None
         self.header = None
+        self.footer = None
         self.column_validation_succeeded = False
         self.row_validation_succeeded = False
         self.column_lookup_json = None
@@ -357,6 +358,12 @@ class FileValidator():
         self.validate_columns()
         self.validate_rows()
         self.prepare_file_for_upload()
+
+        row_count = len(self.display_table)
+        row_error_count = len(self.display_table[self.display_table['All Fields Valid'] == False])
+        invalid_row_count = len(self.display_table[self.display_table['Row is Valid'] != True])
+        row_error_count -= invalid_row_count
+
         self.display_table = self.display_table.to_html(
             table_id='basic-datatables',
             border=0,
@@ -387,6 +394,7 @@ class FileValidator():
                 File validation failed. Please fix the red columns and re-upload.{pre_button_spacing}
                 {back_button_opening_tag}Go Back</a>
             """
+            self.footer = ''
         elif not self.row_validation_succeeded:
             self.header = f"""
                 <br>
@@ -395,9 +403,25 @@ class FileValidator():
                 {forward_button}
                 {back_button_opening_tag}I Want to Make Changes.<br>Go Back</a>
             """
+
+            self.footer = f"""
+                <p>
+                    <br>
+                    {invalid_row_count} out of {row_count} rows were invalid and will not be uploaded.
+                    <br>
+                    {row_error_count} rows had errors in individual fields, but their valid fields will be uploaded.
+                </p>
+            """
         else:
             self.header = f"""
                 Recipient Upload{pre_button_spacing}
                 {forward_button}
                 {back_button_opening_tag}I Want to Make Changes.<br>Go Back</a>
+            """
+
+            self.footer = f"""
+                <p>
+                    <br>
+                    {len(self.display_table)} rows will be uploaded.
+                </p>
             """
