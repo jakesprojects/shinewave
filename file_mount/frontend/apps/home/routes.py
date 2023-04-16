@@ -1036,11 +1036,17 @@ def recipient_file_upload_overwrite_settings():
     )
     upload_file = StringIO(upload_file_contents)
     upload_df = pd.read_csv(upload_file)
+    upload_df = upload_df.rename(columns={'id': 'provider_id'})
+    upload_df['id'] = upload_df.index + 1
+    upload_df['account_id'] = ACCOUNT_ID
     upload_df['upload_id'] = upload_id
 
     database_connector.run_query(
-        "DELETE FROM members_staging WHERE upload_id = ?", sql_parameters=[upload_id], commit=True
+        "DELETE FROM members_staging WHERE account_id = ? AND upload_id = ?",
+        sql_parameters=[ACCOUNT_ID, upload_id],
+        commit=True
     )
+
     conn = database_connector.get_conn()
     try:
         upload_df.to_sql('members_staging', conn, if_exists='append', index=False)
@@ -1048,6 +1054,16 @@ def recipient_file_upload_overwrite_settings():
     except Exception as e:
         conn.close()
         raise ValueError(e)
+
+    database_connector.run_query(
+        """
+            UPDATE members_staging
+            SET upload_datetime = strftime('%Y-%m-%d %H:%M','now')
+            WHERE account_id = ? AND upload_id = ?
+        """,
+        sql_parameters=[ACCOUNT_ID, upload_id],
+        commit=True
+    )
 
     return render_template(
         'home/rm-file-upload-overwrite-settings.html',
