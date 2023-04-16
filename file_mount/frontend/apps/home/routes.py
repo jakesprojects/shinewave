@@ -18,7 +18,7 @@ from jinja2 import TemplateNotFound
 import pandas as pd
 import requests
 
-from shinewave_webapp import database_connector, file_storage_connector
+from shinewave_webapp import database_connector, documentation_builder, file_storage_connector
 from shinewave_webapp.file_validator import FileValidator
 
 ACCOUNT_ID = 1
@@ -1049,5 +1049,7 @@ def documentation():
     return render_template(
         'home/documentation.html',
         segment=get_segment(request),
-        header=section
+        header=documentation_builder.get_section_name(active_section=section),
+        content='',
+        documentation_menu=documentation_builder.build_documentation_nav(active_section=section)
     )
