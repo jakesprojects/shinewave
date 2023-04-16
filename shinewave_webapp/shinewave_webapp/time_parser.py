@@ -65,9 +65,7 @@ def get_timezones(include_synthetic_timezones):
             'Mountain': 'US/Mountain',
             'Central': 'US/Central',
             'Eastern': 'US/Eastern',
-            'UTC': 'UTC',
-            'Local to Recipient Area Code': None,
-            'Defined by Recipient Data': None
+            'UTC': 'UTC'
         }
     )
 
