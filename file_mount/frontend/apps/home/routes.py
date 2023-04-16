@@ -1007,10 +1007,12 @@ def recipient_file_upload():
 @login_required
 def recipient_file_upload_validation():
     upload_id = request.args.get('upload_id')
-    upload_file_contents = file_storage_connector.read_raw_upload(account_id=ACCOUNT_ID, upload_id=upload_id)
+    upload_file_contents = file_storage_connector.read_upload(
+        account_id=ACCOUNT_ID, upload_id=upload_id, upload_type='raw'
+    )
     file_validator = FileValidator(upload_file_contents, upload_id)
     file_validator.validate_file()
-    in_process_file = file_validator.upload_table.to_csv()
+    in_process_file = file_validator.upload_table.to_csv(index=False)
     file_storage_connector.send_file_upload(
         account_id=ACCOUNT_ID, upload_id=upload_id, upload_file=in_process_file, upload_type='in_process'
     )
@@ -1029,16 +1031,28 @@ def recipient_file_upload_validation():
 @login_required
 def recipient_file_upload_overwrite_settings():
     upload_id = request.args.get('upload_id')
-    upload_file_contents = file_storage_connector.read_raw_upload(account_id=ACCOUNT_ID, upload_id=upload_id)
-    file_validator = FileValidator(upload_file_contents, upload_id)
-    file_validator.validate_file()
+    upload_file_contents = file_storage_connector.read_upload(
+        account_id=ACCOUNT_ID, upload_id=upload_id, upload_type='in_process'
+    )
+    upload_file = StringIO(upload_file_contents)
+    upload_df = pd.read_csv(upload_file)
+    upload_df['upload_id'] = upload_id
+
+    database_connector.run_query(
+        "DELETE FROM members_staging WHERE upload_id = ?", sql_parameters=[upload_id], commit=True
+    )
+    conn = database_connector.get_conn()
+    try:
+        upload_df.to_sql('members_staging', conn, if_exists='append', index=False)
+        conn.close()
+    except Exception as e:
+        conn.close()
+        raise ValueError(e)
 
     return render_template(
         'home/rm-file-upload-overwrite-settings.html',
         segment=get_segment(request),
-        recipients_table=file_validator.display_table,
-        column_lookup_function=file_validator.column_lookup_function,
-        header=file_validator.header
+        upload_id=upload_id
     )
 
 

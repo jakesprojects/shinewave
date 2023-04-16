@@ -1,0 +1,2 @@
+id,account_id,provider_id,first_name,last_name,phone_number,email,key_date,key_time,time_zone,workflow_name,workflow_id,custom_data,active,upload_id
+INTEGER,INTEGER,TEXT,TEXT,TEXT,INTEGER,TEXT,TEXT,TEXT,TEXT,TEXT,INTEGER,TEXT,TEXT,TEXT
