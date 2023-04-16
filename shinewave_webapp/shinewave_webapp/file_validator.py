@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 import html
 from io import StringIO
+import json
 import re
 
 import pandas as pd
@@ -325,11 +326,37 @@ class FileValidator():
 
         self.upload_table['key_time'] = datetimes_df['key_time']
         self.upload_table['key_date'] = datetimes_df['key_date']
+
+    def prepare_file_for_upload(self):
+        base_columns = [
+            'id',
+            'first_name',
+            'last_name',
+            'phone_number',
+            'email',
+            'key_date',
+            'key_time',
+            'time_zone',
+            'workflow_id',
+            'workflow_name'
+        ]
+
+        custom_columns = []
+
+        for column in self.upload_table.columns:
+            if column not in base_columns:
+                custom_columns.append(column)
+
+        custom_data_rows = self.upload_table[custom_columns].to_dict('records')
+        self.upload_table['custom_data'] = custom_data_rows
+        self.upload_table['custom_data'] = self.upload_table['custom_data'].map(json.dumps)
+        self.upload_table = self.upload_table[base_columns + ['custom_data']]
         
 
     def validate_file(self):
         self.validate_columns()
         self.validate_rows()
+        self.prepare_file_for_upload()
         self.display_table = self.display_table.to_html(
             table_id='basic-datatables',
             border=0,
