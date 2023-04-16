@@ -927,7 +927,7 @@ def api_triggers():
     def _construct_api_endpoint_info(custom_data):
         try:
             custom_data = json.loads(custom_data)
-            return request.url_root + custom_data.get('api_endpoint')
+            return custom_data.get('api_endpoint', '')
         except TypeError as e:
             if current_app.config['DEBUG']:
                 return str(e)
@@ -941,12 +941,14 @@ def api_triggers():
                 wc.name AS "Workflow Category",
                 w.name AS "Workflow Name",
                 wn.name AS "Endpoint Name",
-                wn.custom_data AS "API Endpoint"
+                wn.custom_data AS "API Endpoint",
+                a.subdomain
             FROM workflow_nodes wn
             INNER JOIN workflows w ON
                 wn.workflow_id = w.id
                 AND wn.active = w.active
             INNER JOIN workflow_categories wc ON w.workflow_category_id = wc.id
+            INNER JOIN account a ON w.account_id=a.id
             WHERE
                 w.account_id = ?
                 AND wn.node_type = 'nodes.trigger.APITrigger'
@@ -959,6 +961,9 @@ def api_triggers():
     table_df = pd.DataFrame(workflow_data)
 
     table_df['API Endpoint'] = table_df['API Endpoint'].map(_construct_api_endpoint_info)
+    table_df['API Endpoint'] = table_df.apply(
+        lambda row: f"https://{row['subdomain']}.shinewave.io/{row['API Endpoint']}", axis=1)
+    del table_df['subdomain']
 
     triggers_table = table_df.to_html(
         table_id='basic-datatables',
