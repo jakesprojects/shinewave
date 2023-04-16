@@ -1,13 +1,16 @@
+from datetime import datetime, timedelta
 import html
 from io import StringIO
 import re
 
 import pandas as pd
 
+from shinewave_webapp import time_parser
+
 
 """
     TO DO:
-        * Add workflow_name, workflow_id, dates, times, and timezones
+        * Add workflow_name, workflow_id, and timezones
         * Delete invalid fields, or whole rows if names are missing
         * Add check for new column names
         * Render file invalid if all rows are invalid
@@ -53,6 +56,18 @@ class FileValidator():
         value = str(value).strip()
         if not value.strip():
             raise ValueError('Field is blank.')
+
+        return value
+
+    def validate_is_date(self, value):
+        if value is None:
+            raise ValueError('Date not provided in valid format.')
+
+        return value
+
+    def validate_is_time(self, value):
+        if value is None:
+            raise ValueError('Time not provided in valid format.')
 
         return value
 
@@ -190,13 +205,17 @@ class FileValidator():
         return self.format_tooltiped_value(is_valid, validation_failure_reason)
 
     def validate_rows(self):
+        self.standardize_key_datetimes()
+
         original_columns = list(self.upload_table.columns)
 
         validation_methods_dict = {
             'phone_number': self.validate_us_phone_number,
             'email': self.validate_email_address,
             'first_name': self.validate_is_not_blank,
-            'last_name': self.validate_is_not_blank
+            'last_name': self.validate_is_not_blank,
+            'key_date': self.validate_is_date,
+            'key_time': self.validate_is_time
         }
 
         display_table = self.upload_table.copy()
@@ -245,6 +264,67 @@ class FileValidator():
             display_table[column_name] = display_table[column_name].map(lambda value: value[1])
 
         self.display_table = display_table
+
+    def standardize_key_datetimes(self):
+
+        def _extract_time_from_datetime(existing_time, datetime_text, formats):
+
+            if existing_time is not None:
+                return existing_time
+
+            datetime_text = datetime_text.strip()
+            for python_format in formats:
+                try:
+                    found_datetime = datetime.strptime(datetime_text, python_format)
+                    return datetime.strftime(found_datetime, '%H:%M')
+                except:
+                    pass
+
+            return None
+
+        def _extract_date_from_datetime(datetime_text, formats):
+            datetime_text = datetime_text.strip()
+            for python_format in formats:
+                try:
+                    found_datetime = datetime.strptime(datetime_text, python_format)
+                    return datetime.strftime(found_datetime, '%Y-%m-%d')
+                except:
+                    pass
+
+            return None
+
+        for column in ['key_date', 'key_time']:
+            if column not in self.upload_table.columns:
+                self.upload_table[column] = None
+
+        datetime_formats = list(time_parser.get_format_dict('datetime').keys())
+        time_formats = [i.split(' ')[-1] for i in datetime_formats]
+        date_formats = list(time_parser.get_format_dict('date').keys())
+
+        datetimes_df = self.upload_table[['key_date', 'key_time']].copy()
+        for column in datetimes_df:
+            datetimes_df[column] = datetimes_df[column].map(lambda text: text.strip())
+
+        datetimes_df['key_time'] = datetimes_df['key_time'].map(
+            lambda datetime_text: _extract_time_from_datetime(
+                existing_time=None, datetime_text=datetime_text, formats=time_formats
+            )
+        )
+        datetimes_df['key_time'] = datetimes_df.apply(
+            lambda row: _extract_time_from_datetime(
+                existing_time=row['key_time'], datetime_text=row['key_date'], formats=datetime_formats
+            ),
+            axis=1
+        )
+
+        datetimes_df['key_date'] = datetimes_df['key_date'].map(
+            lambda datetime_text: _extract_date_from_datetime(
+                datetime_text=datetime_text, formats=(datetime_formats + date_formats)
+            )
+        )
+
+        self.upload_table['key_time'] = datetimes_df['key_time']
+        self.upload_table['key_date'] = datetimes_df['key_date']
         
 
     def validate_file(self):
