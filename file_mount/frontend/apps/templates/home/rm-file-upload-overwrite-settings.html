@@ -59,9 +59,6 @@
             if (switch_id === "toggle-email") {
             	email_checked = !email_checked
             };
-            console.log(id_checked)
-			console.log(phone_checked)
-			console.log(email_checked)
             document.getElementById("overwrite-summary").innerHTML = constructTextDescription(id_checked, phone_checked, email_checked);
             return false;
         };
