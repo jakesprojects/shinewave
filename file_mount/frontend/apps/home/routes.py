@@ -929,10 +929,7 @@ def api_triggers():
             custom_data = json.loads(custom_data)
             return custom_data.get('api_endpoint', '')
         except TypeError as e:
-            if current_app.config['DEBUG']:
-                return str(e)
-            else:
-                return ''
+            return ''
 
     workflow_data = database_connector.run_query(
         """
@@ -958,11 +955,12 @@ def api_triggers():
         sql_parameters=[ACCOUNT_ID],
         return_data_format=dict
     )
+
     table_df = pd.DataFrame(workflow_data)
 
     table_df['API Endpoint'] = table_df['API Endpoint'].map(_construct_api_endpoint_info)
     table_df['API Endpoint'] = table_df.apply(
-        lambda row: f"https://{row['subdomain']}.shinewave.io/{row['API Endpoint']}", axis=1)
+        lambda row: f"https://{row['subdomain']}.shinewave.io/{row['API Endpoint']}" if row['API Endpoint'] else '', axis=1)
     del table_df['subdomain']
 
     triggers_table = table_df.to_html(
