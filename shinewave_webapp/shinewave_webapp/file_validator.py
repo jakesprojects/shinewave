@@ -33,6 +33,10 @@ class FileValidator():
         self.column_lookup_json = None
         self.display_table = None
 
+        # Stats
+        self.original_upload_len = None
+        self.upload_len = None
+
     def validate_us_phone_number(self, phone_number):
         phone_number = str(phone_number).strip()
         regex_pattern = r'\(?\+?1?\)?[-\. ]?\(?[0-9]{3}\)?[-\. ]?[0-9]{3}[-\. ]?[0-9]{4}'
@@ -207,7 +211,9 @@ class FileValidator():
         return self.format_tooltiped_value(is_valid, validation_failure_reason)
 
     def validate_rows(self):
+        self.original_upload_len = len(self.upload_table)
         self.standardize_key_datetimes()
+        self.upload_table.drop_duplicates(inplace=True)
 
         original_columns = list(self.upload_table.columns)
 
@@ -266,6 +272,7 @@ class FileValidator():
             display_table[column_name] = display_table[column_name].map(lambda value: value[1])
 
         self.display_table = display_table
+        self.upload_len = len(self.upload_table)
 
     def standardize_key_datetimes(self):
 
@@ -359,6 +366,15 @@ class FileValidator():
         self.validate_rows()
         self.prepare_file_for_upload()
 
+        if self.upload_len < self.original_upload_len:
+            duplicates_removed = self.original_upload_len - self.upload_len
+            duplicates_removed_message = f"""
+                <br>{duplicates_removed} duplicate {"row" if duplicates_removed == 1 else "rows"} removed from 
+                original file.
+            """
+        else:
+            duplicates_removed_message = ''
+
         row_count = len(self.display_table)
         row_error_count = len(self.display_table[self.display_table['All Fields Valid'] == False])
         invalid_row_count = len(self.display_table[self.display_table['Row is Valid'] != True])
@@ -407,9 +423,12 @@ class FileValidator():
             self.footer = f"""
                 <p>
                     <br>
-                    {invalid_row_count} out of {row_count} rows were invalid and will not be uploaded.
+                    {invalid_row_count} out of {row_count} {"row" if row_count == 1 else "rows"} 
+                    {"was" if invalid_row_count == 1 else "were"} invalid and will not be uploaded.
                     <br>
-                    {row_error_count} rows had errors in individual fields, but their valid fields will be uploaded.
+                    {row_error_count} {"row" if row_error_count == 1 else "rows"} had errors in individual fields, but 
+                    {"its" if invalid_row_count == 1 else "their"} valid fields will be uploaded.
+                    {duplicates_removed_message}
                 </p>
             """
         else:
@@ -422,6 +441,7 @@ class FileValidator():
             self.footer = f"""
                 <p>
                     <br>
-                    {len(self.display_table)} rows will be uploaded.
+                    {self.upload_len} {"row" if self.upload_len == 1 else "rows"} will be uploaded.
+                    {duplicates_removed_message}
                 </p>
             """

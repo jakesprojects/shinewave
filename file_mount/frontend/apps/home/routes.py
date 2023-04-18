@@ -1027,10 +1027,69 @@ def recipient_file_upload_validation():
     )
 
 
-@blueprint.route('/rm-file-upload-overwrite-settings')
-@blueprint.route('/rm-file-upload-overwrite-settings.html')
+@blueprint.route('/rm-file-upload-overwrite-settings', methods=["GET", "POST"])
+@blueprint.route('/rm-file-upload-overwrite-settings.html', methods=["GET", "POST"])
 @login_required
 def recipient_file_upload_overwrite_settings():
+
+    if request.method == "POST":
+        toggle_data = request.get_json()
+        upload_id = toggle_data['upload_id']
+        id_checked = toggle_data['id_checked']
+        phone_checked = toggle_data['phone_checked']
+        email_checked = toggle_data['email_checked']
+
+        if not any([id_checked, phone_checked, email_checked]):
+            query = f"""
+                SELECT
+                    COUNT(1) AS upload_count,
+                    0 AS existing_count
+                FROM members_staging
+                WHERE
+                    account_id = ?
+                    AND upload_id = ?
+            """
+
+            sql_parameters = [ACCOUNT_ID, upload_id]
+        else:
+            id_checked = ["''", 'provider_id'][id_checked]
+            phone_checked = ["''", 'phone_number'][phone_checked]
+            email_checked = ["''", 'email'][email_checked]
+            compound_key = f"{id_checked}||'-'||{phone_checked}||'-'||{email_checked}"
+
+            query = f"""
+                WITH upload_rows AS (
+                    SELECT DISTINCT {compound_key} AS compound_key
+                    FROM members_staging
+                    WHERE
+                        account_id = ?
+                        AND upload_id = ?
+                ), existing_rows AS (
+                    SELECT DISTINCT {compound_key} AS compound_key
+                    FROM members
+                    WHERE account_id = ?
+                )
+                SELECT
+                    COUNT(ur.compound_key) AS upload_count,
+                    COUNT(er.compound_key) AS existing_count
+                FROM upload_rows ur
+                LEFT JOIN existing_rows er ON ur.compound_key = er.compound_key
+            """
+
+            sql_parameters = [ACCOUNT_ID, upload_id, ACCOUNT_ID]
+
+        counts = database_connector.run_query(
+            query,
+            sql_parameters=sql_parameters,
+            return_data_format=dict
+        )
+
+        upload_count = counts["upload_count"][0]
+        existing_count = counts["existing_count"][0]
+        upload_message = f"{upload_count} rows will be uploaded.<br>{existing_count} rows will be overwritten."
+
+        return json.dumps({'upload_message': upload_message})
+
     upload_id = request.args.get('upload_id')
     upload_file_contents = file_storage_connector.read_upload(
         account_id=ACCOUNT_ID, upload_id=upload_id, upload_type='in_process'

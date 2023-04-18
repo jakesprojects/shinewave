@@ -60,15 +60,27 @@
             	email_checked = !email_checked
             };
             document.getElementById("overwrite-summary").innerHTML = constructTextDescription(id_checked, phone_checked, email_checked);
-			// var xhr = new XMLHttpRequest();
-			// xhr.open("POST", '/process_active_toggle', true);
-			// xhr.setRequestHeader('Content-Type', 'application/json');
-			// xhr.send(JSON.stringify({
-			//     'enabled': !checked,
-			//     'workflow_id': workflow_id
-			// }));
+			getOverwriteCount(id_checked, phone_checked, email_checked);
             return false;
         };
+        function getOverwriteCount(id_checked, phone_checked, email_checked) {
+        	var xhr = new XMLHttpRequest();
+			xhr.responseType = 'json';
+			xhr.onreadystatechange = function() {
+			    if (xhr.readyState == XMLHttpRequest.DONE) {
+			        document.getElementById("overwrite-details").innerHTML = xhr.response['upload_message'];
+			    }
+			};
+			xhr.open("POST", '/rm-file-upload-overwrite-settings', true);
+			xhr.setRequestHeader('Content-Type', 'application/json');
+			xhr.send(JSON.stringify({
+				'upload_id': '{{ upload_id | safe}}',
+			    'id_checked': id_checked,
+				'phone_checked': phone_checked,
+				'email_checked': email_checked
+			}));
+			return false;
+        }
     </script>
 	<div class="content">
 		<div class="page-inner">
@@ -128,6 +140,9 @@
 								<p class="lead" id="overwrite-summary">
 									Data will not be overwritten. If duplicate recipients exist in file, they will exist in the database.
 								</p>
+								<p id="overwrite-details">
+								</p>
+								<script>getOverwriteCount(false, false, false);</script>
 								<br>
 								<br>
 								<a href="#" class="btn btn-success">
