@@ -27,6 +27,12 @@ DATABASE = f'{APP_HANDLER_PATH}/data/test_db.db'
 LAUNCHER_APP_ADDRESS = 'http://localhost:49151/app_launcher'
 
 
+def construct_compound_key(id_checked, phone_checked, email_checked):
+    id_checked = ["''", 'provider_id'][id_checked]
+    phone_checked = ["''", 'phone_number'][phone_checked]
+    email_checked = ["''", 'email'][email_checked]
+    return f"{id_checked}||'-'||{phone_checked}||'-'||{email_checked}"
+
 def get_validation_failure_codes(node_type):
     return {
         '1': 'The submitted folder name already exists. Names must be unique.',
@@ -1052,10 +1058,7 @@ def recipient_file_upload_overwrite_settings():
 
             sql_parameters = [ACCOUNT_ID, upload_id]
         else:
-            id_checked = ["''", 'provider_id'][id_checked]
-            phone_checked = ["''", 'phone_number'][phone_checked]
-            email_checked = ["''", 'email'][email_checked]
-            compound_key = f"{id_checked}||'-'||{phone_checked}||'-'||{email_checked}"
+            compound_key = construct_compound_key(id_checked, phone_checked, email_checked)
 
             query = f"""
                 WITH upload_rows AS (
