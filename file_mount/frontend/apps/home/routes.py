@@ -1132,6 +1132,21 @@ def recipient_file_upload_overwrite_settings():
     )
 
 
+@blueprint.route('/rm-file-upload-confirmed', methods=["GET", "POST"])
+@blueprint.route('/rm-file-upload-confirmed.html', methods=["GET", "POST"])
+@login_required
+def recipient_file_upload_confirmed():
+
+    if request.method == "POST":
+        pass
+
+    return render_template(
+        'home/rm-file-upload-confirmed.html',
+        segment=get_segment(request)
+        # upload_id=upload_id
+    )
+
+
 @blueprint.route('/documentation')
 @blueprint.route('/documentation.html')
 @login_required
