@@ -1,2 +1,2 @@
-id,account_id,workflow_id,source_event_id,recipient_id,current_node_id,current_node_time,pending_triggers,pending_outreaches,active
-INTEGER,INTEGER,INTEGER,INTEGER,INTEGER,INTEGER,TEXT,TEXT,TEXT,TEXT
+id,account_id,workflow_id,source_event_id,recipient_id,current_node_id,current_node_time,pending_triggers,pending_outreaches,pending_markers,active
+INTEGER,INTEGER,INTEGER,INTEGER,INTEGER,INTEGER,TEXT,TEXT,TEXT,TEXT,TEXT

@@ -1,3 +1,4 @@
+from jakenode.nodes.marker.marker_node import Converted, NotConverted
 from jakenode.nodes.outreach.email_outreach import EmailOutreach
 from jakenode.nodes.outreach.sms_outreach import SMSOutreach
 from jakenode.nodes.outreach.workflow_change import OutboundWorkflowChange
@@ -10,6 +11,8 @@ from jakenode.nodes.trigger.workflow_change import InboundWorkflowChange
 
 def fetch_all_node_types():
     return [
+        Converted,
+        NotConverted,
         APITrigger,
         AtTimeTrigger,
         ExactResponseReceivedTrigger,

@@ -36,6 +36,10 @@ def get_context_menu_commands():
             }),
             'separator_1': None,
             '&Add Node': OrderedDict({
+                '&Marker': OrderedDict({
+                    'Converted': ('add_node_marker_converted', ''),
+                    'Not Converted': ('add_node_marker_not_converted', '')
+                }),
                 '&Outreach': OrderedDict({
                     'API': ('add_node_api_outreach', ''),
                     'Email': ('add_node_email_outreach', ''),
@@ -354,6 +358,13 @@ class graph_modifier():
         """
         graph.toggle_node_search()
 
+    # Marker NODE CREATION FUNCTIONS
+
+    def add_node_marker_converted(self, graph):
+        graph.create_node('nodes.marker.Converted')
+
+    def add_node_marker_not_converted(self, graph):
+        graph.create_node('nodes.marker.NotConverted')
 
     # OUTREACH NODE CREATION FUNCTIONS
 
