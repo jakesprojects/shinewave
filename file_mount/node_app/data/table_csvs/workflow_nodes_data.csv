@@ -1,0 +1,11 @@
+id,workflow_id,workflow_version,object_id,name,node_type,inputs,outputs,custom_data,active
+1,1,1,0x7f434c48f7c0,API Trigger,nodes.trigger.APITrigger,[],"[""0x7f434c4219a0""]","{""api_endpoint"": ""30dafbdb7f52907f3f749092552772b2563afbf6e87880d4b568da40ed013bf4""}",TRUE
+2,1,1,0x7f434c4219a0,SMS Outreach,nodes.outreach.SMSOutreach,"[""0x7f434c48f7c0""]",[],"{""sms_templates"": ""Same Day Appt Reminder"", ""template_id"": 1}",TRUE
+27,2,4,0x7ff6d42d6340,API Trigger,nodes.trigger.APITrigger,[],"[""0x7ff6d4275460""]","{""api_endpoint"": ""9031ea8395a314135be027d5e7d76c510fe2f7e0eb27b8b9bcd73b56dfab00d5""}",TRUE
+28,2,4,0x7ff6d4275460,Initial Reminder,nodes.outreach.SMSOutreach,"[""0x7ff6d42d6340""]","[""0x7ff6d43188e0"", ""0x7ff6d427d0d0"", ""0x7ff6d427d280""]","{""sms_templates"": ""Prescription Reminder"", ""template_id"": 2}",TRUE
+29,2,4,0x7ff6d43188e0,Renewal Response Received,nodes.trigger.ExactResponseReceivedTrigger,"[""0x7ff6d4275460"", ""0x7ff6d4275190""]","[""0x7ff6d4275bb0""]","{""exact_response"": ""1""}",TRUE
+30,2,4,0x7ff6d427d0d0,Cancel Response Received,nodes.trigger.ExactResponseReceivedTrigger,"[""0x7ff6d4275460"", ""0x7ff6d4275190""]","[""0x7ff713395310""]","{""exact_response"": ""2""}",TRUE
+31,2,4,0x7ff6d427d280,No Response - 8 Days,nodes.trigger.TimeElapsedTrigger,"[""0x7ff6d4275460""]","[""0x7ff6d4275190""]","{""time_units"": ""days"", ""time_number"": ""8""}",TRUE
+32,2,4,0x7ff6d4275190,Second Reminder,nodes.outreach.SMSOutreach,"[""0x7ff6d427d280""]","[""0x7ff6d43188e0"", ""0x7ff6d427d0d0""]","{""sms_templates"": ""Prescription Reminder"", ""template_id"": 2}",TRUE
+33,2,4,0x7ff6d4275bb0,Workflow Change - Renewal,nodes.outreach.OutboundWorkflowChange,"[""0x7ff6d43188e0""]",[],"{""workflow_templates"": ""Reorder Workflow"", ""template_id"": 4}",TRUE
+34,2,4,0x7ff713395310,Cancelation Confirmation,nodes.outreach.SMSOutreach,"[""0x7ff6d427d0d0""]",[],"{""sms_templates"": ""Cancelation Confirmation"", ""template_id"": 6}",TRUE
