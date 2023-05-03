@@ -1,2 +1,2 @@
 id,account_id,workflow_id,app_server_address,xpra_port,info_panel_port,websocket,x11_display,active,last_activity
-INTEGER,INTEGER,INTEGER,TEXT,INTEGER,INTEGER,INTEGER,INTEGER,TEXT,TEXT
+INTEGER,INTEGER,INTEGER,TEXT,INTEGER,INTEGER,INTEGER,INTEGER,TEXT,TIMESTAMP
