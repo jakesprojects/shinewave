@@ -349,7 +349,7 @@ def builder_submit():
                             (SELECT MAX(id) + 1 FROM workflows),
                             ?,
                             ?,
-                            (SELECT id FROM workflow_categories WHERE name = ? AND active = 'TRUE'),
+                            (SELECT id FROM workflow_categories WHERE name = ? AND active = 'TRUE' LIMIT 1),
                             'TRUE'
                         )
                     """,
@@ -582,6 +582,7 @@ def workflow_builder_app():
     launcher_api_response = requests.post(
         LAUNCHER_APP_ADDRESS, json={'account_id': str(ACCOUNT_ID), 'workflow_id': str(workflow_id)}
     )
+
     address_info = json.loads(launcher_api_response.content)
     app_server_address = address_info['app_server_address']
     xpra_port = address_info['xpra_port']
