@@ -70,7 +70,6 @@ def get_random_key(value_list, random_value_digits=7):
     value_list.append(random_value)
     random_str = '-'.join(value_list)
     random_str = random_str.encode()
-    print(random_str)
 
     sha_key = hashlib.new('sha256')
     sha_key.update(random_str)
