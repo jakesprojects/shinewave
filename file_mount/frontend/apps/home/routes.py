@@ -1065,7 +1065,7 @@ def recipient_file_upload_overwrite_settings():
                 SELECT
                     COUNT(1) AS upload_count,
                     0 AS existing_count
-                FROM members_staging
+                FROM recipients_staging
                 WHERE
                     account_id = ?
                     AND upload_id = ?
@@ -1078,13 +1078,13 @@ def recipient_file_upload_overwrite_settings():
             query = f"""
                 WITH upload_rows AS (
                     SELECT DISTINCT {compound_key} AS compound_key
-                    FROM members_staging
+                    FROM recipients_staging
                     WHERE
                         account_id = ?
                         AND upload_id = ?
                 ), existing_rows AS (
                     SELECT DISTINCT {compound_key} AS compound_key
-                    FROM members
+                    FROM recipients
                     WHERE account_id = ?
                 )
                 SELECT
@@ -1120,14 +1120,14 @@ def recipient_file_upload_overwrite_settings():
     upload_df['upload_id'] = upload_id
 
     database_connector.run_query(
-        "DELETE FROM members_staging WHERE account_id = ? AND upload_id = ?",
+        "DELETE FROM recipients_staging WHERE account_id = ? AND upload_id = ?",
         sql_parameters=[ACCOUNT_ID, upload_id],
         commit=True
     )
 
     conn = database_connector.get_conn()
     try:
-        upload_df.to_sql('members_staging', conn, if_exists='append', index=False)
+        upload_df.to_sql('recipients_staging', conn, if_exists='append', index=False)
         conn.close()
     except Exception as e:
         conn.close()
@@ -1135,7 +1135,7 @@ def recipient_file_upload_overwrite_settings():
 
     database_connector.run_query(
         """
-            UPDATE members_staging
+            UPDATE recipients_staging
             SET upload_datetime = strftime('%Y-%m-%d %H:%M','now')
             WHERE account_id = ? AND upload_id = ?
         """,

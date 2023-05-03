@@ -1,0 +1,2 @@
+id,event_type,event_subtype,recipient_id,event_time,workflow_node_id,custom_data
+BIGINT,TEXT,TEXT,BIGINT,TIMESTAMP,BIGINT,TEXT
