@@ -253,7 +253,7 @@ def app_launcher():
         return json.dumps(assign_port_dict)
     else:
         address_info = {key: value[0] for key, value in address_info.items()}
-        return json.dumps(address_info)
+        return json.dumps(address_info, default=str)
 
 
 if __name__ == '__main__':

@@ -38,7 +38,7 @@ class GraphHandler(NodeGraph):
         if self.account_id and self.workflow_id:
             run_query(
                 """
-                    UPDATE workflow_routes SET last_activity = datetime()
+                    UPDATE workflow_routes SET last_activity = NOW()::timestamp
                     WHERE
                         account_id = ?
                         AND workflow_id = ?

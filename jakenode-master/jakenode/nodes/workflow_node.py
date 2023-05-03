@@ -25,7 +25,6 @@ class WorkflowNode(BaseNode):
         self,
         has_output,
         has_input,
-        database_connection_type='sqlite3',
         database_connection_kwargs={}
     ):
         super(WorkflowNode, self).__init__()
@@ -50,7 +49,7 @@ class WorkflowNode(BaseNode):
         sql,
         return_data_format=list,
         commit=False,
-        database_connection_type='sqlite',
+        database_connection_type='postgres',
         database=database_connector.DATABASE,
         sql_parameters=[]
     ):
