@@ -122,7 +122,7 @@ def get_workflow_id_by_name(account_id, workflow_name, folder_name):
         return id_list[0]
 
 
-def get_template_id_by_name(account_id, template_name, folder_name, template_type):
+def get_template_id_by_name(account_id, template_name, folder_name, template_type, debug=False):
     query_results_dict = database_connector.run_query(
         """
             SELECT t.id
@@ -144,6 +144,8 @@ def get_template_id_by_name(account_id, template_name, folder_name, template_typ
     id_list = query_results_dict.get('id', [])
     if id_list:
         return id_list[0]
+    elif debug:
+        return str([account_id, template_name, folder_name, template_type])
 
 
 @blueprint.route('/index')
@@ -309,10 +311,10 @@ def builder_submit():
                             AND active = 'TRUE'
                             AND name = ?
                             AND workflow_category_id IN (
-                                SELECT id FROM workflow_categories WHERE name = ? AND active = 'TRUE'
+                                SELECT id FROM workflow_categories WHERE name = ? AND active = 'TRUE' AND account_id = ?
                             )
                     """,
-                    'sql_parameters': (submitted_name, ACCOUNT_ID, workflow, folder)
+                    'sql_parameters': (submitted_name, ACCOUNT_ID, workflow, folder, ACCOUNT_ID)
                 }
             },
             "New Folder": {
@@ -349,11 +351,15 @@ def builder_submit():
                             (SELECT MAX(id) + 1 FROM workflows),
                             ?,
                             ?,
-                            (SELECT id FROM workflow_categories WHERE name = ? AND active = 'TRUE' LIMIT 1),
+                            (
+                                SELECT MAX(id)
+                                FROM workflow_categories
+                                WHERE name = ? AND active = 'TRUE' and account_id = ?
+                            ),
                             'TRUE'
                         )
                     """,
-                    'sql_parameters': (ACCOUNT_ID, submitted_name, folder)
+                    'sql_parameters': (ACCOUNT_ID, submitted_name, folder, ACCOUNT_ID)
                 },
                 'validation': {
                     'sql': """
@@ -404,9 +410,11 @@ def builder_submit():
                             account_id = ?
                             AND active = 'TRUE'
                             AND name = ?
-                            AND workflow_category_id IN (SELECT id FROM workflow_categories WHERE name = ?)
+                            AND workflow_category_id IN (
+                                SELECT MAX(id) FROM workflow_categories WHERE name = ? AND account_id = ?
+                            )
                     """,
-                    'sql_parameters': (ACCOUNT_ID, workflow, folder)
+                    'sql_parameters': (ACCOUNT_ID, workflow, folder, ACCOUNT_ID)
                 }
             },
             "New Template": {
@@ -418,11 +426,15 @@ def builder_submit():
                             ?,
                             ?,
                             ?,
-                            (SELECT id FROM workflow_categories WHERE name = ? AND active = 'TRUE'),
+                            (
+                                SELECT MAX(id)
+                                FROM workflow_categories
+                                WHERE name = ? AND active = 'TRUE' AND account_id = ?
+                            ),
                             'TRUE'
                         )
                     """,
-                    'sql_parameters': (ACCOUNT_ID, template_type, submitted_name, folder)
+                    'sql_parameters': (ACCOUNT_ID, template_type, submitted_name, folder, ACCOUNT_ID)
                 },
                 'validation': {
                     'sql': """
@@ -449,9 +461,11 @@ def builder_submit():
                             account_id = ?
                             AND active = 'TRUE'
                             AND name = ?
-                            AND workflow_category_id IN (SELECT id FROM workflow_categories WHERE name = ?)
+                            AND workflow_category_id IN (
+                                SELECT id FROM workflow_categories WHERE name = ? AND account_id = ?
+                            )
                     """,
-                    'sql_parameters': (ACCOUNT_ID, template, folder)
+                    'sql_parameters': (ACCOUNT_ID, template, folder, ACCOUNT_ID)
                 }
             }
         }
@@ -493,7 +507,7 @@ def builder_submit():
             return redirect(url_for('home_blueprint.workflow_builder_loading_screen', workflow_id=workflow_id))
         elif operation in ['Edit', 'New'] and node_type == 'Template':
             template_id = get_template_id_by_name(
-                account_id=ACCOUNT_ID, template_name=template, folder_name=folder, template_type=template_type
+                account_id=ACCOUNT_ID, template_name=template, folder_name=folder, template_type=template_type, debug=True
             )
             return redirect(
                 url_for(
