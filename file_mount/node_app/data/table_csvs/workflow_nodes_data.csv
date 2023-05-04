@@ -19,3 +19,23 @@ id,workflow_id,workflow_version,object_id,name,node_type,inputs,outputs,custom_d
 75,2,6,0x7fc6cc524b80,Language Response Received 2,nodes.trigger.ExactResponseReceivedTrigger,"[""0x7fc6cc5502b0""]","[""0x7fc6cc45a940""]","{""exact_response"": ""2""}",TRUE
 76,2,6,0x7fc6cc524eb0,No Response - 8 Days - Spanish,nodes.trigger.TimeElapsedTrigger,"[""0x7fc6cc45a940""]","[""0x7fc6cc456be0""]","{""time_units"": ""days"", ""time_number"": ""8""}",TRUE
 77,2,6,0x7fc6cc456be0,Second Reminder - Spanish,nodes.outreach.SMSOutreach,"[""0x7fc6cc524eb0""]","[""0x7fc6cc524370"", ""0x7fc6cc52e730""]","{""sms_templates"": ""Reminder - Spanish"", ""template_id"": 8}",TRUE
+78,4,1,0x7fd9ac0ca040,API Trigger,nodes.trigger.APITrigger,[],"[""0x7fd9ac058520""]","{""api_endpoint"": ""82e1156bb29fab74dc246af8aa3153ff5ff40d920dcbe41e1418c5e810073437""}",FALSE
+79,4,1,0x7fd9ac058520,Initial Reminder,nodes.outreach.SMSOutreach,"[""0x7fd9ac0ca040""]","[""0x7fd9dd9e6970"", ""0x7fd98cfbdf70"", ""0x7fd98cfc7160""]","{""sms_templates"": ""Prescription Reminder"", ""template_id"": 2}",FALSE
+80,4,1,0x7fd9dd9e6970,No Response - 8 Days,nodes.trigger.TimeElapsedTrigger,"[""0x7fd9ac058520""]","[""0x7fd98cfab670""]","{""time_units"": ""days"", ""time_number"": ""8""}",FALSE
+81,4,1,0x7fd98cfab670,Second Reminder,nodes.outreach.SMSOutreach,"[""0x7fd9dd9e6970""]","[""0x7fd98cfbdf70"", ""0x7fd98cfc7160""]","{""sms_templates"": ""Prescription Reminder"", ""template_id"": 2}",FALSE
+82,4,1,0x7fd98cfbdf70,Response Received 1,nodes.trigger.ExactResponseReceivedTrigger,"[""0x7fd9ac058520"", ""0x7fd98cfab670""]","[""0x7fd98cebf850"", ""0x7fd98cfc7130""]","{""exact_response"": ""1""}",FALSE
+83,4,1,0x7fd98cfc7160,Response Received 2,nodes.trigger.ExactResponseReceivedTrigger,"[""0x7fd9ac058520"", ""0x7fd98cfab670""]","[""0x7fd98cfabeb0"", ""0x7fd98cebfa30""]","{""exact_response"": ""2""}",FALSE
+84,4,1,0x7fd98cfabeb0,SMS Outreach,nodes.outreach.SMSOutreach,"[""0x7fd98cfc7160""]",[],"{""sms_templates"": ""Cancelation Confirmation"", ""template_id"": 6}",FALSE
+85,4,1,0x7fd98cebf850,Outbound Workflow Change,nodes.outreach.OutboundWorkflowChange,"[""0x7fd98cfbdf70""]",[],"{""workflow_templates"": ""Prescription Reminder"", ""template_id"": 2}",FALSE
+86,4,1,0x7fd98cfc7130,Converted,nodes.marker.Converted,"[""0x7fd98cfbdf70""]",[],,FALSE
+87,4,1,0x7fd98cebfa30,Not Converted,nodes.marker.NotConverted,"[""0x7fd98cfc7160""]",[],,FALSE
+88,4,2,0x7fd9ac0ca040,API Trigger,nodes.trigger.APITrigger,[],"[""0x7fd9ac058520""]","{""api_endpoint"": ""82e1156bb29fab74dc246af8aa3153ff5ff40d920dcbe41e1418c5e810073437""}",TRUE
+89,4,2,0x7fd9ac058520,Initial Reminder,nodes.outreach.SMSOutreach,"[""0x7fd9ac0ca040""]","[""0x7fd9dd9e6970"", ""0x7fd98cfbdf70"", ""0x7fd98cfc7160""]","{""sms_templates"": ""Prescription Reminder"", ""template_id"": 2}",TRUE
+90,4,2,0x7fd9dd9e6970,No Response - 8 Days,nodes.trigger.TimeElapsedTrigger,"[""0x7fd9ac058520""]","[""0x7fd98cfab670""]","{""time_units"": ""days"", ""time_number"": ""8""}",TRUE
+91,4,2,0x7fd98cfab670,Second Reminder,nodes.outreach.SMSOutreach,"[""0x7fd9dd9e6970""]","[""0x7fd98cfbdf70"", ""0x7fd98cfc7160""]","{""sms_templates"": ""Prescription Reminder"", ""template_id"": 2}",TRUE
+92,4,2,0x7fd98cfbdf70,Response Received 1,nodes.trigger.ExactResponseReceivedTrigger,"[""0x7fd9ac058520"", ""0x7fd98cfab670""]","[""0x7fd98cebf850"", ""0x7fd98cfc7130""]","{""exact_response"": ""1""}",TRUE
+93,4,2,0x7fd98cfc7160,Response Received 2,nodes.trigger.ExactResponseReceivedTrigger,"[""0x7fd9ac058520"", ""0x7fd98cfab670""]","[""0x7fd98cfabeb0"", ""0x7fd98cebfa30""]","{""exact_response"": ""2""}",TRUE
+94,4,2,0x7fd98cfabeb0,SMS Outreach,nodes.outreach.SMSOutreach,"[""0x7fd98cfc7160""]",[],"{""sms_templates"": ""Cancelation Confirmation"", ""template_id"": 6}",TRUE
+95,4,2,0x7fd98cebf850,Outbound Workflow Change,nodes.outreach.OutboundWorkflowChange,"[""0x7fd98cfbdf70""]",[],"{""workflow_templates"": ""Prescription Reminder"", ""template_id"": 2}",TRUE
+96,4,2,0x7fd98cfc7130,Converted,nodes.marker.Converted,"[""0x7fd98cfbdf70""]",[],,TRUE
+97,4,2,0x7fd98cebfa30,Not Converted,nodes.marker.NotConverted,"[""0x7fd98cfc7160""]",[],,TRUE
