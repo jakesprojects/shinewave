@@ -1,0 +1,2 @@
+workflow_id,current_node_date_1,stage1,current_node_date_2,stage2,current_node_date_3,stage3,current_node_date_4,stage4,current_node_date_5,stage5,value
+BIGINT,DATE,TEXT,DATE,TEXT,DATE,TEXT,DATE,TEXT,DATE,TEXT,INTEGER

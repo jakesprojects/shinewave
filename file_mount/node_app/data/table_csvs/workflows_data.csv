@@ -1,4 +1,4 @@
 id,account_id,name,workflow_category_id,enabled,active
 1,1,Test APPT Reminder,1,TRUE,TRUE
-2,1,Test Presc Reminder,2,TRUE,TRUE
+2,1,Prescription Reminder,2,TRUE,TRUE
 3,2,Test Presc Reminder,3,TRUE,TRUE

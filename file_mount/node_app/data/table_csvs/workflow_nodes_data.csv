@@ -3,13 +3,19 @@ id,workflow_id,workflow_version,object_id,name,node_type,inputs,outputs,custom_d
 49,1,6,0x7fb53c6efa60,SMS Outreach,nodes.outreach.SMSOutreach,"[""0x7fb53c6bdc10""]","[""0x7fb53c691520"", ""0x7fb53c689ca0""]","{""sms_templates"": ""Same Day Appt Reminder"", ""template_id"": 1}",TRUE
 50,1,6,0x7fb53c691520,Converted,nodes.marker.Converted,"[""0x7fb53c6efa60""]",[],,TRUE
 51,1,6,0x7fb53c689ca0,NotConverted,nodes.marker.NotConverted,"[""0x7fb53c6efa60""]",[],,TRUE
-52,2,5,0x7fae01f389a0,API Trigger,nodes.trigger.APITrigger,[],"[""0x7fae01f6ca30""]","{""api_endpoint"": ""9031ea8395a314135be027d5e7d76c510fe2f7e0eb27b8b9bcd73b56dfab00d5""}",TRUE
-53,2,5,0x7fae01f6ca30,Initial Reminder,nodes.outreach.SMSOutreach,"[""0x7fae01f389a0""]","[""0x7fae01f057c0"", ""0x7fae01f6ce80"", ""0x7fae01f1f2e0""]","{""sms_templates"": ""Prescription Reminder"", ""template_id"": 2}",TRUE
-54,2,5,0x7fae01f057c0,Renewal Response Received,nodes.trigger.ExactResponseReceivedTrigger,"[""0x7fae01f6ca30"", ""0x7fae01f18190""]","[""0x7fae01f1ffd0"", ""0x7fae01f0e0d0""]","{""exact_response"": ""1""}",TRUE
-55,2,5,0x7fae01f6ce80,Cancel Response Received,nodes.trigger.ExactResponseReceivedTrigger,"[""0x7fae01f6ca30"", ""0x7fae01f18190""]","[""0x7fae01f0e880"", ""0x7fae01f320a0""]","{""exact_response"": ""2""}",TRUE
-56,2,5,0x7fae01f1f2e0,No Response - 8 Days,nodes.trigger.TimeElapsedTrigger,"[""0x7fae01f6ca30""]","[""0x7fae01f18190""]","{""time_units"": ""days"", ""time_number"": ""8""}",TRUE
-57,2,5,0x7fae01f18190,Second Reminder,nodes.outreach.SMSOutreach,"[""0x7fae01f1f2e0""]","[""0x7fae01f057c0"", ""0x7fae01f6ce80""]","{""sms_templates"": ""Prescription Reminder"", ""template_id"": 2}",TRUE
-58,2,5,0x7fae01f1ffd0,Workflow Change - Renewal,nodes.outreach.OutboundWorkflowChange,"[""0x7fae01f057c0""]",[],"{""workflow_templates"": ""Test APPT Reminder"", ""template_id"": 1}",TRUE
-59,2,5,0x7fae01f0e880,Cancelation Confirmation,nodes.outreach.SMSOutreach,"[""0x7fae01f6ce80""]",[],"{""sms_templates"": ""Cancelation Confirmation"", ""template_id"": 6}",TRUE
-60,2,5,0x7fae01f0e0d0,Converted,nodes.marker.Converted,"[""0x7fae01f057c0""]",[],,TRUE
-61,2,5,0x7fae01f320a0,Not Converted,nodes.marker.NotConverted,"[""0x7fae01f6ce80""]",[],,TRUE
+62,2,6,0x7fc6cc55bc10,API Trigger,nodes.trigger.APITrigger,[],"[""0x7fc6cc5502b0""]","{""api_endpoint"": ""9031ea8395a314135be027d5e7d76c510fe2f7e0eb27b8b9bcd73b56dfab00d5""}",TRUE
+63,2,6,0x7fc6cc58ba00,Initial Reminder - English,nodes.outreach.SMSOutreach,"[""0x7fc6cc45a520""]","[""0x7fc6cc52e730"", ""0x7fc6cc524370"", ""0x7fc6cc5402b0""]","{""sms_templates"": ""Prescription Reminder"", ""template_id"": 2}",TRUE
+64,2,6,0x7fc6cc52e730,Renewal Response Received,nodes.trigger.ExactResponseReceivedTrigger,"[""0x7fc6cc58ba00"", ""0x7fc6cc5cff40"", ""0x7fc6cc45a940"", ""0x7fc6cc456be0""]","[""0x7fc6cc540cd0"", ""0x7fc6cc549d00""]","{""exact_response"": ""1""}",TRUE
+65,2,6,0x7fc6cc524370,Cancel Response Received,nodes.trigger.ExactResponseReceivedTrigger,"[""0x7fc6cc58ba00"", ""0x7fc6cc5cff40"", ""0x7fc6cc45a940"", ""0x7fc6cc456be0""]","[""0x7fc6cc52e880"", ""0x7fc6cc539d30""]","{""exact_response"": ""2""}",TRUE
+66,2,6,0x7fc6cc5402b0,No Response - 8 Days - English,nodes.trigger.TimeElapsedTrigger,"[""0x7fc6cc58ba00""]","[""0x7fc6cc5cff40""]","{""time_units"": ""days"", ""time_number"": ""8""}",TRUE
+67,2,6,0x7fc6cc5cff40,Second Reminder - English,nodes.outreach.SMSOutreach,"[""0x7fc6cc5402b0""]","[""0x7fc6cc52e730"", ""0x7fc6cc524370""]","{""sms_templates"": ""Prescription Reminder"", ""template_id"": 2}",TRUE
+68,2,6,0x7fc6cc540cd0,Workflow Change - Renewal,nodes.outreach.OutboundWorkflowChange,"[""0x7fc6cc52e730""]",[],"{""workflow_templates"": ""Test APPT Reminder"", ""template_id"": 1}",TRUE
+69,2,6,0x7fc6cc52e880,Cancelation Confirmation,nodes.outreach.SMSOutreach,"[""0x7fc6cc524370""]",[],"{""sms_templates"": ""Cancelation Confirmation"", ""template_id"": 6}",TRUE
+70,2,6,0x7fc6cc549d00,Converted,nodes.marker.Converted,"[""0x7fc6cc52e730""]",[],,TRUE
+71,2,6,0x7fc6cc539d30,Not Converted,nodes.marker.NotConverted,"[""0x7fc6cc524370""]",[],,TRUE
+72,2,6,0x7fc6cc5502b0,Language Selection,nodes.outreach.SMSOutreach,"[""0x7fc6cc55bc10""]","[""0x7fc6cc45a520"", ""0x7fc6cc524b80""]","{""sms_templates"": ""Language Selection"", ""template_id"": 7}",TRUE
+73,2,6,0x7fc6cc45a940,Initial Reminder - Spanish,nodes.outreach.SMSOutreach,"[""0x7fc6cc524b80""]","[""0x7fc6cc524eb0"", ""0x7fc6cc524370"", ""0x7fc6cc52e730""]","{""sms_templates"": ""Reminder - Spanish"", ""template_id"": 8}",TRUE
+74,2,6,0x7fc6cc45a520,Language Response Received 1,nodes.trigger.ExactResponseReceivedTrigger,"[""0x7fc6cc5502b0""]","[""0x7fc6cc58ba00""]","{""exact_response"": ""1""}",TRUE
+75,2,6,0x7fc6cc524b80,Language Response Received 2,nodes.trigger.ExactResponseReceivedTrigger,"[""0x7fc6cc5502b0""]","[""0x7fc6cc45a940""]","{""exact_response"": ""2""}",TRUE
+76,2,6,0x7fc6cc524eb0,No Response - 8 Days - Spanish,nodes.trigger.TimeElapsedTrigger,"[""0x7fc6cc45a940""]","[""0x7fc6cc456be0""]","{""time_units"": ""days"", ""time_number"": ""8""}",TRUE
+77,2,6,0x7fc6cc456be0,Second Reminder - Spanish,nodes.outreach.SMSOutreach,"[""0x7fc6cc524eb0""]","[""0x7fc6cc524370"", ""0x7fc6cc52e730""]","{""sms_templates"": ""Reminder - Spanish"", ""template_id"": 8}",TRUE

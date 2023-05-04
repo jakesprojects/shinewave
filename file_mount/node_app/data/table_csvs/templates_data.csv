@@ -5,3 +5,5 @@ id,account_id,name,template_type,workflow_category_id,active
 2,1,Prescription Reminder,nodes.outreach.SMSOutreach,2,TRUE
 4,2,Prescription Reminder,nodes.outreach.SMSOutreach,3,TRUE
 3,2,Same Day Appt Reminder,nodes.outreach.SMSOutreach,4,TRUE
+7,1,Language Selection,nodes.outreach.SMSOutreach,2,TRUE
+8,1,Reminder - Spanish,nodes.outreach.SMSOutreach,2,TRUE
