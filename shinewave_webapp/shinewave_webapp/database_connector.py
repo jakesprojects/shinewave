@@ -23,9 +23,9 @@ APP_DATA_PATH = f'{APP_HANDLER_PATH}/data'
 # New Settings - make sure to change all connection info before going to production
 DEFAULT_CONNECTION_TYPE = 'postgres'
 DATABASE = 'shinewavebackend'
-HOST = 'localhost'
+HOST = '54.177.211.218'
 PASSWORD = 'PVgR_9KjYkfNw72'
-PORT = 5455
+PORT = 5432
 USERNAME = 'jakemiller'
 
 # Old Settings
@@ -139,7 +139,7 @@ def run_query(
 
     if print_debug_info:
         for debug_component in [sql, sql_parameters, rows, column_names]:
-            print(debug_component)
+            print(str(debug_component)[:1000])
 
     if exception is not None:
         raise exception
