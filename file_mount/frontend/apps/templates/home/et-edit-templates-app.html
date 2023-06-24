@@ -9,7 +9,9 @@
 {% block content %}
 <script>
 	function cancelSubmission() {
-		window.location.replace('/edit-templates');
+		const urlParams = new URLSearchParams(window.location.search);
+		const templateTypeName = urlParams.get('template_type_name');
+		window.location.replace('/et-edit-' + templateTypeName.toLowerCase() + '-templates');
 	}
 </script>
 	<div class="content">
