@@ -22,13 +22,13 @@ This repository is preserved for historical and educational purposes. Maybe it'l
 
 ## Repo Structure
 - jakenode-master
- - This contains all of the logic for constructing a "Node Graph", which is essentially a DAG-builder that allows a user to structure messaging workflows.
+  - This contains all of the logic for constructing a "Node Graph", which is essentially a DAG-builder that allows a user to structure messaging workflows.
 - file_mount
- - This (poorly-named) folder contains the Flask Frontend (built from the [Flask Atlantis](https://app-generator.dev/product/atlantis-dark/flask/) template), as well as the "production" (not really) version of the "jakenode" app.
+  - This (poorly-named) folder contains the Flask Frontend (built from the [Flask Atlantis](https://app-generator.dev/product/atlantis-dark/flask/) template), as well as the "production" (not really) version of the "jakenode" app.
 - shinewave_webapp
- - This contained all file-processing logic for the webapp
+  - This contained all file-processing logic for the webapp
 - NodeGraphQt-master
- - Just an archived copy of the NodeGraph app, so that I could run this locally and wouldn't get into trouble if it was ever deleted. In a clean repo, this would just be a fork.
+  - Just an archived copy of the NodeGraph app, so that I could run this locally and wouldn't get into trouble if it was ever deleted. In a clean repo, this would just be a fork.
 
 ---
 
