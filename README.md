@@ -68,15 +68,15 @@ Ultimately, messaging workflows were treated as [DAGs](https://en.wikipedia.org/
 
 What was completed:
 
-* A working local prototype, with the drag-and-drop app implemented.
+* A working local prototype, with the multi-user, drag-and-drop app implemented.
 * General skeletal outlines of how the various nodes would work (in Python).
 * A file uploader, with basic file management, validation, and auditing as features.
 * Mock data was generated for an analytics project, showcasing the kinds of reports that would be available upon completion.
 
 What was not completed:
 
-* Authentication. The mortal sin of hard-coding a login was committed ONLY because this was a prototype never meant for production.
-* The messaging scheduler.
+* Authentication. The mortal sin of hard-coding a login was committed ONLY because this was a prototype never meant for production
+* The messaging scheduler
 * The messaging executors, e.g. Twilio, email integration, etc.
-* The full multi-tenant framework.
-* Cloud infrastructure.
+* The full multi-tenant framework
+* Cloud infrastructure
