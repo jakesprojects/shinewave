@@ -23,10 +23,10 @@ APP_DATA_PATH = f'{APP_HANDLER_PATH}/data'
 # New Settings - make sure to change all connection info before going to production
 DEFAULT_CONNECTION_TYPE = 'postgres'
 DATABASE = 'shinewavebackend'
-HOST = '54.177.211.218'
-PASSWORD = 'PVgR_9KjYkfNw72'
+HOST = ''
+PASSWORD = ''
 PORT = 5432
-USERNAME = 'jakemiller'
+USERNAME = ''
 
 # Old Settings
 # DEFAULT_CONNECTION_TYPE = 'sqlite'
