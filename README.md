@@ -18,7 +18,21 @@ In short, the market opportunity didn't seem likely to supplant the income provi
 
 This repository is preserved for historical and educational purposes. Maybe it'll be useful to somebody. Note that it isn't in a production-ready state; this was a solo project, so versioned releases, solid branching/forking logic, and a complete CI/CD framework were never implemented.
 
-<img width="800" height="447" alt="shinewave" src="https://github.com/user-attachments/assets/c997f2e1-db68-463e-8765-32f0e34a50a7" />
+## Application Screenshots
+
+### Webapp
+<img width="800" height="447" alt="shinewave" src="https://github.com/user-attachments/assets/d173ae19-31d2-4b35-91e4-643c00a2cbbe" />
+
+### Workflow Details
+<img width="960" height="540" alt="Messaging Dashboard Overview - Copy pptx (1)" src="https://github.com/user-attachments/assets/8650356e-c4b2-497b-a443-af4d5e9578fe" />
+<img width="960" height="540" alt="Messaging Dashboard Overview - Copy pptx (3)" src="https://github.com/user-attachments/assets/75d4cc82-1bd8-4baa-98ae-18b7f9edf975" />
+
+### Analytics
+<img width="960" height="540" alt="Messaging Dashboard Overview - Copy pptx (4)" src="https://github.com/user-attachments/assets/476174eb-e57b-4d46-b394-5be2fd0412d9" />
+<img width="960" height="540" alt="Messaging Dashboard Overview - Copy pptx (5)" src="https://github.com/user-attachments/assets/7a1026e5-2304-4eb2-9dc9-d53c174e4f31" />
+<img width="960" height="540" alt="Messaging Dashboard Overview - Copy pptx (6)" src="https://github.com/user-attachments/assets/a9af8a03-1893-49df-b708-bb7e6e452b5e" />
+
+
 
 ---
 
