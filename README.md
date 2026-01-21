@@ -10,9 +10,9 @@
 
 **shinewave.io** was an experimental SaaS platform for configuring and managing **stateful, two-way messaging workflows** in sensitive, high-stakes contexts such as healthcare, care coordination, and regulated customer communications.
 
-The system focused on modeling conversations as **explicit workflows** with validation, persistence, and auditability, rather than treating messages as isolated delivery events. The workflow editor was implemented as a **Directed Acyclic Graph (DAG)** builder, allowing non-engineers to configure complex logic visually (see: https://en.wikipedia.org/wiki/Directed_acyclic_graph).
+The system focused on modeling conversations as **explicit workflows** with validation, persistence, and auditability, rather than treating messages as isolated delivery events. The workflow editor was implemented as a [Directed Acyclic Graph (DAG)](https://en.wikipedia.org/wiki/Directed_acyclic_graph) builder, allowing non-engineers to configure complex logic visually.
 
-A central technical component of the project was a custom node-graph system built on top of **NodeGraphQt** (https://github.com/jchanvfx/NodeGraphQt), extended to support domain-specific validation, persistence, and multi-user interaction. Portions of the UI experimentation also involved working directly with the **X Window System** (https://en.wikipedia.org/wiki/X_Window_System) to better understand lower-level windowing behavior.
+A central technical component of the project was a custom node-graph system built on top of (NodeGraphQt)[https://github.com/jchanvfx/NodeGraphQt], extended to support domain-specific validation, persistence, and multi-user interaction. Portions of the UI experimentation also involved working directly with the [X Window System](https://en.wikipedia.org/wiki/X_Window_System) to better understand lower-level windowing behavior.
 
 At its core, shinewave emphasized **workflow structure, correctness, and visibility**, rather than channel execution or growth tooling.
 
