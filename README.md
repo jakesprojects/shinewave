@@ -2,7 +2,7 @@
 
 > **Status:** 🪦 Archived / Discontinued  
 > **Type:** Personal Project  
-> **Domain:** Omnichannel Messaging, Sensitive Communications (e.g., Healthcare)
+> **Domain:** Omnichannel Messaging, Sensitive Communications (e.g. Healthcare)
 
 ## Overview
 
