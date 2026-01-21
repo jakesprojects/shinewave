@@ -18,6 +18,8 @@ In short, the market opportunity didn't seem likely to supplant the income provi
 
 This repository is preserved for historical and educational purposes. Maybe it'll be useful to somebody. Note that it isn't in a production-ready state; this was a solo project, so versioned releases, solid branching/forking logic, and a complete CI/CD framework were never implemented.
 
+<img width="800" height="447" alt="shinewave" src="https://github.com/user-attachments/assets/c997f2e1-db68-463e-8765-32f0e34a50a7" />
+
 ---
 
 ## Repo Structure
@@ -46,6 +48,7 @@ This repository is preserved for historical and educational purposes. Maybe it'l
 ---
 
 ## Core Concepts
+
 
 - **Omnichannel Messaging**
   - SMS, email, in-app, and extensible channel support
